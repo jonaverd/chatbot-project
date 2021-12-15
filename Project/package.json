@@ -1,0 +1,32 @@
+{
+  "name": "odiseowebhook",
+  "version": "1.0.0",
+  "description": "dialogflow fullfillment",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setcredentials": "powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Scripts/auth.ps1",
+    "publicserver": "powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Scripts/public.ps1",
+    "pre-config": "npm run setcredentials ; npm run publicserver",
+    "start": "npm run pre-config ; npx nodemon ./server.js"
+  },
+  "keywords": [
+    "dialogflow",
+    "chatbot",
+    "webhook"
+  ],
+  "author": "jvv13@gcloud.ua.es",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/dialogflow": "^4.5.0",
+    "actions-on-google": "^3.0.0",
+    "dialogflow-fulfillment": "^0.6.1",
+    "enum": "^3.0.4",
+    "express": "^4.17.1",
+    "mongodb": "^4.2.1",
+    "mongoose": "^6.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  }
+}
