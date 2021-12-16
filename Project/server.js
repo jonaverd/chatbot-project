@@ -5,35 +5,37 @@
 **/
 
 // Archivos locales importados
-const databaseFile = require('./MongoDB/Connection/mongodb.js');
+const databaseFile = require('./Database/MongoDB/Connection/mongodb.js');
 
 // Archivos locales importados
-const databaseInsert = require('./MongoDB/Operations/insert-data.js');
+const databaseInsert = require('./Database/MongoDB/Operations/insert-data.js');
 
 // Archivos locales importados
-const databaseReceive = require('./MongoDB/Operations/receive-data.js');
+const databaseReceive = require('./Database/MongoDB/Operations/receive-data.js');
 
 // Archivos locales importados
-const webhookFile = require('./Webhooks/webhook.js');
+const webhookFile = require('./Examples/Fulfillment/webhook.js');
 
 // Archivos locales importados
-const webhookFileParam = require('./Webhooks/webhook-params.js');
+const webhookFileParam = require('./Examples/Fulfillment/webhook-params.js');
 
 // Archivos locales importados
-const webhookFileApiCreate = require('./GCloud-API/webhook-api-create.js');
+const webhookFileApiCreate = require('./Examples/GCloud-API/webhook-api-create.js');
 
 // Archivos locales importados
-const webhookFileApiList = require('./GCloud-API/webhook-api-list.js');
+const webhookFileApiList = require('./Examples/GCloud-API/webhook-api-list.js');
 
 // Archivos locales importados
-const webhookFileApiDelete = require('./GCloud-API/webhook-api-delete.js');
+const webhookFileApiDelete = require('./Examples/GCloud-API/webhook-api-delete.js');
 
 // Archivos locales importados
-const prototypeUseful = require('./Prototype/Utiles.js');
+const apiTools = require('./Prototype/webhook-api-tools.js');
 
 // Archivos locales importados
-const prototypeAddQuestion = require('./Prototype/AddQuestion.js');
+const prototypeAddQuestion = require('./Prototype/webhook-training.js');
 
+// Libreria DialogFlow
+const dialogflow = require('@google-cloud/dialogflow');
 
 // Libreria para abrir un servidor local
 const express = require('express');
@@ -78,7 +80,12 @@ app.get('/prototype/check', async function (req, res) {
 })
 
 app.post('/prototype', express.json(), function (req, res) { 
-  prototypeAddQuestion.addQuestion(req, res, port);
+  prototypeAddQuestion.addQuestion(req, res);
+})
+
+app.get('/check', async function (req, res) {
+
+ 
 })
 
 //###################################################################################################

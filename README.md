@@ -26,6 +26,11 @@ Siempre que se ejecute el proyecto
 ````
 $env:GOOGLE_APPLICATION_CREDENTIALS="D:\Cosas Personales\Trabajo Final\Proyecto\chatbot-project\Project\Scripts\Credentials\odiseo-chatbot-5749349920e9.json"
 ````
+## Pasar los Tests
+¡IMPORTANTE! antes de iniciar el proyecto debemos comprobar que las funciones responden correctamente
+````
+npm test
+````
 
 ## Iniciar proyecto
 Se iniciará terminal de credenciales, nGrok y node start
