@@ -4,9 +4,9 @@ exports.createIntent = async function(){
      * TODO(developer): Uncomment the following lines before running the sample.
      */
      const projectId = 'odiseo-chatbot';
-     const displayName = 'INT_API_Creado';
-     const trainingPhrasesParts = ['Frase de entrada creada automaticamente'];
-     const messageTexts = ['Frase de salida creada automaticamente'];
+     const displayName = 'INT_API_CREATE';
+     const trainingPhrasesParts = ['Automatic input text'];
+     const messageTexts = ['Automatic output text'];
 
     // Imports the Dialogflow library
     const dialogflow = require('@google-cloud/dialogflow');

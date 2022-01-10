@@ -13,7 +13,7 @@ exports.receive = function(){
     async function getData(){
 
         // Funcion que consulta datos en el modelo (tambien en la bd fisica porque el modelo ya estaba vinculado)
-        let res = await ExampleCollection.findOne({firstText:"me buscabas"});
+        let res = await ExampleCollection.find({firstText:"pregunta"});
         console.log("Se han consultado datos en la BD: ", res);
     }
 
