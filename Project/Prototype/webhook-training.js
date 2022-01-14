@@ -38,23 +38,28 @@ exports.addQuestion = async function (req, res) {
 
   // Custom Intent PTE_RecibirRespuesta
   async function receive_answer(agent) {
-    var answerUser = agent.parameters.any;
 
     // Modificar la cuestion y guardar la respuesta 
-    const struct = await apiTools.getIntentStructure(exports.lastQuestion);
-    struct[0].messages = [
-      {
-        "text": {
-          "text": [
-            answerUser
-          ]
+    if(exports.lastQuestion != ""){
+      var answerUser = agent.parameters.any;
+      const struct = await apiTools.getIntentStructure(exports.lastQuestion);
+      struct[0].messages = [
+        {
+          "text": {
+            "text": [
+              answerUser
+            ]
+          }
         }
-      }
-    ]
-    await apiTools.updateIntentfromInfo(struct, exports.lastQuestion);
-
-    agent.add('Gracias. Tu cuestión ha sido guardada (' +  exports.lastQuestion + ': ' + answerUser + ') ¡Hasta la próxima!');
-    exports.lastQuestion = "";
+      ]
+      await apiTools.updateIntentfromInfo(struct, exports.lastQuestion);
+      agent.add('Gracias. Tu cuestión ha sido guardada (' +  exports.lastQuestion + ': ' + answerUser + ') ¡Hasta la próxima!');
+      exports.lastQuestion = "";
+    }
+    
+    else{
+      agent.add('Nada por aqui');
+    }
   }
 
   // Asociamos el nombre del Intent de DialogFlow con su funcion
