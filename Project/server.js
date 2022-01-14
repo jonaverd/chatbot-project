@@ -69,6 +69,12 @@ app.get('/server', function (req, res) {
   + '<li><a href="/server/db/setdata/">Insertar datos</a></li>'
   + '<li><a href="/server/db/getdata/">Consultar datos</a></li>' 
   + '</ul>'
+  + '<h4>Prototype Questions/Answers</h4>'
+  + '<ul>'
+  + '<li><a href="/server/prototype/apitools/reset"> Restablecer intent "tools_check"</a></li>'
+  + '<li><a href="/server/prototype/apitools/list"> Mostrar lista detallada de intents</a></li>'
+  + '<li><a href="/server/prototype/apitools/setdisplayname"> Modificar displayname del intent "tools_check"</a></li>'
+  + '</ul>'
   );
 })
 
@@ -127,4 +133,30 @@ app.get('/server/db/getdata', function (req, res) {
   res.send('<h3>Acciones Mongo Database</h3><h4>Consultando datos de la base de datos...</h4>' +
   '<a href="/server">Volver al menu principal</a>'); 
 })
+
+// Peticion GET de interacciones con el prototipo/ ApiTools - Reset
+app.get('/server/prototype/apitools/reset', async function (req, res) { 
+  const intentsClient = new dialogflow.IntentsClient();
+  const request = { name: "projects/odiseo-chatbot/agent/intents/de5af645-97f1-4440-8e1d-00e239057372" };
+  const intentStruct = await intentsClient.getIntent(request);
+  await apiTools.setIntentDisplayName(intentStruct[0].displayName,"TOOLS_CHECK");
+  res.send('<h3>Acciones Prototipo</h3><h4>Reiniciando la informacion del intent...</h4>' +
+  '<a href="/server">Volver al menu principal</a>'); 
+})
+
+// Peticion GET de interacciones con el prototipo/ ApiTools - Lista detallada
+app.get('/server/prototype/apitools/list', async function (req, res) { 
+  await apiTools.getIntentList();
+  res.send('<h3>Acciones Prototipo</h3><h4>Mostrando lista detallada de intents...</h4>' +
+  '<a href="/server">Volver al menu principal</a>'); 
+})
+
+// Peticion GET de interacciones con el prototipo/ ApiTools - SetDisplayName 
+app.get('/server/prototype/apitools/setdisplayname', async function (req, res) { 
+  await apiTools.setIntentDisplayName("TOOLS_CHECK","HOLA");
+  res.send('<h3>Acciones Prototipo</h3><h4>Modificando nombre del intent...</h4>' +
+  '<a href="/server">Volver al menu principal</a>'); 
+})
+
+
 
