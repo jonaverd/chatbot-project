@@ -67,31 +67,7 @@ router.get('/', function (req, res) {
 
 // Peticion GET de bienvenida a la pagina
 router.get('/server', function (req, res) {
-  res.send(''
-  + '<h3><i>Servidor Pruebas Chatbot Odiseo</i></h3>'
-  + '<h4>Fullfillment Webhook (Interfaz DialogFlow)</h4>' 
-  + '<ul>'  
-  + '<li><a href="/server/webhook">Respuesta desde NodeJS</a></li>' 
-  + '</ul>' 
-  + '<h4>Google Cloud API (Uso de credenciales)</h4>' 
-  + '<ul>' 
-  + '<li><a href="/server/api/list">Listar intents actuales</a></li>' 
-  + '<li><a href="/server/api/create">Crear intent de prueba "int_api_create"</a></li>' 
-  + '<li><a href="/server/api/delete/">Borrar intent de prueba "int_api_create"</a></li>' 
-  + '</ul>'
-  + '<h4>Database MongoCloud (Uso de conexion)</h4>' 
-  + '<ul>'
-  + '<li><a href="/server/db/test/">Comprobar cadena de conexion</a></li>'
-  + '<li><a href="/server/db/setdata/">Insertar datos</a></li>'
-  + '<li><a href="/server/db/getdata/">Consultar datos</a></li>' 
-  + '</ul>'
-  + '<h4>Prototype Questions/Answers</h4>'
-  + '<ul>'
-  + '<li><a href="/server/prototype/apitools/reset"> Restablecer intent "tools_check"</a></li>'
-  + '<li><a href="/server/prototype/apitools/list"> Mostrar lista detallada de intents</a></li>'
-  + '<li><a href="/server/prototype/apitools/setdisplayname"> Modificar displayname del intent "tools_check"</a></li>'
-  + '</ul>'
-  );
+  res.sendFile(path.join(__dirname, "/Prototype/Views/index.html"));
 })
 
 // Peticion GET de ultima respuesta del webhook
@@ -163,8 +139,14 @@ router.get('/server/prototype/apitools/reset', async function (req, res) {
 // Peticion GET de interacciones con el prototipo/ ApiTools - Lista detallada
 router.get('/server/prototype/apitools/list', async function (req, res) { 
   const list = await apiTools.getIntentList();
-  res.render("index", {intents: list, getidfunction: apiTools.getIdIntentfromPath});
-  
+  res.render("list", {intents: list, getidfunction: apiTools.getIdIntentfromPath});
+})
+
+// Peticion GET de interacciones con el prototipo/ ApiTools - Detalles del intent
+router.get('/server/prototype/apitools/details/:name', async function (req, res) { 
+  const actualstruct = await apiTools.getIntentStructure(req.params['name'])
+  const actualid = await apiTools.getIdIntentfromPath(actualstruct[0].name)
+  res.render("details", {intent: actualstruct[0], id: actualid});
 })
 
 // Peticion GET de interacciones con el prototipo/ ApiTools - SetDisplayName 
