@@ -470,6 +470,8 @@ exports.getIntentList = async function(){
       });
     };
   });
+
+  return response;
 };
 
 // Metodo para modificar el atributo displayName de un intent (modificacion permanente)

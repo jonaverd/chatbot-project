@@ -16,12 +16,21 @@ const prototypeTraining = require('./Prototype/webhook-training.js');
 // Librerias importadas
 const dialogflow = require('@google-cloud/dialogflow');
 const express = require('express');
+const path = require('path');
 
 // Inicializacion del servidor
 const app = express();
+const router = express.Router();
 
 // Puerto del servidor
 const port = 8080;
+
+// Add the router
+app.use('/', router);
+
+// HTML Dinamico
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "/Prototype/Views"));
 
 // Puerto escuchando peticiones 
 // Se desviará a nGrok para hacerlo público
@@ -30,13 +39,15 @@ app.listen(port, function() {
 });
 
 // Peticion POST de enviar informacion al servidor desde la interfaz
-app.post('/server', express.json(), function (req, res) { 
+router.post('/server', express.json(), function (req, res) { 
 
+  // Identificamos que tipo frase de entrenamiento recibimos por el chat
   function contains(order) { 
     const input = req.body.queryResult.queryText;
     return input.includes(order);
   }
 
+  // Actuamos y servimos una respuesta al usuario
   switch(true){
     case contains("Conecta Odiseo"): 
       webhookFile.webhook(req, res, port);
@@ -49,8 +60,13 @@ app.post('/server', express.json(), function (req, res) {
   }
 })
 
+// Peticion GET por defecto
+router.get('/', function (req, res) {
+  res.redirect('/server');
+})
+
 // Peticion GET de bienvenida a la pagina
-app.get('/server', function (req, res) {
+router.get('/server', function (req, res) {
   res.send(''
   + '<h3><i>Servidor Pruebas Chatbot Odiseo</i></h3>'
   + '<h4>Fullfillment Webhook (Interfaz DialogFlow)</h4>' 
@@ -79,7 +95,7 @@ app.get('/server', function (req, res) {
 })
 
 // Peticion GET de ultima respuesta del webhook
-app.get('/server/webhook', function (req, res) {
+router.get('/server/webhook', function (req, res) {
   if(webhookFileParam.info=="Nothing"){
     res.send('<h3>Acciones FullFillment Webhook</h3><h4>Mostrando respuesta sin parametros...</h4>' +
     '<a href="/server">Volver al menu principal</a>');
@@ -92,21 +108,21 @@ app.get('/server/webhook', function (req, res) {
 })
 
 // Peticion GET de interacciones con la api de google cloud / Listar Intent
-app.get('/server/api/list', function (req, res) { 
+router.get('/server/api/list', function (req, res) { 
   webhookFileApiList.listIntent();
   res.send('<h3>Acciones API Cloud</h3><h4>Listando intents de prueba...</h4>' +
   '<a href="/server">Volver al menu principal</a>'); 
 })
 
 // Peticion GET de interacciones con la api de google cloud / Crear Intent
-app.get('/server/api/create', function (req, res) { 
+router.get('/server/api/create', function (req, res) { 
   webhookFileApiCreate.createIntent();
   res.send('<h3>Acciones API Cloud</h3>' + '<h4>Creando intent de prueba...</h4>' + 
   '<a href="/server">Volver al menu principal</a>');       
 })
 
 // Peticion GET de interacciones con la api de google cloud / Borrar Intent
-app.get('/server/api/delete', async function (req, res) { 
+router.get('/server/api/delete', async function (req, res) { 
   const id = await apiTools.getIdIntentfromName("INT_API_CREATE");
   webhookFileApiDelete.deleteIntent(id);
   res.send('<h3>Acciones API Cloud</h3><h4>Borrando intent de prueba...</h4>' +
@@ -114,28 +130,28 @@ app.get('/server/api/delete', async function (req, res) {
 })
 
 // Peticion GET de interacciones con la base de datos MongoDB/ Probar Conexion
-app.get('/server/db/test', function (req, res) { 
+router.get('/server/db/test', function (req, res) { 
   databaseFile.testConnection();
   res.send('<h3>Acciones Mongo Database</h3><h4>Probando conexion a la base de datos...</h4>' +
   '<a href="/server">Volver al menu principal</a>'); 
 })
 
 // Peticion GET de interacciones con la base de datos MongoDB/ Insertar Datos
-app.get('/server/db/setdata', function (req, res) { 
+router.get('/server/db/setdata', function (req, res) { 
   databaseInsert.insert();
   res.send('<h3>Acciones Mongo Database</h3><h4>Insertando datos de la base de datos...</h4>' +
   '<a href="/server">Volver al menu principal</a>'); 
 })
 
 // Peticion GET de interacciones con la base de datos MongoDB/ Recuperar Datos
-app.get('/server/db/getdata', function (req, res) { 
+router.get('/server/db/getdata', function (req, res) { 
   databaseReceive.receive();
   res.send('<h3>Acciones Mongo Database</h3><h4>Consultando datos de la base de datos...</h4>' +
   '<a href="/server">Volver al menu principal</a>'); 
 })
 
 // Peticion GET de interacciones con el prototipo/ ApiTools - Reset
-app.get('/server/prototype/apitools/reset', async function (req, res) { 
+router.get('/server/prototype/apitools/reset', async function (req, res) { 
   const intentsClient = new dialogflow.IntentsClient();
   const request = { name: "projects/odiseo-chatbot/agent/intents/de5af645-97f1-4440-8e1d-00e239057372" };
   const intentStruct = await intentsClient.getIntent(request);
@@ -145,14 +161,14 @@ app.get('/server/prototype/apitools/reset', async function (req, res) {
 })
 
 // Peticion GET de interacciones con el prototipo/ ApiTools - Lista detallada
-app.get('/server/prototype/apitools/list', async function (req, res) { 
-  await apiTools.getIntentList();
-  res.send('<h3>Acciones Prototipo</h3><h4>Mostrando lista detallada de intents...</h4>' +
-  '<a href="/server">Volver al menu principal</a>'); 
+router.get('/server/prototype/apitools/list', async function (req, res) { 
+  const list = await apiTools.getIntentList();
+  res.render("index", {intents: list, getidfunction: apiTools.getIdIntentfromPath});
+  
 })
 
 // Peticion GET de interacciones con el prototipo/ ApiTools - SetDisplayName 
-app.get('/server/prototype/apitools/setdisplayname', async function (req, res) { 
+router.get('/server/prototype/apitools/setdisplayname', async function (req, res) { 
   await apiTools.setIntentDisplayName("TOOLS_CHECK","HOLA");
   res.send('<h3>Acciones Prototipo</h3><h4>Modificando nombre del intent...</h4>' +
   '<a href="/server">Volver al menu principal</a>'); 

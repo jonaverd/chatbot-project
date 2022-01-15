@@ -1,0 +1,67 @@
+head
+  title Lista Intents Prototipo
+  meta(name='viewport' content='width=device-width, initial-scale=1')
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
+  link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css')
+  link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css')
+  script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')
+
+  style.
+    * {
+    box-sizing: border-box;
+    }
+    body {
+    font-family: Arial, Helvetica, sans-serif;
+    }
+    .column {
+    float: left;
+    width: 25%;
+    padding: 0 10px;
+    }
+    .row {margin: 0 -5px;}
+    .row:after {
+    content: "";
+    display: table;
+    clear: both;
+    }
+    @media screen and (max-width: 600px) {
+        .column {
+        width: 100%;
+        display: block;
+        margin-bottom: 20px;
+        }
+    }
+    .card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    text-align: center;
+    background-color: #f1f1f1;
+    display: grid;
+    grid-template-rows: repeat(auto-fill);
+    grid-template-columns: repeat(auto-fill);
+    grid-gap: 10px;
+    }
+
+body
+    div(style='margin:100px;')
+        .jumbotron(style='padding:40px;')
+            h3 Acciones Prototipo
+            h4 Mostrando lista detallada de intents...
+            a(href='/server') Volver al menu principal
+
+        - x=0
+        each intent in intents
+            if(x%4==0)
+                .row
+            .column
+                .card
+                    .row
+                        h4= intent.displayName
+                    .row
+                       p= getidfunction(intent.name)
+                        // each trainingphrase in intent.trainingPhrases
+                            each part in trainingphrase.parts
+                                .column    
+                                    h6= part.text               
+            - x++
+    
