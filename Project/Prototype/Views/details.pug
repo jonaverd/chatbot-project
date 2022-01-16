@@ -8,7 +8,6 @@ head
     meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
     title Prototype API Tools
-
     style.
         html {
             box-sizing: border-box;
@@ -19,73 +18,204 @@ head
         body {
             position: relative;
         }
-
 body
     div
         .jumbotron(style='padding:40px;')
             h5 Acciones Prototipo
             h6 (Mostrando información del intent)
             a(href='/server/prototype/apitools/list') Volver a la lista
-
     .row-auto.p-6
         .col-auto.p-6
-            button.btn.btn-lg.btn-primary(type='button' disabled='')= intent.displayName
+            if exists(intent.displayName) 
+                button.btn.btn-lg.btn-primary(type='button' disabled='')= intent.displayName
+            else
+                button.btn.btn-lg.btn-danger(type='button' disabled='') Undefined
             br
             br
             h5 Project Path
             p
             ul.list-group
-                li.list-group-item= intent.name
+                if exists(intent.name) 
+                    li.list-group-item= intent.name
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined    
             br 
             br
             h5 Identificator
             p
             ul.list-group
-                li.list-group-item= id 
+                if exists(id) 
+                    li.list-group-item= id
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined     
             br
             br
             h5 Display Name
             p
             ul.list-group
-                li.list-group-item= intent.displayName
+                if exists(intent.displayName) 
+                    li.list-group-item= intent.displayName
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined    
             br
             br
             h5 Webhook State
             p
             ul.list-group
-                li.list-group-item= intent.webhookState
+                if exists(intent.webhookState) 
+                    li.list-group-item= intent.webhookState
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined        
             br
             br
             h5 Priority 
             p
             ul.list-group
-                li.list-group-item= intent.priority      
+                if exists(intent.priority) 
+                    li.list-group-item= intent.priority
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined          
             br
             br
             h5 Is Fallback 
             p
             ul.list-group
-                li.list-group-item= intent.isFallback   
+                if exists(intent.isFallback) 
+                    li.list-group-item= intent.isFallback
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined     
             br
             br   
             h5 ML Disabled 
             p
             ul.list-group
-                li.list-group-item= intent.mlDisabled
+                if exists(intent.mlDisabled) 
+                    li.list-group-item= intent.mlDisabled
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined     
             br
             br   
             h5 Live Agent HandOff 
             p
             ul.list-group
-                li.list-group-item= intent.liveAgentHandoff
+                if exists(intent.liveAgentHandoff) 
+                    li.list-group-item= intent.liveAgentHandoff
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined     
             br
             br   
             h5 End Interaction
             p
             ul.list-group
-                li.list-group-item= intent.endInteraction     
-         
-      
+                if exists(intent.endInteraction) 
+                    li.list-group-item= intent.endInteraction
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined     
+            br
+            br   
+            h5 Input Context Names
+            p
+            ul.list-group
+                if exists(intent.inputContextNames) 
+                    table.table.table-bordered
+                        thead.thead-light
+                            tr
+                                th(scope='col') Name  
+                        each context in intent.inputContextNames 
+                            tbody   
+                                tr
+                                    if exists(context)  
+                                        td= context
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
+            br
+            br   
+            h5 Events
+            p
+            ul.list-group
+                if exists(intent.events) 
+                    table.table.table-bordered
+                        thead.thead-light
+                            tr
+                                th(scope='col') Name  
+                        each event in intent.events 
+                            tbody   
+                                tr
+                                    if exists(event)  
+                                        td= event
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
+
+            br
+            br   
+            h5 Training Phrases
+            p
+            ul.list-group
+                if exists(intent.trainingPhrases)      
+                    table.table.table-bordered
+                        thead.thead-light
+                            tr
+                                th(scope='col') Name
+                                th(scope='col') Type
+                                th(scope='col') Parts
+                                th(scope='col') TimesAddedCount
+                        each trainingphrase in intent.trainingPhrases
+                            tbody
+                                tr
+                                    if exists(trainingphrase.name)  
+                                        td= trainingphrase.name
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(trainingphrase.type)  
+                                        td= trainingphrase.type
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(trainingphrase.parts)  
+                                        td
+                                            table.table.table-bordered
+                                                thead
+                                                    tr                                  
+                                                        th(scope='col') Text
+                                                        th(scope='col') EntityType
+                                                        th(scope='col') Alias
+                                                        th(scope='col') UserDefined
+                                                each part in trainingphrase.parts
+                                                    tbody
+                                                        tr
+                                                            if exists(part.text)
+                                                                td= part.text
+                                                            else
+                                                                td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                                            if exists(part.entityType)
+                                                                td= part.entityType
+                                                            else
+                                                                td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                                            if exists(part.alias)
+                                                                td= part.alias
+                                                            else
+                                                                td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                                            if exists(part.userDefined)
+                                                                td= part.userDefined
+                                                            else
+                                                                td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(trainingphrase.timesAddedCount)                        
+                                        td= trainingphrase.timesAddedCount
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
+
+                            
+
+            
+            
+        
       
 
                 

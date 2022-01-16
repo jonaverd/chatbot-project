@@ -146,7 +146,7 @@ router.get('/server/prototype/apitools/list', async function (req, res) {
 router.get('/server/prototype/apitools/details/:name', async function (req, res) { 
   const actualstruct = await apiTools.getIntentStructure(req.params['name'])
   const actualid = await apiTools.getIdIntentfromPath(actualstruct[0].name)
-  res.render("details", {intent: actualstruct[0], id: actualid});
+  res.render("details", {intent: actualstruct[0], id: actualid, exists: apiTools.checkNotUndefined});
 })
 
 // Peticion GET de interacciones con el prototipo/ ApiTools - SetDisplayName 

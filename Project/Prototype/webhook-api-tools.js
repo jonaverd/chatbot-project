@@ -208,37 +208,40 @@ exports.getIntentStructure = async function(displayName){
   const intentsClient = new dialogflow.IntentsClient();
   const intentPath = intentsClient.projectAgentIntentPath(projectId, intentId);
   const request = {
-    name: intentPath
+    name: intentPath,
+    intentView: "INTENT_VIEW_FULL",
   };
 
   const intentStruct = await intentsClient.getIntent(request);
   return intentStruct;
 };
 
-// Metodo para comporbar si un array esta vacio
-exports.arrayIsEmpty = function(array) {
-  //If it's not an array, return FALSE.
-  if (!Array.isArray(array)) {
-      return false;
-  }
-  //If it is an array, check its length property
-  if (array.length == 0) {
-      //Return TRUE if the array is empty
-      return true;
-  }
-  //Otherwise, return FALSE.
-  return false;
-}
 
 // Metodo para comprobar si un elemento contiene algun valor nulo o indefinido
 exports.checkNotUndefined = function(element){
+
+  // Metodo para comporbar si un array esta vacio
+  function arrayIsEmpty(array) {
+    //If it's not an array, return FALSE.
+    if (!Array.isArray(array)) {
+        return false;
+    }
+    //If it is an array, check its length property
+    if (array.length == 0) {
+        //Return TRUE if the array is empty
+        return true;
+    }
+    //Otherwise, return FALSE.
+    return false;
+  }
+
   if(element === null){
     return false;
   }
   else if(element === undefined){
     return false;
   }
-  else if(this.arrayIsEmpty(element)){
+  else if(arrayIsEmpty(element)){
     return false;
   }
   else if (element === ""){
