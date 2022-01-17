@@ -344,7 +344,36 @@ body
             p
             ul.list-group
                 if exists(intent.messages) 
-                    li.list-group-item RELLENAR
+                    table.table.table-bordered
+                        thead.thead-light
+                            tr
+                                th(scope='col') Platform
+                                th(scope='col') Text        
+                        each messages in intent.messages
+                            tbody   
+                                tr
+                                    if exists(messages.platform)  
+                                        td= messages.platform
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(messages.text)
+                                        if exists(messages.text.text)    
+                                            td
+                                                table.table.table-bordered
+                                                    thead.thead-light
+                                                        tr
+                                                            th(scope='col') Text  
+                                                    each text in messages.text.text
+                                                        tbody   
+                                                            tr
+                                                                if exists(text)  
+                                                                    td= text
+                                                                else
+                                                                    td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                        else
+                                            td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
                 else
                     li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined                         
             br
