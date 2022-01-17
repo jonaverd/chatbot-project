@@ -152,7 +152,7 @@ exports.deleteIntentfromName = async function(displayName){
 };
 
 // Metodo para modificar un intent con cierta informacion
-exports.updateIntentfromInfo = async function(additionals, displayName){
+exports.updateIntentfromInfo = async function(additionals, intentId){
 
   // Imports the Dialogflow library
   const dialogflow = require('@google-cloud/dialogflow');
@@ -160,31 +160,30 @@ exports.updateIntentfromInfo = async function(additionals, displayName){
  
   // Instantiates clients
   const intentsClient = new dialogflow.IntentsClient();
-  const intentId = await exports.getIdIntentfromName(displayName);
   const intentPath = intentsClient.projectAgentIntentPath(projectId, intentId);
 
   // Informacion Intent
   const intent = {
     "name": intentPath,
-    "displayName": additionals[0].displayName,
-    "webhookState": additionals[0].webhookState,
-    "priority": additionals[0].priority,
-    "isFallback": additionals[0].isFallback,
-    "mlDisabled": additionals[0].mlDisabled,
-    "liveAgentHandoff": additionals[0].liveAgentHandoff,
-    "endInteraction": additionals[0].endInteraction,
-    "inputContextNames": additionals[0].inputContextNames,
-    "events": additionals[0].events,
-    "trainingPhrases": additionals[0].trainingPhrases,
-    "action": additionals[0].action,
-    "outputContexts": additionals[0].outputContexts,
-    "resetContexts": additionals[0].resetContexts,
-    "parameters": additionals[0].parameters,
-    "messages": additionals[0].messages,
-    "defaultResponsePlatforms": additionals[0].defaultResponsePlatforms,
-    "rootFollowupIntentName": additionals[0].rootFollowupIntentName,
-    "parentFollowupIntentName": additionals[0].parentFollowupIntentName,
-    "followupIntentInfo": additionals[0].followupIntentInfo,
+    "displayName": additionals.displayName,
+    "webhookState": additionals.webhookState,
+    "priority": additionals.priority,
+    "isFallback": additionals.isFallback,
+    "mlDisabled": additionals.mlDisabled,
+    "liveAgentHandoff": additionals.liveAgentHandoff,
+    "endInteraction": additionals.endInteraction,
+    "inputContextNames": additionals.inputContextNames,
+    "events": additionals.events,
+    "trainingPhrases": additionals.trainingPhrases,
+    "action": additionals.action,
+    "outputContexts": additionals.outputContexts,
+    "resetContexts": additionals.resetContexts,
+    "parameters": additionals.parameters,
+    "messages": additionals.messages,
+    "defaultResponsePlatforms": additionals.defaultResponsePlatforms,
+    "rootFollowupIntentName": additionals.rootFollowupIntentName,
+    "parentFollowupIntentName": additionals.parentFollowupIntentName,
+    "followupIntentInfo": additionals.followupIntentInfo,
   };
 
   const request = { intent };
@@ -197,12 +196,11 @@ exports.updateIntentfromInfo = async function(additionals, displayName){
 };
 
 // Metodo para conseguir toda la estructura de un intent 
-exports.getIntentStructure = async function(displayName){
+exports.getIntentStructure = async function(intentId){
 
   // Imports the Dialogflow library
   const dialogflow = require('@google-cloud/dialogflow');
   const projectId = 'odiseo-chatbot'; 
-  const intentId = await exports.getIdIntentfromName(displayName);
   
   // Instantiates clients
   const intentsClient = new dialogflow.IntentsClient();
@@ -212,8 +210,7 @@ exports.getIntentStructure = async function(displayName){
     intentView: "INTENT_VIEW_FULL",
   };
 
-  const intentStruct = await intentsClient.getIntent(request);
-  return intentStruct;
+  return await intentsClient.getIntent(request);
 };
 
 
@@ -383,12 +380,17 @@ exports.getIntentList = async function(){
         if(this.checkNotUndefined(outputContext.lifespanCount)){
           console.log(`\tLifespanCount: ${outputContext.lifespanCount}`);
         };
-        if(this.checkNotUndefined(outputContext.parameters)){
-          console.log(`\tParameters:`);
-          outputContext.parameters.forEach(parameter => {
-            console.log(`\t\tValue: ${parameter}`);
+        /*if(this.checkNotUndefined(outputContext.parameters)){
+          console.log('Parameters:');
+          outputContext.parameters.forEach(parameter=> {
+            if(this.checkNotUndefined(parameter.key)){
+              console.log(`\t\tKey: ${parameter.key}`);
+            }
+            if(this.checkNotUndefined(parameter.value)){
+              console.log(`\t\tValue: ${parameter.value}`);
+            }
           });
-        };
+        };*/
       });
     };
     if(this.checkNotUndefined(resetContexts)){

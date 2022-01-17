@@ -6,6 +6,7 @@ head
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     meta(charset='utf-8')
     meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    meta(http-equiv='refresh' content='5')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
     title Prototype API Tools
     style.
@@ -95,7 +96,7 @@ body
                     li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined     
             br
             br   
-            h5 Live Agent HandOff 
+            h5 Live Agent Hand Off 
             p
             ul.list-group
                 if exists(intent.liveAgentHandoff) 
@@ -149,7 +150,6 @@ body
                                         td(style='color:red; font-weight:bold; font-size:small') Undefined
                 else
                     li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
-
             br
             br   
             h5 Training Phrases
@@ -210,6 +210,195 @@ body
                                         td(style='color:red; font-weight:bold; font-size:small') Undefined
                 else
                     li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
+            br
+            br   
+            h5 Action
+            p
+            ul.list-group
+                if exists(intent.action) 
+                    li.list-group-item= intent.action
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined   
+            br
+            br   
+            h5 Output Contexts
+            p
+            ul.list-group
+                if exists(intent.outputContexts) 
+                    table.table.table-bordered
+                        thead.thead-light
+                            tr
+                                th(scope='col') Name
+                                th(scope='col') LifeSpan Count  
+                                th(scope='col') Parameters    
+                        each context in intent.outputContexts 
+                            tbody   
+                                tr
+                                    if exists(context.name)  
+                                        td= context.name
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(context.lifespanCount)  
+                                        td= context.lifespanCount
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(context.parameters)  
+                                        td
+                                            table.table.table-bordered
+                                                thead
+                                                    tr                                  
+                                                        th(scope='col') Key
+                                                        th(scope='col') Value 
+                                                each parameter in context.parameters
+                                                    tbody
+                                                        tr
+                                                            if exists(parameter.key)
+                                                                td= parameter.key
+                                                            else
+                                                                td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                                            if exists(parameter.value)
+                                                                td= parameter.value
+                                                            else
+                                                                td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
+            br
+            br   
+            h5 Reset Contexts
+            p
+            ul.list-group
+                if exists(intent.resetContexts) 
+                    li.list-group-item= intent.resetContexts
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined  
+            br
+            br   
+            h5 Parameters
+            p
+            ul.list-group
+                if exists(intent.parameters) 
+                    table.table.table-bordered
+                        thead.thead-light
+                            tr
+                                th(scope='col') Name
+                                th(scope='col') Display Name
+                                th(scope='col') Value
+                                th(scope='col') Default Value
+                                th(scope='col') Entity Type Display Name
+                                th(scope='col') Mandatory 
+                                th(scope='col') Prompts
+                                th(scope='col') Is List        
+                        each parameter in intent.parameters
+                            tbody   
+                                tr
+                                    if exists(parameter.name)  
+                                        td= parameter.name
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(parameter.displayName)  
+                                        td= parameter.displayName
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(parameter.value)  
+                                        td= parameter.value
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(parameter.defaultValue)  
+                                        td= parameter.defaultValue
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(parameter.entityTypeDisplayName)  
+                                        td= parameter.entityTypeDisplayName
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(parameter.mandatory)  
+                                        td= parameter.mandatory
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(parameter.prompts) 
+                                        td
+                                            table.table.table-bordered
+                                                thead.thead-light
+                                                    tr
+                                                        th(scope='col') Text  
+                                                each prompt in parameter.prompts 
+                                                    tbody   
+                                                        tr
+                                                            if exists(prompt)  
+                                                                td= prompt
+                                                            else
+                                                                td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(parameter.isList)  
+                                        td= parameter.isList
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
+            br
+            br   
+            h5 Messages
+            p
+            ul.list-group
+                if exists(intent.messages) 
+                    li.list-group-item RELLENAR
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined                         
+            br
+            br   
+            h5 Default Response Platforms
+            p
+            ul.list-group
+                if exists(intent.defaultResponsePlatforms) 
+                    li.list-group-item= intent.defaultResponsePlatforms
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined 
+            br
+            br   
+            h5 Root Followup Intent Name
+            p
+            ul.list-group
+                if exists(intent.rootFollowupIntentName) 
+                    li.list-group-item= intent.rootFollowupIntentName
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
+            br
+            br   
+            h5 Parent Followup Intent Name
+            p
+            ul.list-group
+                if exists(intent.parentFollowupIntentName) 
+                    li.list-group-item= intent.parentFollowupIntentName
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined
+            br
+            br   
+            h5 Followup Intent Info
+            p
+            ul.list-group
+                if exists(intent.followupIntentInfo) 
+                    table.table.table-bordered
+                        thead.thead-light
+                            tr
+                                th(scope='col') Followup Intent Name
+                                th(scope='col') Parent Followup Intent Name 
+                        each info in intent.followupIntentInfo
+                            tbody   
+                                tr
+                                    if exists(info.followupIntentName)  
+                                        td= info.followupIntentName
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                                    if exists(info.parentFollowupIntentName)  
+                                        td= info.parentFollowupIntentName
+                                    else
+                                        td(style='color:red; font-weight:bold; font-size:small') Undefined
+                else
+                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined                                      
+  
 
                             
 

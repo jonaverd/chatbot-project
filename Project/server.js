@@ -126,16 +126,6 @@ router.get('/server/db/getdata', function (req, res) {
   '<a href="/server">Volver al menu principal</a>'); 
 })
 
-// Peticion GET de interacciones con el prototipo/ ApiTools - Reset
-router.get('/server/prototype/apitools/reset', async function (req, res) { 
-  const intentsClient = new dialogflow.IntentsClient();
-  const request = { name: "projects/odiseo-chatbot/agent/intents/de5af645-97f1-4440-8e1d-00e239057372" };
-  const intentStruct = await intentsClient.getIntent(request);
-  await apiTools.setIntentDisplayName(intentStruct[0].displayName,"TOOLS_CHECK");
-  res.send('<h3>Acciones Prototipo</h3><h4>Reiniciando la informacion del intent...</h4>' +
-  '<a href="/server">Volver al menu principal</a>'); 
-})
-
 // Peticion GET de interacciones con el prototipo/ ApiTools - Lista detallada
 router.get('/server/prototype/apitools/list', async function (req, res) { 
   const list = await apiTools.getIntentList();
@@ -143,18 +133,12 @@ router.get('/server/prototype/apitools/list', async function (req, res) {
 })
 
 // Peticion GET de interacciones con el prototipo/ ApiTools - Detalles del intent
-router.get('/server/prototype/apitools/details/:name', async function (req, res) { 
-  const actualstruct = await apiTools.getIntentStructure(req.params['name'])
-  const actualid = await apiTools.getIdIntentfromPath(actualstruct[0].name)
+router.get('/server/prototype/apitools/details/:id', async function (req, res) { 
+  const actualid = req.params['id'];
+  const actualstruct = await apiTools.getIntentStructure(actualid)
   res.render("details", {intent: actualstruct[0], id: actualid, exists: apiTools.checkNotUndefined});
 })
 
-// Peticion GET de interacciones con el prototipo/ ApiTools - SetDisplayName 
-router.get('/server/prototype/apitools/setdisplayname', async function (req, res) { 
-  await apiTools.setIntentDisplayName("TOOLS_CHECK","HOLA");
-  res.send('<h3>Acciones Prototipo</h3><h4>Modificando nombre del intent...</h4>' +
-  '<a href="/server">Volver al menu principal</a>'); 
-})
 
 
 
