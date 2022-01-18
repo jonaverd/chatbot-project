@@ -20,7 +20,7 @@ exports.addQuestion = async function (req, res) {
 
     // Comprobar si la cuestion esta ya guardada
     var questionUser = agent.parameters.any; 
-    const check = await apiTools.checkIntentExistsfromName(questionUser);
+    const check = await apiTools.checkIntentExists(questionUser);
 
     if(check==true){
       //await apiTools.setEndConversationIntent("PTE_RecibirCuestion", true);
@@ -30,7 +30,7 @@ exports.addQuestion = async function (req, res) {
     
     // Guardar la cuestion
     else{
-      const id = await apiTools.createIntentfromName(questionUser);   
+      const id = await apiTools.createIntent(questionUser);   
       agent.add('Por favor, dime la respuesta para (' + questionUser + ')');
       exports.lastQuestion = questionUser;
     }
@@ -42,7 +42,8 @@ exports.addQuestion = async function (req, res) {
     // Modificar la cuestion y guardar la respuesta 
     if(exports.lastQuestion != ""){
       var answerUser = agent.parameters.any;
-      const struct = await apiTools.getIntentStructure(exports.lastQuestion);
+      const id = await apiTools.getIDIntent_Name(exports.lastQuestion);
+      const struct = await apiTools.getIntent(id);
       struct[0].messages = [
         {
           "text": {
@@ -52,7 +53,7 @@ exports.addQuestion = async function (req, res) {
           }
         }
       ]
-      await apiTools.updateIntentfromInfo(struct, exports.lastQuestion);
+      await apiTools.updateIntent(id, struct);
       agent.add('Gracias. Tu cuestión ha sido guardada (' +  exports.lastQuestion + ': ' + answerUser + ') ¡Hasta la próxima!');
       exports.lastQuestion = "";
     }

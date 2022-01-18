@@ -20,6 +20,13 @@ const path = require('path');
 
 // Inicializacion del servidor
 const app = express();
+
+// Parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded({ extended: true }));
+
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
+
 const router = express.Router();
 
 // Puerto del servidor
@@ -55,8 +62,11 @@ router.post('/server', express.json(), function (req, res) {
     case contains("Conecta y Repite Odiseo"): 
       webhookFileParam.webhookparams(req, res, port);
       break;
-    default:
+    case contains("Quiero enseñarte"): 
       prototypeTraining.addQuestion(req, res);
+      break;
+    default:
+      res.send()
   }
 })
 
@@ -99,7 +109,7 @@ router.get('/server/api/create', function (req, res) {
 
 // Peticion GET de interacciones con la api de google cloud / Borrar Intent
 router.get('/server/api/delete', async function (req, res) { 
-  const id = await apiTools.getIdIntentfromName("INT_API_CREATE");
+  const id = await apiTools.getIDIntent_Name("INT_API_CREATE");
   webhookFileApiDelete.deleteIntent(id);
   res.send('<h3>Acciones API Cloud</h3><h4>Borrando intent de prueba...</h4>' +
   '<a href="/server">Volver al menu principal</a>');  
@@ -126,18 +136,34 @@ router.get('/server/db/getdata', function (req, res) {
   '<a href="/server">Volver al menu principal</a>'); 
 })
 
+// Peticion POST de interacciones con el prototipo/ ApiTools - Crear intent
+router.post('/server/prototype/apitools/intents/create', async function (req, res) { 
+  var nameValue = req.body.inputconfirm;
+  await apiTools.createIntent(nameValue);
+  res.redirect('/server/prototype/apitools/intents/list');
+})
+
 // Peticion GET de interacciones con el prototipo/ ApiTools - Lista detallada
-router.get('/server/prototype/apitools/list', async function (req, res) { 
+router.get('/server/prototype/apitools/intents/list', async function (req, res) { 
   const list = await apiTools.getIntentList();
-  res.render("list", {intents: list, getidfunction: apiTools.getIdIntentfromPath});
+  res.render("list", {intents: list, getidfunction: apiTools.getIDIntent_Path, exists: apiTools.checkNotUndefined});
 })
 
 // Peticion GET de interacciones con el prototipo/ ApiTools - Detalles del intent
-router.get('/server/prototype/apitools/details/:id', async function (req, res) { 
+router.get('/server/prototype/apitools/intents/:id/details', async function (req, res) { 
   const actualid = req.params['id'];
-  const actualstruct = await apiTools.getIntentStructure(actualid)
+  const actualstruct = await apiTools.getIntent(actualid);
   res.render("details", {intent: actualstruct[0], id: actualid, exists: apiTools.checkNotUndefined});
 })
+
+// Peticion GET de interacciones con el prototipo/ ApiTools - Detalles del intent
+router.get('/server/prototype/apitools/intents/:id/delete', async function (req, res) { 
+  const actualid = req.params['id'];
+  await apiTools.deleteIntent(actualid);
+  res.redirect('/server/prototype/apitools/intents/list');
+})
+
+
 
 
 

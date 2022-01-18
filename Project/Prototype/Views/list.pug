@@ -1,5 +1,6 @@
 doctype html
 head
+    //meta(http-equiv='refresh' content='5')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -8,7 +9,6 @@ head
     meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
     title Prototype API Tools
-
     style.
         html {
             box-sizing: border-box;
@@ -16,14 +16,89 @@ head
         *, *:before, *:after {
             box-sizing: inherit;
         }
-
+        .close {
+            float: right;
+        }
+        .close:hover,
+        .close:focus {
+            cursor: pointer;
+        }
+    script.
+        $(".modal-wide").on("show.bs.modal", function() {
+            var height = $(window).height() - 200;
+            $(this).find(".modal-body").css("max-height", height);
+            $('#inputname').trigger('focus')
+        });
+    script.
+        function getcreatetext(){
+            var name = document.getElementById("inputname").value;
+            document.getElementById("inputconfirm").value = name;
+            document.getElementById("nameconfirm").innerHTML = name;
+        }
+    script.
+        function getdeletetext(name, id){
+            document.getElementById("inputdelete").href = `/server/prototype/apitools/intents/${id}/delete`;
+            document.getElementById("namedelete").innerHTML = name;
+        }
+    script.
+        function hidden_button(){
+            if(document.getElementById("inputname").value != ""){
+                document.getElementById("visiblecreate").disabled= "false";;
+            }
+            else{
+                document.getElementById("visiblecreate").disabled= "true";
+            }
+        }
 body
+    #createModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    .modal-title.h4 Guardar cambios 
+                    button.btn(class="close" data-dismiss="modal" aria-hidden="true") &times;
+                .modal-body
+                    form(role='form' method='POST' action='/server/prototype/apitools/intents/create')
+                        .form-group
+                            p The new intent will be created only with the fields ID and DIsplayName.
+                            b#nameconfirm
+                            input#inputconfirm.form-control(type='hidden' name='inputconfirm')  
+                        .modal-footer
+                            .btn-group.mr-2
+                                button.btn.btn-secondary(data-dismiss="modal") Cancelar
+                            .btn-group.mr-2
+                                button.btn.btn-success(type="submit") Confirmar
+    #deleteModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    .modal-title.h4 Confirmar eliminación 
+                    button.btn(class="close" data-dismiss="modal" aria-hidden="true") &times;
+                .modal-body
+                    p Warning: This action will remove the intent selected permanently!
+                    b#namedelete
+                .modal-footer
+                    .btn-group.mr-2
+                        button.btn.btn-secondary(data-dismiss="modal") Cancelar
+                    .btn-group.mr-2
+                        a#inputdelete.btn.btn-danger(href=``) Confirmar
     div
         .jumbotron(style='padding:40px;')
-            h5 Acciones Prototipo
-            h6 (Mostrando lista detallada de intents)
-            a(href='/server') Volver al menu principal
-
+            .row
+                .col
+                    .card
+                        .card-body
+                            h5.card-title  Acciones Prototipo
+                            p.card-text Mostrando lista detallada de intents almacenados.
+                            a.btn.btn-secondary(href='/server') Volver al menu principal
+                .col
+                    .card
+                        .card-body
+                            h5.card-title Crear nueva intención
+                            small.form-text.text-muted The new intent will can be edited.
+                            p
+                            .form-group
+                                input#inputname.form-control(type='text' name='inputname' placeholder='Enter the name...' oninput="hidden_button()")                       
+                            button#visiblecreate.btn.btn-primary(data-toggle="modal" href="#createModal" onclick="getcreatetext()" disabled) Añadir                   
     each intent in intents
         .row-auto.p-6
             .col-auto.p-6
@@ -31,8 +106,11 @@ body
                 .card-body
                     h5.card-title= intent.displayName
                     p.card-text= getidfunction(intent.name)
-                    a.btn.btn-primary(href='/server/prototype/apitools/details/' + getidfunction(intent.name)) Detalles
-    
+                    .btn-group.mr-2
+                        a.btn.btn-primary(href=`/server/prototype/apitools/intents/${getidfunction(intent.name)}/details`) Detalles
+                    .btn-group.mr-2
+                        a.btn.btn-danger(data-toggle="modal" id=getidfunction(intent.name) name=intent.displayName href="#deleteModal" onclick="getdeletetext(this.name, this.id)") Eliminar
+        
    
                      
                  
