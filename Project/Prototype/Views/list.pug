@@ -43,13 +43,20 @@ head
     script.
         function hidden_button(){
             if(document.getElementById("inputname").value != ""){
-                document.getElementById("visiblecreate").disabled= "false";;
+                document.getElementById("visiblecreate").disabled= false;
+                document.getElementById("visiblecreate").className= "btn btn-primary";
             }
             else{
-                document.getElementById("visiblecreate").disabled= "true";
+                document.getElementById("visiblecreate").disabled= true;
+                document.getElementById("visiblecreate").className= "btn btn-secondary";
             }
         }
 body
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+        .collapse.navbar-collapse
+            ul.navbar-nav.mr-auto
+                li.nav-item
+                    a.nav-link(href='list') Gestor de Intents
     #createModal.modal.fade
         .modal-dialog
             .modal-content
@@ -89,7 +96,6 @@ body
                         .card-body
                             h5.card-title  Acciones Prototipo
                             p.card-text Mostrando lista detallada de intents almacenados.
-                            a.btn.btn-secondary(href='/server') Volver al menu principal
                 .col
                     .card
                         .card-body
@@ -98,7 +104,7 @@ body
                             p
                             .form-group
                                 input#inputname.form-control(type='text' name='inputname' placeholder='Enter the name...' oninput="hidden_button()")                       
-                            button#visiblecreate.btn.btn-primary(data-toggle="modal" href="#createModal" onclick="getcreatetext()" disabled) Añadir                   
+                            button#visiblecreate.btn.btn-secondary(data-toggle="modal" href="#createModal" onclick="getcreatetext()" disabled=true) Añadir                   
     each intent in intents
         .row-auto.p-6
             .col-auto.p-6
