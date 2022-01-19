@@ -166,9 +166,15 @@ router.get('/server/prototype/apitools/intents/:id/delete', async function (req,
 // Peticion GET de interacciones con el prototipo/ ApiTools - Detalles del intent
 router.post('/server/prototype/apitools/intents/:id/update', async function (req, res) { 
   const actualid = req.params['id'];
-  const actualstruct = req.body.inputupdatenew;
+  const data = req.body.inputupdatenew;
+  const type = req.body.typeupdate;
   const newstruct = await apiTools.getIntent(actualid);
-  newstruct[0].displayName = actualstruct;
+  switch (type) {
+    case "displayName":
+      newstruct[0].displayName = data;
+      break;
+    default:
+  }
   await apiTools.updateIntent(actualid, newstruct[0]);
   res.redirect('/server/prototype/apitools/intents/' + actualid +'/details');
 })

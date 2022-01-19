@@ -1,6 +1,8 @@
 doctype html
 head
     //meta(http-equiv='refresh' content='5')
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -23,16 +25,56 @@ head
         .close:focus {
             cursor: pointer;
         }
+        button.btn.add::before {
+            font-family: fontAwesome;
+            content: "\f067\00a0";
+        }
+        button.btn.edit::before {
+            font-family: fontAwesome;
+            content: "\f044\00a0";
+        }
+        button.btn.save::before {
+            font-family: fontAwesome;
+            content: "\f00c\00a0";
+        }
+        button.btn.cancel::before {
+            font-family: fontAwesome;
+            content: "\f00d\00a0";
+        }
     script.
         $(".modal-wide").on("show.bs.modal", function() {
             var height = $(window).height() - 200;
             $(this).find(".modal-body").css("max-height", height);
         });
     script.
-        function getupdatetext(element, id){
+        function getupdatetext(element, id, type){
+            // Remove the previous inputs
+            const block = document.querySelector('.containeradd');
+            block.innerHTML = '';
+            // Set default modal values
             document.getElementById("inputupdateactual").value = element;
-            document.getElementById("inputupdatenew").placeholder = element;
+            document.getElementById("typeupdate").value = type;
             document.getElementById("updateform").action = `/server/prototype/apitools/intents/${id}/update`;
+            // Create new input specific for the type
+            var htmlcreate= document.createElement("div");
+            switch (type) {
+                case "displayName":
+                    htmlcreate.innerHTML = "" 
+                    +"<input class='form-control' id='inputupdatenew' type='text' name='inputupdatenew' oninput='hidden_button_update()' placeholder=" + element + " />";
+                    break;
+
+                case "webhookState":
+                    htmlcreate.innerHTML = ""
+                    +"<select class='form-select' aria-label='Default select example'>"
+                    +"    <option selected>Open this select menu</option>"
+                    +"    <option value='1'>One</option>"
+                    +"    <option value='2'>Two</option>"
+                    +"    <option value='3'>Three</option>"
+                    +"</select>";
+                    break;
+                default:
+            }   
+            block.appendChild(htmlcreate);
         }
     script.
         function hidden_button_update(){
@@ -63,8 +105,9 @@ body
                             p Warning: This action will update the data overriding previous changes!
                             .form-group
                                 input#inputupdateactual.form-control(type='text' name='inputupdateactual' disabled)
+                                input#typeupdate.form-control(type='hidden' name='typeupdate')    
                                 br
-                                input#inputupdatenew.form-control(type='text' name='inputupdatenew' oninput="hidden_button_update()")  
+                                .containeradd            
                         .modal-footer
                             .btn-group.mr-2
                                 button.btn.btn-secondary(data-dismiss="modal") Cancelar
@@ -91,22 +134,24 @@ body
             p
             ul.list-group
                 if exists(intent.name) 
-                    li.list-group-item= intent.name
+                    li.list-group-item.list-group-item-secondary= intent.name
                 else
-                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined    
+                    li.list-group-item.list-group-item-secondary(style='color:red; font-weight:bold; font-size:small') Undefined    
             br 
             br
             h5 Identificator
             p
             ul.list-group
                 if exists(id) 
-                    li.list-group-item= id
+                    li.list-group-item.list-group-item-secondary= id
                 else
-                    li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined     
+                    li.list-group-item.list-group-item-secondary(style='color:red; font-weight:bold; font-size:small') Undefined     
             br
             br
-            h5 Display Name
-            a.btn.btn-danger(data-toggle="modal" id=id name=intent.displayName href="#updateModal" onclick="getupdatetext(this.name, this.id)") Actualizar
+            .btn-group.mr-2
+                h5 Display Name
+            .btn-group.mr-2
+                button.btn.edit.btn-warning(data-toggle="modal" id=id name=intent.displayName href="#updateModal" onclick="getupdatetext(this.name, this.id, 'displayName')") Editar
             p
             ul.list-group
                 if exists(intent.displayName) 
@@ -115,7 +160,10 @@ body
                     li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined    
             br
             br
-            h5 Webhook State
+            .btn-group.mr-2
+                h5 Webhook State
+            .btn-group.mr-2
+                button.btn.edit.btn-warning(data-toggle="modal" id=id name=intent.displayName href="#updateModal" onclick="getupdatetext(this.name, this.id, 'webhookState')") Editar
             p
             ul.list-group
                 if exists(intent.webhookState) 

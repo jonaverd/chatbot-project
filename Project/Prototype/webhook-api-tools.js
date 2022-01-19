@@ -91,8 +91,6 @@ exports.checkIntentExists = async function(displayName){
 exports.createIntent = async function(displayNameParam){
   const projectId = 'odiseo-chatbot';
   const displayName = displayNameParam;
-  const trainingPhrasesParts = [];
-  const messageTexts = [];
 
   // Imports the Dialogflow library
   const dialogflow = require('@google-cloud/dialogflow');
@@ -102,25 +100,7 @@ exports.createIntent = async function(displayNameParam){
  
   // The path to identify the agent that owns the created intent.
   const agentPath = intentsClient.projectAgentPath(projectId);
-  const trainingPhrases = [];
-  trainingPhrasesParts.forEach(trainingPhrasesPart => {
-    const part = {
-      text: trainingPhrasesPart,
-    };
-    // Here we create a new training phrase for each provided part.
-    const trainingPhrase = {
-      type: 'TYPE_UNSPECIFIED',
-      parts: [part],
-    };
-    trainingPhrases.push(trainingPhrase);
-  });
-  const messageText = { text: messageTexts, };
-  const message = { text: messageText, };
-  const intent = {
-    displayName: displayName,
-    trainingPhrases: trainingPhrases,
-    messages: [message],
-  };
+  const intent = { displayName: displayName, };
   const createIntentRequest = {
     parent: agentPath,
     intent: intent,
