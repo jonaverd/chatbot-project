@@ -16,8 +16,34 @@ head
         *, *:before, *:after {
             box-sizing: inherit;
         }
-        body {
-            position: relative;
+        .close {
+            float: right;
+        }
+        .close:hover,
+        .close:focus {
+            cursor: pointer;
+        }
+    script.
+        $(".modal-wide").on("show.bs.modal", function() {
+            var height = $(window).height() - 200;
+            $(this).find(".modal-body").css("max-height", height);
+        });
+    script.
+        function getupdatetext(element, id){
+            document.getElementById("inputupdateactual").value = element;
+            document.getElementById("inputupdatenew").placeholder = element;
+            document.getElementById("updateform").action = `/server/prototype/apitools/intents/${id}/update`;
+        }
+    script.
+        function hidden_button_update(){
+            if(document.getElementById("inputupdatenew").value != ""){
+                document.getElementById("visibleupdate").disabled= false;
+                document.getElementById("visibleupdate").className= "btn btn-success";
+            }
+            else{
+                document.getElementById("visibleupdate").disabled= true;
+                document.getElementById("visibleupdate").className= "btn btn-secondary";
+            }
         }
 body
     nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
@@ -25,6 +51,25 @@ body
             ul.navbar-nav.mr-auto
                 li.nav-item
                     a.nav-link(href='/server/prototype/apitools/intents/list') Gestor de Intents
+    #updateModal.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    .modal-title.h4 Actualizar datos
+                    button.btn(class="close" data-dismiss="modal" aria-hidden="true") &times;
+                .modal-body
+                    form#updateform(role='form' method='POST' action='/server/prototype/apitools/intents/:id/update')
+                        .form-group
+                            p Warning: This action will update the data overriding previous changes!
+                            .form-group
+                                input#inputupdateactual.form-control(type='text' name='inputupdateactual' disabled)
+                                br
+                                input#inputupdatenew.form-control(type='text' name='inputupdatenew' oninput="hidden_button_update()")  
+                        .modal-footer
+                            .btn-group.mr-2
+                                button.btn.btn-secondary(data-dismiss="modal") Cancelar
+                            .btn-group.mr-2
+                                button#visibleupdate.btn.btn-secondary(type="submit" disabled) Confirmar
     div
         .jumbotron(style='padding:40px;')
             .row
@@ -61,6 +106,7 @@ body
             br
             br
             h5 Display Name
+            a.btn.btn-danger(data-toggle="modal" id=id name=intent.displayName href="#updateModal" onclick="getupdatetext(this.name, this.id)") Actualizar
             p
             ul.list-group
                 if exists(intent.displayName) 
