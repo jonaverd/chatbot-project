@@ -50,7 +50,7 @@ router.post('/server', express.json(), function (req, res) {
 
   // Identificamos que tipo frase de entrenamiento recibimos por el chat
   function contains(order) { 
-    const input = req.body.queryResult.queryText;
+    const input = req.body.queryResult.action;
     return input.includes(order);
   }
 
@@ -62,11 +62,11 @@ router.post('/server', express.json(), function (req, res) {
     case contains("Conecta y Repite Odiseo"): 
       webhookFileParam.webhookparams(req, res, port);
       break;
-    case contains("Quiero enseñarte"): 
-      prototypeTraining.addQuestion(req, res);
+    case contains("PTE_ActivarEnseanza.PTE_ActivarEnseanza-yes.PTE_EnseanzaAceptar-custom"): 
+      prototypeTraining.addLearning(req, res);
       break;
     default:
-      res.send()
+      res.send();
   }
 })
 

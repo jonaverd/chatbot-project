@@ -163,7 +163,7 @@ body
             .btn-group.mr-2
                 h5 Webhook State
             .btn-group.mr-2
-                button.btn.edit.btn-warning(data-toggle="modal" id=id name=intent.displayName href="#updateModal" onclick="getupdatetext(this.name, this.id, 'webhookState')") Editar
+                button.btn.edit.btn-warning(data-toggle="modal" id=id name=intent.webhookState href="#updateModal" onclick="getupdatetext(this.name, this.id, 'webhookState')") Editar
             p
             ul.list-group
                 if exists(intent.webhookState) 
