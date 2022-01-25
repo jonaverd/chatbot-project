@@ -4,25 +4,12 @@
 'use strict';
 
 // Libreria para Cloud Firebase
-const firebase = require('firebase-functions');
-const {WebhookClient} = require('dialogflow-fulfillment');
-const {Card, Suggestion} = require('dialogflow-fulfillment');
-const firebaseAdmin = require("firebase-admin");
-
-// enables lib debugging statements
-process.env.DEBUG = 'dialogflow:debug'; 
-
-firebaseAdmin.initializeApp({
+//const firebase = require('firebase-functions');
+//const firebaseAdmin = require("firebase-admin");
+/*firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.applicationDefault(),
   databaseURL: 'https://odiseo-chatbot-default-rtdb.europe-west1.firebasedatabase.app/'
-});
-
-// Libreria necesaria para API Cloud
-const apiTools = require('./webhook-api-tools.js');
-
-// Nombre de la pregunta para que no se pierda y asi luego sacarla por pantalla
-exports.lastQuestion;
-
+});*/
 /*exports.dialogflowFirebaseFulfillment = firebase.https.onRequest((request, response) => {
   const agent = new WebhookClient({ request, response });
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
@@ -83,38 +70,92 @@ exports.lastQuestion;
   agent.handleRequest(intentMap);
 });
 */
+
+const {WebhookClient} = require('dialogflow-fulfillment');
+const {Card, Suggestion} = require('dialogflow-fulfillment');
+
+// enables lib debugging statements
+process.env.DEBUG = 'dialogflow:debug'; 
+
+// Libreria necesaria para API Cloud
+const apiTools = require('./webhook-api-tools.js');
+
+// Libreria necesaria para Database MongoDB
+const database = require('./Database/insert-data-learning.js');
+
+// Nombre de la cuestión a guardar
+exports.lastQuestion;
+
 // Peticion Webhook POST que se nos pide desde DialogFlow 
 exports.addLearning = async function (req, res) {
-
+  
   // Inicializacion del agente 
   const agent = new WebhookClient({ request: req, response: res });
 
-  // Custom Intent PTE_RecibirCuestion
+  // Custom Intent PTE_ActivarEnseñanza
+  async function active_learning(agent) {
+    agent.add("¿Quieres guardar una pregunta en mi base de datos?");
+    agent.add(new Suggestion("Aceptar"));
+    agent.add(new Suggestion("Rechazar"));
+  }
+
+  // Custom Intent PTE_EnseñanzaRechazar
+  async function rejects_learning(agent) {
+    agent.add("¿Quieres responder a una pregunta ya guardada?");
+    agent.add(new Suggestion("Aceptar"));
+    agent.add(new Suggestion("Rechazar"));
+  }
+
+  // Custom Intent PTE_EnseñanzaAceptar
+  async function accept_learning(agent) {
+    agent.add("Escríbame la cuestión que desea guardar:");
+  }
+
+  // Custom Intent PTE_EnseñanzaGuardar
   async function receive_question(agent) {
 
     // Comprobar si la cuestion esta ya guardada
     var questionUser = agent.parameters.any; 
     const check = await apiTools.checkIntentExists(questionUser);
-
     if(check==true){
       agent.add('¡La cuestión que deseas almacenar ya existe! (' + questionUser + ')');
-      exports.lastQuestion = "";
     }
     
     // Guardar la cuestion
     else{
       const id = await apiTools.createIntent(questionUser);   
-      agent.add(new Suggestion("Quick Reply"));
-      //agent.add('La cuestión (' + questionUser + ') ha sido almacenada.');
-      exports.lastQuestion = questionUser;
+      database.insert(questionUser);
+      agent.add('La cuestión (' + questionUser + ') ha sido almacenada.');
     }
   }
 
-  // Custom Intent PTE_RecibirRespuesta
-  async function receive_answer(agent) {
+  // Custom Intent PTE_EnseñanzaSalir
+  async function exit_learning(agent) {
+    agent.add("Enseñanza finalizada. Que tenga un buen día!");
+  }
+
+  // Custom Intent PTE_EnseñanzaResponder
+  async function response_learning(agent) {
+    const list = await apiTools.getIntentList();
+    list.forEach(question => { 
+      agent.add(new Suggestion(question.displayName))
+    }); 
+  }
+
+  // Custom Intent PTE_EnseñanzaActivarModificar
+  async function receive_select_question(agent) {
 
     // Modificar la cuestion y guardar la respuesta 
+    var selected = agent.parameters.any;
+    exports.lastQuestion = selected;
+    agent.add('Escriba una respuesta para la cuestión (' +  selected + ')');
+  }
+
+  // Custom Intent PTE_EnseñanzaModificar
+  async function receive_answer(agent) {
+
     if(exports.lastQuestion != ""){
+      // Modificar la cuestion y guardar la respuesta 
       var answerUser = agent.parameters.any;
       const id = await apiTools.getIDIntent_Name(exports.lastQuestion);
       const struct = await apiTools.getIntent(id);
@@ -127,20 +168,24 @@ exports.addLearning = async function (req, res) {
           }
         }
       ]
-      await apiTools.updateIntent(id, struct);
+      await apiTools.updateIntent(id, struct[0]);
       agent.add('Gracias. Tu cuestión ha sido guardada (' +  exports.lastQuestion + ': ' + answerUser + ') ¡Hasta la próxima!');
       exports.lastQuestion = "";
     }
-    
     else{
-      agent.add('Nada por aqui');
+      agent.add('No se ha podido encontrar la cuestión ha modificar.');
     }
   }
 
   // Asociamos el nombre del Intent de DialogFlow con su funcion
   let intentMap = new Map();
+  intentMap.set('PTE_ActivarEnseñanza', active_learning);
+  intentMap.set('PTE_EnseñanzaRechazar', rejects_learning);
+  intentMap.set('PTE_EnseñanzaAceptar', accept_learning);
   intentMap.set('PTE_EnseñanzaGuardar', receive_question);
-  intentMap.set('PTE_RecibirRespuesta', receive_answer);
-
+  intentMap.set('PTE_EnseñanzaResponder', response_learning);
+  intentMap.set('PTE_EnseñanzaSalir', exit_learning);
+  intentMap.set('PTE_EnseñanzaActivarModificar', receive_select_question);
+  intentMap.set('PTE_EnseñanzaModificar', receive_answer);
   agent.handleRequest(intentMap);
 }

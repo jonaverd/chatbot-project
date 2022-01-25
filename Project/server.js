@@ -50,19 +50,40 @@ router.post('/server', express.json(), function (req, res) {
 
   // Identificamos que tipo frase de entrenamiento recibimos por el chat
   function contains(order) { 
-    const input = req.body.queryResult.action;
+    const input = req.body.queryResult.intent.displayName;
     return input.includes(order);
   }
 
   // Actuamos y servimos una respuesta al usuario
   switch(true){
-    case contains("Conecta Odiseo"): 
+    case contains("INT_Webhook"): 
       webhookFile.webhook(req, res, port);
       break;
-    case contains("Conecta y Repite Odiseo"): 
+    case contains("INT_WebhookParametros"): 
       webhookFileParam.webhookparams(req, res, port);
       break;
-    case contains("PTE_ActivarEnseanza.PTE_ActivarEnseanza-yes.PTE_EnseanzaAceptar-custom"): 
+    case contains("PTE_ActivarEnseñanza"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_EnseñanzaRechazar"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_EnseñanzaAceptar"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_EnseñanzaGuardar"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_EnseñanzaSalir"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_EnseñanzaResponder"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_EnseñanzaActivarModificar"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_EnseñanzaModificar"): 
       prototypeTraining.addLearning(req, res);
       break;
     default:
