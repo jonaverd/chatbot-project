@@ -65,25 +65,22 @@ router.post('/server', express.json(), function (req, res) {
     case contains("PTE_ActivarEnseñanza"): 
       prototypeTraining.addLearning(req, res);
       break;
-    case contains("PTE_EnseñanzaRechazar"): 
+    case contains("PTE_ActivarGuardarPregunta"): 
       prototypeTraining.addLearning(req, res);
       break;
-    case contains("PTE_EnseñanzaAceptar"): 
+    case contains("PTE_GuardarPregunta"): 
       prototypeTraining.addLearning(req, res);
       break;
-    case contains("PTE_EnseñanzaGuardar"): 
+    case contains("PTE_GuardarRespuesta"): 
       prototypeTraining.addLearning(req, res);
       break;
-    case contains("PTE_EnseñanzaSalir"): 
+    case contains("PTE_ActivarCambiarRespuesta"): 
       prototypeTraining.addLearning(req, res);
       break;
-    case contains("PTE_EnseñanzaResponder"): 
+    case contains("PTE_SeleccionarPregunta"): 
       prototypeTraining.addLearning(req, res);
       break;
-    case contains("PTE_EnseñanzaActivarModificar"): 
-      prototypeTraining.addLearning(req, res);
-      break;
-    case contains("PTE_EnseñanzaModificar"): 
+    case contains("PTE_CambiarRespuesta"): 
       prototypeTraining.addLearning(req, res);
       break;
     default:

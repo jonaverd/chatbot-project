@@ -94,64 +94,39 @@ exports.addLearning = async function (req, res) {
 
   // Custom Intent PTE_ActivarEnseñanza
   async function active_learning(agent) {
-    agent.add("¿Quieres guardar una pregunta en mi base de datos?");
-    agent.add(new Suggestion("Aceptar"));
-    agent.add(new Suggestion("Rechazar"));
+    agent.add("¡Tengo muchas ganas de aprender!");
+    agent.add(new Suggestion("Quiero guardar una pregunta"));
+    agent.add(new Suggestion("Quiero cambiar una respuesta "));
   }
 
-  // Custom Intent PTE_EnseñanzaRechazar
-  async function rejects_learning(agent) {
-    agent.add("¿Quieres responder a una pregunta ya guardada?");
-    agent.add(new Suggestion("Aceptar"));
-    agent.add(new Suggestion("Rechazar"));
+   // Custom Intent PTE_ActivarGuardarPregunta
+  async function active_receive_question(agent) {
+    agent.add('Escríbeme lo que debo preguntar:');
   }
 
-  // Custom Intent PTE_EnseñanzaAceptar
-  async function accept_learning(agent) {
-    agent.add("Escríbame la cuestión que desea guardar:");
-  }
-
-  // Custom Intent PTE_EnseñanzaGuardar
+  // Custom Intent PTE_GuardarPregunta
   async function receive_question(agent) {
 
     // Comprobar si la cuestion esta ya guardada
     var questionUser = agent.parameters.any; 
     const check = await apiTools.checkIntentExists(questionUser);
     if(check==true){
-      agent.add('¡La cuestión que deseas almacenar ya existe! (' + questionUser + ')');
+      exports.lastQuestion = ""; 
+      agent.add('¡Esta pregunta ya la tenía guardada! (' + questionUser + ')');
+      agent.add(new Suggestion("Continuar"));
     }
     
     // Guardar la cuestion
     else{
-      const id = await apiTools.createIntent(questionUser);   
-      database.insert(questionUser);
-      agent.add('La cuestión (' + questionUser + ') ha sido almacenada.');
+      exports.lastQuestion = questionUser; 
+      const id = await apiTools.createIntent(questionUser);  
+      //database.insert(questionUser);
+      agent.add('¡Acabo de añadir esta cuestión [' + questionUser + '] a mi aprendizaje!');
+      agent.add("Escríbeme lo que debo responder:");
     }
   }
 
-  // Custom Intent PTE_EnseñanzaSalir
-  async function exit_learning(agent) {
-    agent.add("Enseñanza finalizada. Que tenga un buen día!");
-  }
-
-  // Custom Intent PTE_EnseñanzaResponder
-  async function response_learning(agent) {
-    const list = await apiTools.getIntentList();
-    list.forEach(question => { 
-      agent.add(new Suggestion(question.displayName))
-    }); 
-  }
-
-  // Custom Intent PTE_EnseñanzaActivarModificar
-  async function receive_select_question(agent) {
-
-    // Modificar la cuestion y guardar la respuesta 
-    var selected = agent.parameters.any;
-    exports.lastQuestion = selected;
-    agent.add('Escriba una respuesta para la cuestión (' +  selected + ')');
-  }
-
-  // Custom Intent PTE_EnseñanzaModificar
+  // Custom Intent PTE_GuardarRespuesta
   async function receive_answer(agent) {
 
     if(exports.lastQuestion != ""){
@@ -169,23 +144,83 @@ exports.addLearning = async function (req, res) {
         }
       ]
       await apiTools.updateIntent(id, struct[0]);
-      agent.add('Gracias. Tu cuestión ha sido guardada (' +  exports.lastQuestion + ': ' + answerUser + ') ¡Hasta la próxima!');
+      agent.add('Gracias por enseñarme [' +  exports.lastQuestion + '], la respuesta es: [' + answerUser + '] ¡Ahora me siento más inteligente!');
       exports.lastQuestion = "";
     }
+
     else{
-      agent.add('No se ha podido encontrar la cuestión ha modificar.');
+      agent.add('¿Deseas enseñarme más lecciones?');
+      agent.add(new Suggestion("Quiero guardar otra pregunta"));
+      agent.add(new Suggestion("Quiero cambiar una respuesta"));
     }
   }
 
+  // Custom Intent PTE_ActivarCambiarRespuesta
+  async function show_list_questions(agent){
+    const list = await apiTools.getIntentList();
+    agent.add('Aquí te muestro una lista de tus preguntas guardadas. ¿Qué lección quieres responder/cambiar su respuesta?');
+    list.forEach(question => { 
+      agent.add(new Suggestion(question.displayName))
+    }); 
+  }
+
+  // Custom Intent PTE_SeleccionarPregunta
+  async function select_question(agent) {
+
+    // Comprobar si la cuestion existe
+    var questionUser = agent.parameters.any; 
+    const check = await apiTools.checkIntentExists(questionUser);
+    if(check==false){
+      exports.lastQuestion = ""; 
+      agent.add('¡Esta pregunta no existe! (' + questionUser + ')');
+      agent.add(new Suggestion("Continuar"));
+    }
+    
+    // Seleccionar la cuestion
+    else{
+      exports.lastQuestion = questionUser; 
+      agent.add("Escriba la nueva respuesta:");
+    }
+  }
+
+  // Custom Intent PTE_CambiarRespuesta
+  async function modify_answer(agent) {
+
+    if(exports.lastQuestion != ""){
+      // Modificar la respuesta y guardar 
+      var answerUser = agent.parameters.any;
+      const id = await apiTools.getIDIntent_Name(exports.lastQuestion);
+      const struct = await apiTools.getIntent(id);
+      struct[0].messages = [
+        {
+          "text": {
+            "text": [
+              answerUser
+            ]
+          }
+        }
+      ]
+      await apiTools.updateIntent(id, struct[0]);
+      agent.add('Gracias por corregirme la respuesta para [' + exports.lastQuestion + '] ahora es: [' + answerUser + '] ¡Es un placer trabajar contigo!');
+      exports.lastQuestion = "";
+    }
+
+    else{
+      agent.add('¿Deseas enseñarme más lecciones?');
+      agent.add(new Suggestion("Quiero guardar otra pregunta"));
+      agent.add(new Suggestion("Quiero cambiar una respuesta"));
+    }
+  }
+
+  
   // Asociamos el nombre del Intent de DialogFlow con su funcion
   let intentMap = new Map();
   intentMap.set('PTE_ActivarEnseñanza', active_learning);
-  intentMap.set('PTE_EnseñanzaRechazar', rejects_learning);
-  intentMap.set('PTE_EnseñanzaAceptar', accept_learning);
-  intentMap.set('PTE_EnseñanzaGuardar', receive_question);
-  intentMap.set('PTE_EnseñanzaResponder', response_learning);
-  intentMap.set('PTE_EnseñanzaSalir', exit_learning);
-  intentMap.set('PTE_EnseñanzaActivarModificar', receive_select_question);
-  intentMap.set('PTE_EnseñanzaModificar', receive_answer);
+  intentMap.set('PTE_ActivarGuardarPregunta', active_receive_question);
+  intentMap.set('PTE_GuardarPregunta', receive_question);
+  intentMap.set('PTE_GuardarRespuesta', receive_answer);
+  intentMap.set('PTE_ActivarCambiarRespuesta', show_list_questions);
+  intentMap.set('PTE_SeleccionarPregunta', select_question);
+  intentMap.set('PTE_CambiarRespuesta', modify_answer);
   agent.handleRequest(intentMap);
 }
