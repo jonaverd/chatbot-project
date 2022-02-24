@@ -65,3 +65,12 @@ exports.listBackend_Question = async function(){
   const list =  await databaseTools.getQuestionsList();
   return list;
 }
+
+// Auxiliar - procesos de backend
+exports.deleteBackend_Question = async function(input){
+  const id = await apiTools.getIDIntent_Name(input);
+  // ... en los intents
+  await apiTools.deleteIntent(id)
+  // ... en la base de datos  
+  await databaseTools.deleteQuestion(input);
+}

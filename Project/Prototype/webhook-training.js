@@ -23,12 +23,14 @@ exports.addLearning = async function (req, res) {
   async function active_learning(agent) {
     agent.add("¡Tengo muchas ganas de aprender!");
     agent.add(new Suggestion("Quiero guardar una pregunta"));
-    agent.add(new Suggestion("Quiero cambiar una respuesta "));
+    agent.add(new Suggestion("Quiero cambiar una respuesta"));
+    agent.add(new Suggestion("Quiero borrar una pregunta"));
   }
 
    // Custom Intent PTE_ActivarGuardarPregunta
   async function active_receive_question(agent) {
     agent.add('Escríbeme lo que debo preguntar:');
+    agent.add(new Suggestion("No quiero guardar nada"))
   }
 
   // Custom Intent PTE_GuardarPregunta
@@ -36,18 +38,26 @@ exports.addLearning = async function (req, res) {
 
     // Comprobar si la cuestion esta ya guardada
     var questionUser = agent.parameters.any; 
-    if(await backendTools.existsBackend_Question(questionUser)){
-      backendTools.updateWaitingInput_Question("exit");
-      agent.add('¡Esta pregunta ya la tenía guardada! (' + questionUser + ')');
-      agent.add(new Suggestion("Continuar"));
+    if(questionUser != "No quiero guardar nada"){
+      if(await backendTools.existsBackend_Question(questionUser)){
+        backendTools.updateWaitingInput_Question("exit");
+        agent.add('¡Esta pregunta ya la tenía guardada! (' + questionUser + ')');
+        agent.add(new Suggestion("Continuar"));
+      }
+      
+      // Guardar la cuestion
+      else{
+        backendTools.updateWaitingInput_Question("required", questionUser);
+        await backendTools.createBackend_Question(questionUser);
+        agent.add('¡Acabo de añadir esta cuestión [' + questionUser + '] a mi aprendizaje!');
+        agent.add("Escríbeme lo que debo responder:");
+      }
     }
-    
-    // Guardar la cuestion
-    else{
-      backendTools.updateWaitingInput_Question("required", questionUser);
-      await backendTools.createBackend_Question(questionUser);
-      agent.add('¡Acabo de añadir esta cuestión [' + questionUser + '] a mi aprendizaje!');
-      agent.add("Escríbeme lo que debo responder:");
+
+    else {
+      backendTools.updateWaitingInput_Question("exit");
+      agent.add('He cancelado la operación');
+      agent.add(new Suggestion("Continuar"));
     }
   }
 
@@ -61,6 +71,7 @@ exports.addLearning = async function (req, res) {
       var answerUser = agent.parameters.any;
       await backendTools.updateBackend_Answer(answerUser);
       agent.add('Gracias por enseñarme [' +  backendTools.lastQuestion + '], la respuesta es: [' + answerUser + '] ¡Ahora me siento más inteligente!');
+      agent.add(new Suggestion("Quiero hacer más cosas"));
       backendTools.updateWaitingInput_Question("exit");
     }
 
@@ -68,16 +79,18 @@ exports.addLearning = async function (req, res) {
       agent.add('¿Deseas enseñarme más lecciones?');
       agent.add(new Suggestion("Quiero guardar otra pregunta"));
       agent.add(new Suggestion("Quiero cambiar una respuesta"));
+      agent.add(new Suggestion("Quiero borrar una pregunta"));
     }
   }
 
   // Custom Intent PTE_ActivarCambiarRespuesta
-  async function show_list_questions(agent){
+  async function show_list_questions_update(agent){
     const list = await backendTools.listBackend_Question();
     agent.add('Aquí te muestro una lista de tus preguntas guardadas. ¿Qué lección quieres responder/cambiar su respuesta?');
     list.forEach(element => { 
       agent.add(new Suggestion(element.question))
     }); 
+    agent.add(new Suggestion("No quiero modificar ninguna"))
   }
 
   // Custom Intent PTE_SeleccionarPregunta
@@ -86,9 +99,17 @@ exports.addLearning = async function (req, res) {
     // Comprobar si la cuestion existe
     var questionUser = agent.parameters.any; 
     if(await backendTools.existsBackend_Question(questionUser) == false){
-      backendTools.updateWaitingInput_Question("exit");
-      agent.add('¡Esta pregunta no existe! (' + questionUser + ')');
-      agent.add(new Suggestion("Continuar"));
+
+      if(questionUser == "No quiero modificar ninguna"){
+        backendTools.updateWaitingInput_Question("exit");
+        agent.add('He cancelado la operación');
+        agent.add(new Suggestion("Continuar"));
+      }
+      else{
+        backendTools.updateWaitingInput_Question("exit");
+        agent.add('¡Esta pregunta no existe! (' + questionUser + ')');
+        agent.add(new Suggestion("Continuar"));
+      }
     }
     
     // Seleccionar la cuestion
@@ -108,6 +129,7 @@ exports.addLearning = async function (req, res) {
       var answerUser = agent.parameters.any;
       await backendTools.updateBackend_Answer(answerUser);
       agent.add('Gracias por corregirme la respuesta para [' + backendTools.lastQuestion + '] ahora es: [' + answerUser + '] ¡Es un placer trabajar contigo!');
+      agent.add(new Suggestion("Quiero hacer más cosas"));
       backendTools.updateWaitingInput_Question("exit");
     }
 
@@ -115,6 +137,49 @@ exports.addLearning = async function (req, res) {
       agent.add('¿Deseas enseñarme más lecciones?');
       agent.add(new Suggestion("Quiero guardar otra pregunta"));
       agent.add(new Suggestion("Quiero cambiar una respuesta"));
+      agent.add(new Suggestion("Quiero borrar una pregunta"));
+    }
+  }
+
+  // Custom Intent PTE_ActivarBorrarPregunta
+  async function show_list_questions_delete(agent){
+    const list = await backendTools.listBackend_Question();
+    agent.add('Aquí te muestro una lista de tus preguntas guardadas. ¿Qué lección quieres eliminar?');
+    agent.add('¡Cuidado, no hay vuelta atrás!');
+    list.forEach(element => { 
+      agent.add(new Suggestion(element.question))
+    }); 
+    agent.add(new Suggestion("No quiero borrar ninguna"))
+  }
+
+  // Custom Intent PTE_SeleccionarPreguntaDL
+  async function select_question_delete(agent) {
+
+    // Comprobar si la cuestion existe
+    var questionUser = agent.parameters.any; 
+    if(await backendTools.existsBackend_Question(questionUser) == false){
+
+      if(questionUser == "No quiero borrar ninguna"){
+        backendTools.updateWaitingInput_Question("exit");
+        agent.add('¿Deseas enseñarme más lecciones?');
+        agent.add(new Suggestion("Quiero guardar otra pregunta"));
+        agent.add(new Suggestion("Quiero cambiar una respuesta"));
+        agent.add(new Suggestion("Quiero borrar una pregunta"));
+      }
+      else{
+        backendTools.updateWaitingInput_Question("exit");
+        agent.add('¡Esta pregunta no existe! (' + questionUser + ')');
+        agent.add(new Suggestion("Quiero hacer más cosas"));
+      }
+    }
+    
+    // Seleccionar la cuestion
+    else{
+      backendTools.updateWaitingInput_Question("required", questionUser);
+      await backendTools.deleteBackend_Question(questionUser);
+      agent.add('Has eliminado la cuestión [' + backendTools.lastQuestion + '] ¡La sabía pero se me acaba de olvidar!');
+      agent.add(new Suggestion("Quiero hacer más cosas"));
+      backendTools.updateWaitingInput_Question("exit");
     }
   }
 
@@ -125,8 +190,10 @@ exports.addLearning = async function (req, res) {
   intentMap.set('PTE_ActivarGuardarPregunta', active_receive_question);
   intentMap.set('PTE_GuardarPregunta', receive_question);
   intentMap.set('PTE_GuardarRespuesta', receive_answer);
-  intentMap.set('PTE_ActivarCambiarRespuesta', show_list_questions);
+  intentMap.set('PTE_ActivarCambiarRespuesta', show_list_questions_update);
   intentMap.set('PTE_SeleccionarPregunta', select_question);
   intentMap.set('PTE_CambiarRespuesta', modify_answer);
+  intentMap.set('PTE_ActivarBorrarPregunta', show_list_questions_delete);
+  intentMap.set('PTE_SeleccionarPreguntaDL', select_question_delete);
   agent.handleRequest(intentMap);
 }

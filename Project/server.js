@@ -84,6 +84,12 @@ router.post('/server', express.json(), function (req, res) {
     case contains("PTE_CambiarRespuesta"): 
       prototypeTraining.addLearning(req, res);
       break;
+    case contains("PTE_ActivarBorrarPregunta"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_SeleccionarPreguntaDL"): 
+      prototypeTraining.addLearning(req, res);
+      break;
     default:
       res.send();
   }
