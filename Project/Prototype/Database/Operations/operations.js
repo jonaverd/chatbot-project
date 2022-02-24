@@ -88,3 +88,17 @@ exports.checkQuestionExists = async function (userQuestion){
 }
 
 
+exports.deleteQuestion = async function (userQuestion){
+
+    try {
+   
+        // query function
+        const result =  await LearningCollections.findOneAndDelete({question: userQuestion});
+        
+        console.log(result);
+        return result;
+
+    } catch (err) {
+        console.log(err);
+    }
+}

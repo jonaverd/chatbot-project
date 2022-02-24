@@ -6,17 +6,12 @@
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
 
+// archivo con las funciones para trabajar con el backend
+// y los inputs del usuario que se quedan pendientes "en el iare"
+const backendTools = require('./middleware-backend.js');
+
 // enables lib debugging statements
 process.env.DEBUG = 'dialogflow:debug'; 
-
-// Libreria necesaria para API Cloud
-const apiTools = require('./webhook-api-tools.js');
-
-// Libreria necesaria para operar Database MongoDB
-const databaseTools = require('./Database/Operations/operations.js');
-
-// Nombre de la cuestión a guardar
-exports.lastQuestion;
 
 // Peticion Webhook POST que se nos pide desde DialogFlow 
 exports.addLearning = async function (req, res) {
@@ -41,23 +36,16 @@ exports.addLearning = async function (req, res) {
 
     // Comprobar si la cuestion esta ya guardada
     var questionUser = agent.parameters.any; 
-    // ... en los intents
-    const check1 = await apiTools.checkIntentExists(questionUser);
-    // ... en la base de datos
-    const check2 = await databaseTools.checkQuestionExists(questionUser);
-    if(check1==true || check2==true){
-      exports.lastQuestion = ""; 
+    if(await backendTools.existsBackend_Question(questionUser)){
+      backendTools.updateWaitingInput_Question("exit");
       agent.add('¡Esta pregunta ya la tenía guardada! (' + questionUser + ')');
       agent.add(new Suggestion("Continuar"));
     }
     
     // Guardar la cuestion
     else{
-      exports.lastQuestion = questionUser; 
-      // ... en los intents
-      const id = await apiTools.createIntent(questionUser);
-      // ... en la base de datos  
-      await databaseTools.createVoidQuestion(questionUser);
+      backendTools.updateWaitingInput_Question("required", questionUser);
+      await backendTools.createBackend_Question(questionUser);
       agent.add('¡Acabo de añadir esta cuestión [' + questionUser + '] a mi aprendizaje!');
       agent.add("Escríbeme lo que debo responder:");
     }
@@ -67,27 +55,13 @@ exports.addLearning = async function (req, res) {
   async function receive_answer(agent) {
 
     // ¿Hay alguna pregunta pendiente?
-    if(exports.lastQuestion != ""){
+    if(backendTools.updateWaitingInput_Question("progress")){
 
       // Modificar la cuestion y guardar la respuesta 
       var answerUser = agent.parameters.any;
-      const id = await apiTools.getIDIntent_Name(exports.lastQuestion);
-      const struct = await apiTools.getIntent(id);
-      struct[0].messages = [
-        {
-          "text": {
-            "text": [
-              answerUser
-            ]
-          }
-        }
-      ]
-      // ... en los intents
-      await apiTools.updateIntent(id, struct[0]);
-      // ... en la base de datos  
-      await databaseTools.updateAnswer(exports.lastQuestion, answerUser);
-      agent.add('Gracias por enseñarme [' +  exports.lastQuestion + '], la respuesta es: [' + answerUser + '] ¡Ahora me siento más inteligente!');
-      exports.lastQuestion = "";
+      await backendTools.updateBackend_Answer(answerUser);
+      agent.add('Gracias por enseñarme [' +  backendTools.lastQuestion + '], la respuesta es: [' + answerUser + '] ¡Ahora me siento más inteligente!');
+      backendTools.updateWaitingInput_Question("exit");
     }
 
     else{
@@ -99,12 +73,10 @@ exports.addLearning = async function (req, res) {
 
   // Custom Intent PTE_ActivarCambiarRespuesta
   async function show_list_questions(agent){
-    // ... solo la base de datos  
-    const list =  await databaseTools.getQuestionsList();
-    console.log(list);
+    const list = await backendTools.listBackend_Question();
     agent.add('Aquí te muestro una lista de tus preguntas guardadas. ¿Qué lección quieres responder/cambiar su respuesta?');
-    list.forEach(question => { 
-      agent.add(new Suggestion(question.question))
+    list.forEach(element => { 
+      agent.add(new Suggestion(element.question))
     }); 
   }
 
@@ -113,19 +85,15 @@ exports.addLearning = async function (req, res) {
 
     // Comprobar si la cuestion existe
     var questionUser = agent.parameters.any; 
-    // ... en los intents
-    const check1 = await apiTools.checkIntentExists(questionUser);
-    // ... en la base de datos
-    const check2 = await databaseTools.checkQuestionExists(questionUser);
-    if(check1==false || check2==false){
-      exports.lastQuestion = ""; 
+    if(await backendTools.existsBackend_Question(questionUser) == false){
+      backendTools.updateWaitingInput_Question("exit");
       agent.add('¡Esta pregunta no existe! (' + questionUser + ')');
       agent.add(new Suggestion("Continuar"));
     }
     
     // Seleccionar la cuestion
     else{
-      exports.lastQuestion = questionUser; 
+      backendTools.updateWaitingInput_Question("required", questionUser);
       agent.add("Escriba la nueva respuesta:");
     }
   }
@@ -134,28 +102,13 @@ exports.addLearning = async function (req, res) {
   async function modify_answer(agent) {
 
     // ¿Hay alguna pregunta pendiente?
-    if(exports.lastQuestion != ""){
+    if(backendTools.updateWaitingInput_Question("progress")){
 
       // Modificar la respuesta y guardar 
       var answerUser = agent.parameters.any;
-      const id = await apiTools.getIDIntent_Name(exports.lastQuestion);
-      const struct = await apiTools.getIntent(id);
-      struct[0].messages = [
-        {
-          "text": {
-            "text": [
-              answerUser
-            ]
-          }
-        }
-      ]
-
-      // ... en los intents
-      await apiTools.updateIntent(id, struct[0]);
-      // ... en la base de datos
-      await databaseTools.updateAnswer(exports.lastQuestion, answerUser);
-      agent.add('Gracias por corregirme la respuesta para [' + exports.lastQuestion + '] ahora es: [' + answerUser + '] ¡Es un placer trabajar contigo!');
-      exports.lastQuestion = "";
+      await backendTools.updateBackend_Answer(answerUser);
+      agent.add('Gracias por corregirme la respuesta para [' + backendTools.lastQuestion + '] ahora es: [' + answerUser + '] ¡Es un placer trabajar contigo!');
+      backendTools.updateWaitingInput_Question("exit");
     }
 
     else{
