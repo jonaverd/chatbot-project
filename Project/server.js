@@ -14,6 +14,7 @@ const apiTools = require('./Prototype/webhook-api-tools.js');
 const prototypeTraining = require('./Prototype/webhook-training.js');
 
 // Librerias importadas
+//const dialogflow = require('@google-cloud/dialogflow');
 const dialogflow = require('@google-cloud/dialogflow');
 const express = require('express');
 const path = require('path');
