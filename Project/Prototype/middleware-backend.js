@@ -44,15 +44,15 @@ exports.createBackend_Question = async function (input){
 exports.updateBackend_Answer = async function(input){
   const id = await apiTools.getIDIntent_Name(exports.lastQuestion);
   const struct = await apiTools.getIntent(id);
-  struct[0].messages = [
-    {
-      "text": {
-        "text": [
-          input
-        ]
-      }
+  const modify = {
+    "text": {
+      "text": [
+        input
+      ]
     }
-  ]
+  };
+  // La posicion 0 de mensajes indica el text, las siguientes: imagen y sugerencias
+  struct[0].messages[0] = modify;
   // ... en los intents
   await apiTools.updateIntent(id, struct[0]);
   // ... en la base de datos  

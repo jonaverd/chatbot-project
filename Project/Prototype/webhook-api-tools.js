@@ -92,6 +92,7 @@ exports.createIntent = async function(displayNameParam){
   const projectId = 'odiseo-chatbot';
   const displayName = displayNameParam;
   const trainingPhrasesParts = [displayNameParam];
+  const suggestionsParts = ['Quiero hacer más cosas'];
   const messageTexts = ['null'];
 
   // Imports the Dialogflow library
@@ -117,6 +118,15 @@ exports.createIntent = async function(displayNameParam){
     trainingPhrases.push(trainingPhrase);
   });
 
+  // Here we create a new suggestion phrase for each provided part.
+  const suggestions_begin = [];
+  suggestionsParts.forEach(suggestionsPart => {
+    const suggestion = {
+      title: suggestionsPart,
+    };
+    suggestions_begin.push(suggestion);
+  });
+
   // respuesta por defecto
   const messageText = {
     text: messageTexts,
@@ -125,11 +135,20 @@ exports.createIntent = async function(displayNameParam){
     text: messageText,
   };
 
+  // sugerencias por defecto
+  const suggestions_middle = {
+    suggestions: suggestions_begin,
+  }
+  const suggestions_final = {
+    platform: 'ACTIONS_ON_GOOGLE',
+    suggestions: suggestions_middle
+  };
+
   // creamos el intent con sus partes
   const intent = { 
     displayName: displayName,
     trainingPhrases: trainingPhrases,
-    messages: [message], 
+    messages: [message, suggestions_final], 
     defaultResponsePlatforms: ['PLATFORM_UNSPECIFIED', 'ACTIONS_ON_GOOGLE'],
   };
   const createIntentRequest = {
