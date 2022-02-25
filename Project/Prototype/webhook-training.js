@@ -4,7 +4,7 @@
 'use strict';
 
 const {WebhookClient} = require('dialogflow-fulfillment');
-const {Card, Suggestion} = require('dialogflow-fulfillment');
+const {Card, Suggestion, Image} = require('dialogflow-fulfillment');
 
 // archivo con las funciones para trabajar con el backend
 // y los inputs del usuario que se quedan pendientes "en el iare"

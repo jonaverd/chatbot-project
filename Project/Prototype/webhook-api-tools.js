@@ -92,7 +92,7 @@ exports.createIntent = async function(displayNameParam){
   const projectId = 'odiseo-chatbot';
   const displayName = displayNameParam;
   const trainingPhrasesParts = [displayNameParam];
-  const messageTexts = ['Default response value'];
+  const messageTexts = ['null'];
 
   // Imports the Dialogflow library
   const dialogflow = require('@google-cloud/dialogflow');
@@ -130,6 +130,7 @@ exports.createIntent = async function(displayNameParam){
     displayName: displayName,
     trainingPhrases: trainingPhrases,
     messages: [message], 
+    defaultResponsePlatforms: ['PLATFORM_UNSPECIFIED', 'ACTIONS_ON_GOOGLE'],
   };
   const createIntentRequest = {
     parent: agentPath,
