@@ -88,6 +88,18 @@ router.post('/server', express.json(), function (req, res) {
     case contains("PTE_SeleccionarPreguntaDL"): 
       prototypeTraining.addLearning(req, res);
       break;
+    case contains("Default Welcome Intent"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("Default Fallback Intent"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("Default Exit Intent"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_ActivarAprender"): 
+      prototypeTraining.addLearning(req, res);
+      break;
     default:
       res.send();
   }
