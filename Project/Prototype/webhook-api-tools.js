@@ -93,7 +93,8 @@ exports.createIntent = async function(displayNameParam){
   const displayName = displayNameParam;
   const trainingPhrasesParts = [displayNameParam];
   const quickRepliesParts = ['Continuar'];
-  const messageTexts = ['null'];
+  const messageTexts = 'null';
+  const image = 'https://scontent.falc2-2.fna.fbcdn.net/v/t39.30808-6/258424143_296933379102981_6677037762456772641_n.jpg?_nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=yhw9j5qVA10AX8fYB1T&_nc_ht=scontent.falc2-2.fna&oh=00_AT_HIknnp3pB7lD6QAUFklugGn2koXrXnYBhC-aCjs7LMw&oe=621E9FCC';
 
   // Imports the Dialogflow library
   const dialogflow = require('@google-cloud/dialogflow');
@@ -126,11 +127,18 @@ exports.createIntent = async function(displayNameParam){
   });
 
   // respuesta por defecto
-  const messageText = {
-    text: messageTexts,
+  const buttons = {
+    text: "Referencias",
+    postback: "https://es.wikipedia.org/wiki/Wikipedia:Portada",
+  };
+  const element = {
+    title: displayName,
+    subtitle: messageTexts,
+    imageUri: image,
+    buttons: [buttons],
   };
   const message = {
-    text: messageText,
+    card: element,
   };
 
   // sugerencias por defecto

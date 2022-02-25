@@ -100,6 +100,15 @@ router.post('/server', express.json(), function (req, res) {
     case contains("PTE_ActivarAprender"): 
       prototypeTraining.addLearning(req, res);
       break;
+    case contains("PTE_ActivarCambiarFoto"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_SeleccionarPreguntaFoto"): 
+      prototypeTraining.addLearning(req, res);
+      break;
+    case contains("PTE_CambiarFoto"): 
+      prototypeTraining.addLearning(req, res);
+      break;
     default:
       res.send();
   }

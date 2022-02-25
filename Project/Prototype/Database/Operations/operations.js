@@ -41,6 +41,24 @@ exports.updateAnswer = async function (userQuestion, userAnswer){
 }
 
 
+exports.updatePhoto = async function (userQuestion, userPhoto){
+
+    try {
+    
+        // update fields
+        const question =  await LearningCollections.findOneAndUpdate({question: userQuestion}, {
+            image: userPhoto
+        }, {new: true});
+
+        console.log(question);
+        return question;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 exports.getQuestionsList = async function (){
 
     try {

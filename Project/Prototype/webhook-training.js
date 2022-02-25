@@ -44,6 +44,7 @@ exports.addLearning = async function (req, res) {
     agent.add(new Suggestion("Quiero guardar una pregunta"));
     agent.add(new Suggestion("Quiero cambiar una respuesta"));
     agent.add(new Suggestion("Quiero borrar una pregunta"));
+    agent.add(new Suggestion("Quiero cambiar una foto"));
     agent.add(new Suggestion("Continuar"));
   }
 
@@ -100,6 +101,7 @@ exports.addLearning = async function (req, res) {
       agent.add(new Suggestion("Quiero guardar otra pregunta"));
       agent.add(new Suggestion("Quiero cambiar una respuesta"));
       agent.add(new Suggestion("Quiero borrar una pregunta"));
+      agent.add(new Suggestion("Quiero cambiar una foto"));
       agent.add(new Suggestion("Continuar"));
     }
   }
@@ -159,6 +161,7 @@ exports.addLearning = async function (req, res) {
       agent.add(new Suggestion("Quiero guardar otra pregunta"));
       agent.add(new Suggestion("Quiero cambiar una respuesta"));
       agent.add(new Suggestion("Quiero borrar una pregunta"));
+      agent.add(new Suggestion("Quiero cambiar una foto"));
       agent.add(new Suggestion("Continuar"));
     }
   }
@@ -187,6 +190,7 @@ exports.addLearning = async function (req, res) {
         agent.add(new Suggestion("Quiero guardar otra pregunta"));
         agent.add(new Suggestion("Quiero cambiar una respuesta"));
         agent.add(new Suggestion("Quiero borrar una pregunta"));
+        agent.add(new Suggestion("Quiero cambiar una foto"));
         agent.add(new Suggestion("Continuar"));
       }
       else{
@@ -216,7 +220,66 @@ exports.addLearning = async function (req, res) {
     agent.add(new Suggestion("Continuar"))
   }
 
-  
+  // Custom Intent PTE_ActivarCambiarFoto
+  async function list_update_photo(agent){
+    const list = await backendTools.listBackend_Question();
+    agent.add('Aquí te muestro una lista de tus preguntas guardadas. ¿Qué lección quieres responder/cambiar su imagen?');
+    list.forEach(element => { 
+      agent.add(new Suggestion(element.question))
+    }); 
+    agent.add(new Suggestion("Cancelar"))
+  }
+
+  // Custom Intent PTE_SeleccionarPreguntaFoto
+  async function select_question_photo(agent) {
+
+    // Comprobar si la cuestion existe
+    var questionUser = agent.parameters.any; 
+    if(await backendTools.existsBackend_Question(questionUser) == false){
+
+      if(questionUser == "Cancelar"){
+        backendTools.updateWaitingInput_Question("exit");
+        agent.add('He cancelado la operación');
+        agent.add(new Suggestion("Continuar"));
+      }
+      else{
+        backendTools.updateWaitingInput_Question("exit");
+        agent.add('¡Esta pregunta no existe! (' + questionUser + ')');
+        agent.add(new Suggestion("Continuar"));
+      }
+    }
+    
+    // Seleccionar la cuestion
+    else{
+      backendTools.updateWaitingInput_Question("required", questionUser);
+      agent.add("Escriba la url de la nueva imagen:");
+    }
+  }
+
+  // Custom Intent PTE_CambiarFoto
+  async function modify_photo(agent) {
+
+    // ¿Hay alguna pregunta pendiente?
+    if(backendTools.updateWaitingInput_Question("progress")){
+
+      // Modificar la respuesta y guardar 
+      var answerUser = agent.parameters.any;
+      await backendTools.updateBackend_Photo(answerUser);
+      agent.add('Gracias por actualizar la foto para [' + backendTools.lastQuestion + '] ¡Es muy bonita!');
+      agent.add(new Suggestion("Continuar"));
+      backendTools.updateWaitingInput_Question("exit");
+    }
+
+    else{
+      agent.add('¿Deseas enseñarme más lecciones?');
+      agent.add(new Suggestion("Quiero guardar otra pregunta"));
+      agent.add(new Suggestion("Quiero cambiar una respuesta"));
+      agent.add(new Suggestion("Quiero borrar una pregunta"));
+      agent.add(new Suggestion("Quiero cambiar una foto"));
+      agent.add(new Suggestion("Continuar"));
+    }
+  }
+
   // Asociamos el nombre del Intent de DialogFlow con su funcion
   let intentMap = new Map();
   intentMap.set('PTE_ActivarEnseñanza', active_learning);
@@ -232,5 +295,8 @@ exports.addLearning = async function (req, res) {
   intentMap.set('Default Fallback Intent', fallback);
   intentMap.set('Default Exit Intent', exit);
   intentMap.set('PTE_ActivarAprender', teach_user);
+  intentMap.set('PTE_ActivarCambiarFoto', list_update_photo);
+  intentMap.set('PTE_SeleccionarPreguntaFoto', select_question_photo);
+  intentMap.set('PTE_CambiarFoto', modify_photo);
   agent.handleRequest(intentMap);
 }
