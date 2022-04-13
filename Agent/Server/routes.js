@@ -16,7 +16,7 @@ router.use(function timeLog(req, res, next) {
 
 // Express App fulfillment route (POST). 
 // The entire dialogFlowApp object (incl its handlers) is the callback handler for this route.
-router.post('/', function (req, res){
+router.post('/', async function (req, res){
 
   // Identificamos el tipo de agente/dispositivo
   function contains(order) { 
@@ -31,7 +31,7 @@ router.post('/', function (req, res){
       console.log("Voice Google Assitant Detected")
       break;
     case contains("Dialogflow"):
-      dialogFlowApp.agent(req, res);
+      await dialogFlowApp.agent(req, res);
       console.log("DialogFlow Panel Detected")
       break;
     default:
