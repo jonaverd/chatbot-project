@@ -1,9 +1,9 @@
 
 // Libreria necesaria para API Cloud
-const apiTools = require('./webhook-api-tools.js');
+const apiTools = require('./api-google.js');
 
 // Libreria necesaria para operar Database MongoDB
-const databaseTools = require('./Database/Operations/operations.js');
+const databaseTools = require('./Database/queries.js');
 
 // Nombre de la cuestión a guardar
 exports.lastQuestion;
@@ -65,9 +65,9 @@ exports.updateBackend_Photo = async function(input){
 }
 
 // Auxiliar - procesos de backend
-exports.listBackend_Question = async function(){
+exports.listBackend_Question = async function(user){
   // ... solo la base de datos  
-  const list =  await databaseTools.getQuestionsList();
+  const list =  await databaseTools.getQuestionsList(user);
   return list;
 }
 

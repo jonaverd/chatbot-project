@@ -1,6 +1,6 @@
 doctype html
 head
-    //meta(http-equiv='refresh' content='5')
+    //meta(http-equiv='refresh' content='10')
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
@@ -10,7 +10,7 @@ head
     meta(charset='utf-8')
     meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')  
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
-    title Prototype API Tools
+    title Intents Manager Panel
     style.
         html {
             box-sizing: border-box;
@@ -54,23 +54,13 @@ head
             // Set default modal values
             document.getElementById("inputupdateactual").value = element;
             document.getElementById("typeupdate").value = type;
-            document.getElementById("updateform").action = `/server/prototype/apitools/intents/${id}/update`;
+            document.getElementById("updateform").action = `/update/${id}`;
             // Create new input specific for the type
             var htmlcreate= document.createElement("div");
             switch (type) {
                 case "displayName":
                     htmlcreate.innerHTML = "" 
                     +"<input class='form-control' id='inputupdatenew' type='text' name='inputupdatenew' oninput='hidden_button_update()' placeholder=" + element + " />";
-                    break;
-
-                case "webhookState":
-                    htmlcreate.innerHTML = ""
-                    +"<select class='form-select' aria-label='Default select example'>"
-                    +"    <option selected>Open this select menu</option>"
-                    +"    <option value='1'>One</option>"
-                    +"    <option value='2'>Two</option>"
-                    +"    <option value='3'>Three</option>"
-                    +"</select>";
                     break;
                 default:
             }   
@@ -92,15 +82,15 @@ body
         .collapse.navbar-collapse
             ul.navbar-nav.mr-auto
                 li.nav-item
-                    a.nav-link(href='/server/prototype/apitools/intents/list') Gestor de Intents
+                    a.nav-link(href='/') Intents Manager Panel
     #updateModal.modal.fade
         .modal-dialog
             .modal-content
                 .modal-header
-                    .modal-title.h4 Actualizar datos
+                    .modal-title.h4 Updating Information
                     button.btn(class="close" data-dismiss="modal" aria-hidden="true") &times;
                 .modal-body
-                    form#updateform(role='form' method='POST' action='/server/prototype/apitools/intents/:id/update')
+                    form#updateform(role='form' method='POST' action='/update/:id')
                         .form-group
                             p Warning: This action will update the data overriding previous changes!
                             .form-group
@@ -110,18 +100,18 @@ body
                                 .containeradd            
                         .modal-footer
                             .btn-group.mr-2
-                                button.btn.btn-secondary(data-dismiss="modal") Cancelar
+                                button.btn.btn-secondary(data-dismiss="modal") Cancel
                             .btn-group.mr-2
-                                button#visibleupdate.btn.btn-secondary(type="submit" disabled) Confirmar
+                                button#visibleupdate.btn.btn-secondary(type="submit" disabled) Confirm
     div
         .jumbotron(style='padding:40px;')
             .row
                 .col
                     .card
                         .card-body
-                            h5.card-title  Acciones Prototipo
-                            p.card-text Mostrando información del intent.
-                            a.btn.btn-secondary(href='/server/prototype/apitools/intents/list') Volver a la lista
+                            h5.card-title API Google Cloud
+                            p.card-text Details displayed of saved intents.
+                            a.btn.btn-secondary(href='/') Back to list
     .row-auto.p-6
         .col-auto.p-6
             if exists(intent.displayName) 
@@ -151,7 +141,7 @@ body
             .btn-group.mr-2
                 h5 Display Name
             .btn-group.mr-2
-                button.btn.edit.btn-warning(data-toggle="modal" id=id name=intent.displayName href="#updateModal" onclick="getupdatetext(this.name, this.id, 'displayName')") Editar
+                button.btn.edit.btn-warning(data-toggle="modal" id=id name=intent.displayName href="#updateModal" onclick="getupdatetext(this.name, this.id, 'displayName')") Modify
             p
             ul.list-group
                 if exists(intent.displayName) 
@@ -160,10 +150,7 @@ body
                     li.list-group-item(style='color:red; font-weight:bold; font-size:small') Undefined    
             br
             br
-            .btn-group.mr-2
-                h5 Webhook State
-            .btn-group.mr-2
-                button.btn.edit.btn-warning(data-toggle="modal" id=id name=intent.webhookState href="#updateModal" onclick="getupdatetext(this.name, this.id, 'webhookState')") Editar
+            h5 Webhook State  
             p
             ul.list-group
                 if exists(intent.webhookState) 

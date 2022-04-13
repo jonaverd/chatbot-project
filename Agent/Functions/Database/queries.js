@@ -1,15 +1,15 @@
-require('../Connection/connection.js');
+require('./connection.js');
 
 // using the model 
-const LearningCollections = require('../Models/LearningCollections.js');
+const LearningCollections = require('./Models/LearningCollections.js');
 
 exports.createVoidQuestion = async function (userQuestion){
 
     try {
-        
+
         // creating a new document base on the model
         const learningCollections = new LearningCollections({
-            question: userQuestion,
+            question: userQuestion
         });
 
         // saving the created document
@@ -40,7 +40,6 @@ exports.updateAnswer = async function (userQuestion, userAnswer){
     }
 }
 
-
 exports.updatePhoto = async function (userQuestion, userPhoto){
 
     try {
@@ -58,12 +57,11 @@ exports.updatePhoto = async function (userQuestion, userPhoto){
     }
 }
 
-
 exports.getQuestionsList = async function (){
 
     try {
         // search all questions
-        const list =  await LearningCollections.find();
+        const list =  await LearningCollections.find().sort({question:1});
 
         console.log(list);
         return list;
@@ -72,7 +70,6 @@ exports.getQuestionsList = async function (){
         console.log(err);
     }
 }
-
 
 exports.getQuestionData = async function (userQuestion){
 
@@ -89,7 +86,6 @@ exports.getQuestionData = async function (userQuestion){
     }
 }
 
-
 exports.checkQuestionExists = async function (userQuestion){
 
     try {
@@ -104,7 +100,6 @@ exports.checkQuestionExists = async function (userQuestion){
         console.log(err);
     }
 }
-
 
 exports.deleteQuestion = async function (userQuestion){
 

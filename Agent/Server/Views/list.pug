@@ -1,6 +1,6 @@
 doctype html
 head
-    //meta(http-equiv='refresh' content='5')
+    //meta(http-equiv='refresh' content='10')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -8,7 +8,7 @@ head
     meta(charset='utf-8')
     meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
-    title Prototype API Tools
+    title Intents Manager Panel
     style.
         html {
             box-sizing: border-box;
@@ -36,7 +36,7 @@ head
         }
     script.
         function getdeletetext(name, id){
-            document.getElementById("inputdelete").href = `/server/prototype/apitools/intents/${id}/delete`;
+            document.getElementById("inputdelete").href = `/delete/${id}`;
             document.getElementById("namedelete").innerHTML = name;
         }
     script.
@@ -55,55 +55,55 @@ body
         .collapse.navbar-collapse
             ul.navbar-nav.mr-auto
                 li.nav-item
-                    a.nav-link(href='list') Gestor de Intents
+                    a.nav-link(href='/') Intents Manager Panel
     #createModal.modal.fade
         .modal-dialog
             .modal-content
                 .modal-header
-                    .modal-title.h4 Guardar cambios 
+                    .modal-title.h4 Save changes 
                     button.btn(class="close" data-dismiss="modal" aria-hidden="true") &times;
                 .modal-body
-                    form(role='form' method='POST' action='/server/prototype/apitools/intents/create')
+                    form(role='form' method='POST' action='/create')
                         .form-group
                             p The new intent will be created only with the fields ID and DIsplayName.
                             b#nameconfirm
                             input#inputconfirm.form-control(type='hidden' name='inputconfirm')  
                         .modal-footer
                             .btn-group.mr-2
-                                button.btn.btn-secondary(data-dismiss="modal") Cancelar
+                                button.btn.btn-secondary(data-dismiss="modal") Cancel
                             .btn-group.mr-2
-                                button.btn.btn-success(type="submit") Confirmar
+                                button.btn.btn-success(type="submit") Confirm
     #deleteModal.modal.fade
         .modal-dialog
             .modal-content
                 .modal-header
-                    .modal-title.h4 Confirmar eliminación 
+                    .modal-title.h4 Confirm delete
                     button.btn(class="close" data-dismiss="modal" aria-hidden="true") &times;
                 .modal-body
                     p Warning: This action will remove the intent selected permanently!
                     b#namedelete
                 .modal-footer
                     .btn-group.mr-2
-                        button.btn.btn-secondary(data-dismiss="modal") Cancelar
+                        button.btn.btn-secondary(data-dismiss="modal") Cancel
                     .btn-group.mr-2
-                        a#inputdelete.btn.btn-danger(href=``) Confirmar
+                        a#inputdelete.btn.btn-danger(href=``) Confirm
     div
         .jumbotron(style='padding:40px;')
             .row
                 .col
                     .card
                         .card-body
-                            h5.card-title  Acciones Prototipo
-                            p.card-text Mostrando lista detallada de intents almacenados.
+                            h5.card-title API Google Cloud
+                            p.card-text List displayed of saved intents.
                 .col
                     .card
                         .card-body
-                            h5.card-title Crear nueva intención
+                            h5.card-title Create new intent
                             small.form-text.text-muted The new intent will can be edited.
                             p
                             .form-group
                                 input#inputname.form-control(type='text' name='inputname' placeholder='Enter the name...' oninput="hidden_button()")                       
-                            button#visiblecreate.btn.btn-secondary(data-toggle="modal" href="#createModal" onclick="getcreatetext()" disabled=true) Añadir                   
+                            button#visiblecreate.btn.btn-secondary(data-toggle="modal" href="#createModal" onclick="getcreatetext()" disabled=true) Add                   
     each intent in intents
         .row-auto.p-6
             .col-auto.p-6
@@ -112,9 +112,9 @@ body
                     h5.card-title= intent.displayName
                     p.card-text= getidfunction(intent.name)
                     .btn-group.mr-2
-                        a.btn.btn-primary(href=`/server/prototype/apitools/intents/${getidfunction(intent.name)}/details`) Detalles
+                        a.btn.btn-primary(href=`/details/${getidfunction(intent.name)}`) Details
                     .btn-group.mr-2
-                        a.btn.btn-danger(data-toggle="modal" id=getidfunction(intent.name) name=intent.displayName href="#deleteModal" onclick="getdeletetext(this.name, this.id)") Eliminar
+                        a.btn.btn-danger(data-toggle="modal" id=getidfunction(intent.name) name=intent.displayName href="#deleteModal" onclick="getdeletetext(this.name, this.id)") Delete
         
    
                      

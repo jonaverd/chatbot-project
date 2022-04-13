@@ -1,0 +1,43 @@
+{
+  "name": "odiseo-chatbot",
+  "version": "2.0.0",
+  "description": "TFG Project UA",
+  "main": "./Server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "credentials": "powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Functions/Authentication/ath_scr.ps1",
+    "tunneling": "powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Server/Tunneling/srv_scr.ps1",
+    "server": "powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Server/cfg_scr.ps1",
+    "start": "nodemon ./Server/index.js",
+    "deploy": "npm run credentials; npm run tunneling; nodemon ./Server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonaverd/chatbot-project.git"
+  },
+  "keywords": [
+    "Google",
+    "Actions",
+    "Dialogflow",
+    "API"
+  ],
+  "author": "jvv13@gcloud.ua.es",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonaverd/chatbot-project/issues"
+  },
+  "homepage": "https://github.com/jonaverd/chatbot-project#readme",
+  "dependencies": {
+    "@assistant/conversation": "^3.8.1",
+    "@google-cloud/dialogflow": "^4.7.0",
+    "actions-on-google": "^2.4.1",
+    "dialogflow": "^1.2.0",
+    "dialogflow-fulfillment": "^0.6.1",
+    "express": "^4.17.3",
+    "mongoose": "^6.2.11",
+    "pug": "^3.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  }
+}

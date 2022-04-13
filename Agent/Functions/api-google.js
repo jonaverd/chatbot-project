@@ -1,4 +1,10 @@
-const Enum = require('enum');
+// Agent parameters
+const dialogflow = require('@google-cloud/dialogflow');
+const projectId = 'odiseo-chatbot';
+
+// Instantiate clients
+const intentsClient = new dialogflow.IntentsClient();
+const projectAgentPath = intentsClient.projectAgentPath(projectId);
 
 // Metodo para comprobar si un elemento contiene algun valor nulo o indefinido
 exports.checkNotUndefined = function(element){
@@ -25,19 +31,14 @@ exports.checkNotUndefined = function(element){
 // Metodo para extraer la ID de un Intent, recibiendo una ruta del proyecto
 exports.getIDIntent_Path = function(projectAgentPath){
   var substring = projectAgentPath.split("projects/odiseo-chatbot/agent/intents/")
-  //console.log(`Getting ${projectAgentPath} ID...`);
   return substring[1].toString();
 };
 
 // Metodo para extraer la ID de un Intent, recibiendo un nombre
 exports.getIDIntent_Name = async function(displayName){
   var id = "";
-  const dialogflow = require('@google-cloud/dialogflow');
-  const projectId = 'odiseo-chatbot';
 
-  // Instantiates clients
-  const intentsClient = new dialogflow.IntentsClient();
-  const projectAgentPath = intentsClient.projectAgentPath(projectId);
+  // Arguments information
   const request = { 
     parent: projectAgentPath,
     intentView: "INTENT_VIEW_FULL", 
@@ -50,19 +51,15 @@ exports.getIDIntent_Name = async function(displayName){
       id = this.getIDIntent_Path(intent.name);
     }
   });
-  //console.log(`Getting ${displayName} ID...`);
+  
   if(id !== ""){ return id; }
 };
 
 // Metodo para comprobar si existe un intent creado con ese nombre
 exports.checkIntentExists = async function(displayName){
   var list = [];
-  const projectId = 'odiseo-chatbot';
-  const dialogflow = require('@google-cloud/dialogflow');
 
-  // Instantiates clients
-  const intentsClient = new dialogflow.IntentsClient();
-  const projectAgentPath = intentsClient.projectAgentPath(projectId);
+  // Arguments information
   const request = { 
     parent: projectAgentPath,
     intentView: "INTENT_VIEW_FULL", 
@@ -89,21 +86,13 @@ exports.checkIntentExists = async function(displayName){
 
 // Metodo para crear un intent con ese nombre
 exports.createIntent = async function(displayNameParam){
-  const projectId = 'odiseo-chatbot';
+
+  // Arguments information
   const displayName = displayNameParam;
   const trainingPhrasesParts = [displayNameParam];
   const quickRepliesParts = ['Continuar'];
   const messageTexts = 'null';
-  const image = 'https://scontent.falc2-2.fna.fbcdn.net/v/t39.30808-6/258424143_296933379102981_6677037762456772641_n.jpg?_nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=yhw9j5qVA10AX8fYB1T&_nc_ht=scontent.falc2-2.fna&oh=00_AT_HIknnp3pB7lD6QAUFklugGn2koXrXnYBhC-aCjs7LMw&oe=621E9FCC';
-
-  // Imports the Dialogflow library
-  const dialogflow = require('@google-cloud/dialogflow');
-
-  // Instantiates the Intent Client
-  const intentsClient = new dialogflow.IntentsClient();
- 
-  // The path to identify the agent that owns the created intent.
-  const agentPath = intentsClient.projectAgentPath(projectId);
+  const image = 'https://i.ibb.co/CsKH0YR/istockphoto-497979175-612x612.jpg';
 
   // frase de entrenamiento por defecto
   const trainingPhrases = [];
@@ -158,7 +147,7 @@ exports.createIntent = async function(displayNameParam){
     defaultResponsePlatforms: ['PLATFORM_UNSPECIFIED', 'ACTIONS_ON_GOOGLE'],
   };
   const createIntentRequest = {
-    parent: agentPath,
+    parent: projectAgentPath,
     intent: intent,
     intentView: "INTENT_VIEW_FULL", 
   };
@@ -174,12 +163,7 @@ exports.createIntent = async function(displayNameParam){
 // Metodo para conseguir toda la estructura de un intent 
 exports.getIntent = async function(intentId){
 
-  // Imports the Dialogflow library
-  const dialogflow = require('@google-cloud/dialogflow');
-  const projectId = 'odiseo-chatbot'; 
-  
-  // Instantiates clients
-  const intentsClient = new dialogflow.IntentsClient();
+  // Arguments information
   const intentPath = intentsClient.projectAgentIntentPath(projectId, intentId);
   const request = {
     name: intentPath,
@@ -192,24 +176,13 @@ exports.getIntent = async function(intentId){
 // Metodo para mostrar la lista de intents
 exports.getIntentList = async function(){
 
-  // Imports the Dialogflow library
-  const dialogflow = require('@google-cloud/dialogflow');
-  const projectId = 'odiseo-chatbot';
-  
-  // Instantiates clients
-  const intentsClient = new dialogflow.IntentsClient();
-
-  // The path to identify the agent that owns the intents.
-  const projectAgentPath = intentsClient.projectAgentPath(projectId);
-  console.log(projectAgentPath);
-
   // Send the request for listing intents.
   const request = { 
     parent: projectAgentPath,
     intentView: "INTENT_VIEW_FULL",
   };
   
-  // Intent_View_Full able to show training phrases, by default nos is activated!!
+  // Intent_View_Full able to show training phrases, by default NOT is activated!!
   const [response] = await intentsClient.listIntents(request);
   console.log(`Getting intents list...`);
   return response;
@@ -218,12 +191,7 @@ exports.getIntentList = async function(){
 // Metodo para modificar un intent
 exports.updateIntent = async function(intentId, additionals){
 
-  // Imports the Dialogflow library
-  const dialogflow = require('@google-cloud/dialogflow');
-  const projectId = 'odiseo-chatbot'; 
- 
-  // Instantiates clients
-  const intentsClient = new dialogflow.IntentsClient();
+  // Arguments information
   const intentPath = intentsClient.projectAgentIntentPath(projectId, intentId);
 
   // Informacion Intent
@@ -264,12 +232,7 @@ exports.updateIntent = async function(intentId, additionals){
 // Metodo para borrar un intent
 exports.deleteIntent = async function(intentId){
 
-  // Imports the Dialogflow library
-  const dialogflow = require('@google-cloud/dialogflow');
-  const projectId = 'odiseo-chatbot'; 
-
-  // Instantiates clients
-  const intentsClient = new dialogflow.IntentsClient();
+  // Arguments information
   const intentPath = intentsClient.projectAgentIntentPath(projectId, intentId);
   const request = {name: intentPath};
 
@@ -278,4 +241,3 @@ exports.deleteIntent = async function(intentId){
   console.log(`Intent ${intentPath} deleted`);
   return result;
 };
-

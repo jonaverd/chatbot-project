@@ -1,23 +1,24 @@
 
 // See https://github.com/dialogflow/dialogflow-fulfillment-nodejs
 // for Dialogflow fulfillment library docs, samples, and to report issues
-'use strict';
-
 const {WebhookClient} = require('dialogflow-fulfillment');
-const {Card, Suggestion, Image} = require('dialogflow-fulfillment');
+const {Suggestion} = require('dialogflow-fulfillment');
 
 // archivo con las funciones para trabajar con el backend
-// y los inputs del usuario que se quedan pendientes "en el iare"
-const backendTools = require('./middleware-backend.js');
+// y los inputs del usuario que se quedan pendientes "en el aire"
+const backendTools = require('./server-operations.js');
 
 // enables lib debugging statements
 process.env.DEBUG = 'dialogflow:debug'; 
 
 // Peticion Webhook POST que se nos pide desde DialogFlow 
-exports.addLearning = async function (req, res) {
+exports.agent = async function (req, res) {
   
   // Inicializacion del agente 
   const agent = new WebhookClient({ request: req, response: res });
+
+  console.log('Dialogflow Request headers: ' + JSON.stringify(req.headers));
+  console.log('Dialogflow Request body: ' + JSON.stringify(req.body));
 
   // Default Welcome Intent
   function welcome(agent) {
