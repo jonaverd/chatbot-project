@@ -54,7 +54,7 @@ head
             // Set default modal values
             document.getElementById("inputupdateactual").value = element;
             document.getElementById("typeupdate").value = type;
-            document.getElementById("updateform").action = `/update/${id}`;
+            document.getElementById("updateform").action = `/render/update/${id}`;
             // Create new input specific for the type
             var htmlcreate= document.createElement("div");
             switch (type) {
@@ -82,7 +82,7 @@ body
         .collapse.navbar-collapse
             ul.navbar-nav.mr-auto
                 li.nav-item
-                    a.nav-link(href='/') Intents Manager Panel
+                    a.nav-link(href='/render/list') Intents Manager Panel
     #updateModal.modal.fade
         .modal-dialog
             .modal-content
@@ -90,7 +90,7 @@ body
                     .modal-title.h4 Updating Information
                     button.btn(class="close" data-dismiss="modal" aria-hidden="true") &times;
                 .modal-body
-                    form#updateform(role='form' method='POST' action='/update/:id')
+                    form#updateform(role='form' method='POST' action='/render/update/:id')
                         .form-group
                             p Warning: This action will update the data overriding previous changes!
                             .form-group
@@ -111,7 +111,7 @@ body
                         .card-body
                             h5.card-title API Google Cloud
                             p.card-text Details displayed of saved intents.
-                            a.btn.btn-secondary(href='/') Back to list
+                            a.btn.btn-secondary(href='/render/list') Back to list
     .row-auto.p-6
         .col-auto.p-6
             if exists(intent.displayName) 

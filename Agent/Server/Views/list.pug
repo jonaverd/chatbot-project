@@ -36,7 +36,7 @@ head
         }
     script.
         function getdeletetext(name, id){
-            document.getElementById("inputdelete").href = `/delete/${id}`;
+            document.getElementById("inputdelete").href = `/render/delete/${id}`;
             document.getElementById("namedelete").innerHTML = name;
         }
     script.
@@ -55,7 +55,7 @@ body
         .collapse.navbar-collapse
             ul.navbar-nav.mr-auto
                 li.nav-item
-                    a.nav-link(href='/') Intents Manager Panel
+                    a.nav-link(href='/render/list') Intents Manager Panel
     #createModal.modal.fade
         .modal-dialog
             .modal-content
@@ -63,7 +63,7 @@ body
                     .modal-title.h4 Save changes 
                     button.btn(class="close" data-dismiss="modal" aria-hidden="true") &times;
                 .modal-body
-                    form(role='form' method='POST' action='/create')
+                    form(role='form' method='POST' action='/render/create')
                         .form-group
                             p The new intent will be created only with the fields ID and DIsplayName.
                             b#nameconfirm
@@ -112,7 +112,7 @@ body
                     h5.card-title= intent.displayName
                     p.card-text= getidfunction(intent.name)
                     .btn-group.mr-2
-                        a.btn.btn-primary(href=`/details/${getidfunction(intent.name)}`) Details
+                        a.btn.btn-primary(href=`/render/details/${getidfunction(intent.name)}`) Details
                     .btn-group.mr-2
                         a.btn.btn-danger(data-toggle="modal" id=getidfunction(intent.name) name=intent.displayName href="#deleteModal" onclick="getdeletetext(this.name, this.id)") Delete
         
