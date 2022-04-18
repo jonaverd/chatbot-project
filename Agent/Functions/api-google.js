@@ -6,6 +6,8 @@ const projectId = 'odiseo-chatbot';
 const intentsClient = new dialogflow.IntentsClient();
 const projectAgentPath = intentsClient.projectAgentPath(projectId);
 
+const referencesURI = require('./Assets/references.js');
+
 // Metodo para comprobar si un elemento contiene algun valor nulo o indefinido
 exports.checkNotUndefined = function(element){
   function arrayIsEmpty(array) {
@@ -91,8 +93,9 @@ exports.createIntent = async function(displayNameParam){
   const displayName = displayNameParam;
   const trainingPhrasesParts = [displayNameParam];
   const quickRepliesParts = ['Continuar'];
+  const suggestions = ['Continuar'];
   const messageTexts = 'null';
-  const image = 'https://i.ibb.co/CsKH0YR/istockphoto-497979175-612x612.jpg';
+  const image = referencesURI.imageURI_Welcome;
 
   // frase de entrenamiento por defecto
   const trainingPhrases = [];
@@ -108,6 +111,48 @@ exports.createIntent = async function(displayNameParam){
     trainingPhrases.push(trainingPhrase);
   });
 
+  // respuesta por defecto
+  const element = {
+    title: displayName,
+    subtitle: messageTexts,
+    imageUri: image,
+  };
+  const message = {
+    card: element,
+  };
+
+  // respuesta google actions
+  const actions_card = {
+    platform: "ACTIONS_ON_GOOGLE",
+    basicCard: {
+      title: displayName,
+      subtitle: messageTexts,
+      formattedText: "Generado con el asistente de Google",
+      image: {
+        imageUri: image,
+        accessibilityText: "Odiseo Chatbot"
+      }
+    }
+  }
+
+  // sugerencias google actions por defecto
+  const suggestions_first = [];
+  suggestions.forEach(suggestion => {
+    const sug = {
+      title: suggestion
+    }
+    suggestions_first.push(sug);
+  });
+
+  const suggestions_final = {
+    suggestions: suggestions_first
+  }
+
+  const actions_suggestions = {
+    platform: "ACTIONS_ON_GOOGLE",
+    suggestions: suggestions_final
+  }
+
   // Here we create a new suggestion phrase for each provided part.
   const quickReplies_begin = [];
   quickRepliesParts.forEach(quickRepliesPart => {
@@ -115,22 +160,6 @@ exports.createIntent = async function(displayNameParam){
     quickReplies_begin.push(quickReply);
   });
 
-  // respuesta por defecto
-  const buttons = {
-    text: "Referencias",
-    postback: "https://es.wikipedia.org/wiki/Wikipedia:Portada",
-  };
-  const element = {
-    title: displayName,
-    subtitle: messageTexts,
-    imageUri: image,
-    buttons: [buttons],
-  };
-  const message = {
-    card: element,
-  };
-
-  // sugerencias por defecto
   const quickReplies_middle = {
     quickReplies: quickReplies_begin,
   }
@@ -141,9 +170,9 @@ exports.createIntent = async function(displayNameParam){
   // creamos el intent con sus partes
   const intent = { 
     displayName: displayName,
-    endInteraction: 'true',
+    endInteraction: 'false',
     trainingPhrases: trainingPhrases,
-    messages: [message, quickReplies_final], 
+    messages: [actions_card, actions_suggestions, message, quickReplies_final], 
     defaultResponsePlatforms: ['PLATFORM_UNSPECIFIED', 'ACTIONS_ON_GOOGLE'],
   };
   const createIntentRequest = {

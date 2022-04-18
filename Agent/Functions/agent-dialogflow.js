@@ -71,8 +71,8 @@ exports.agent = async function (req, res) {
   }
 
    // input.new.question.request.question
-   function ConversationOperations_TeachingAssistant_InputQuestion(agent) {
-     // Se cancela la operacion
+   async function ConversationOperations_TeachingAssistant_InputQuestion(agent) {
+    // Se cancela la operacion
     var input = agent.parameters.any; 
     if(input == "Cancelar operación"){
       agent.add('He cancelado el asistente de enseñanza. Si deseas realizar otra consulta, escribe (Continuar)');
@@ -80,8 +80,16 @@ exports.agent = async function (req, res) {
     }
     // Comprobar si la cuestion esta ya guardada
     else {
-      agent.add('¡Perfecto! Acabo de añadir esta cuestión (' + input + ') a mi base de aprendizaje.');
-      agent.add('¿Cuál es su respuesta?');
+      if(await backendTools.existsBackend_Question(input)){
+        agent.add('¡Esta pregunta ya la tenía guardada! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)');
+        agent.add(new Suggestion('Continuar'));
+      }
+      // Continuar
+      else{
+        await backendTools.createBackend_Question(input);
+        agent.add('¡Perfecto! Acabo de añadir esta cuestión (' + input + ') a mi base de aprendizaje.');
+        agent.add('¿Cuál es su respuesta?');
+      }
     }
   }
   

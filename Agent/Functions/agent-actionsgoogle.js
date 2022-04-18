@@ -14,7 +14,7 @@ const backendTools = require('./server-operations.js');
 const referencesURI = require('./Assets/references.js');
 
 // Create an app instance
-const app = conversation()
+const app = conversation({debug:true})
 console.log('Google Assistant Detected')
 
 // Register handlers for Actions SDK
@@ -116,12 +116,62 @@ app.handle('ConversationMain_TeachingAssistant', conv => {
 })
 
  // input.new.question.request.question
-app.handle('ConversationOperations_TeachingAssistant_InputQuestion', conv => {
-  console.log(conv.intent.query)
-  conv.add(new Simple({
-    speech: 'He cancelado el asistente de enseñanza. Si deseas realizar otra consulta, di "Continuar"',
-    text: 'He cancelado el asistente de enseñanza. Pulsa "Continuar"'
-  }));
+app.handle('ConversationOperations_TeachingAssistant_InputQuestion', async conv => {
+  // Se cancela la operacion
+  const input = conv.intent.query;
+  if(input == "Cancelar operación"){
+    conv.add(new Simple({
+      speech: 'He cancelado el asistente de enseñanza. Si deseas realizar otra consulta, di "Continuar"',
+      text: 'He cancelado el asistente de enseñanza. Escribe "Continuar"'
+    }));
+    conv.add(new Suggestion({ title: 'Continuar' }));
+  }
+  // Error ya existe
+  else{
+    if(await backendTools.existsBackend_Question(input)){
+      conv.add(new Simple({
+        speech: 'Lo siento, no he podido aprender la cuestión (' + input + ') porque ya existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
+        text: '¡Esta pregunta ya la tenía guardada! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)'
+      }));
+      conv.add(new Suggestion({ title: 'Continuar' }));
+    }
+    // Continuar
+    else{ 
+      await backendTools.createBackend_Question(input);
+      // save question temporal data
+      conv.user.params.input = input;
+      conv.add(new Simple({
+        speech: '¡Perfecto! Acabo de añadir esta cuestión (' + input + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
+        text: '¡Correcto! La cuestión (' + input + ') ha sido guardada. ¿Cuál es su respuesta?'
+      }));
+    }
+  }
 })
+
+// input.new.question.request.answer
+app.handle('ConversationOperations_TeachingAssistant_InputAnswer', async conv => {
+  // get previous question temporal data
+  const previous = conv.user.params.input;
+  const data = conv.intent.query;
+  // Error no existe 
+  if(!await backendTools.existsBackend_Question(previous)){
+    conv.add(new Simple({
+      speech: 'Lo siento, se ha producido un error al modificar la respuesta para la cuestion (' + previous + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
+      text: 'No se encuentra la cuestión (' + previous + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
+    }));
+    conv.add(new Suggestion({ title: 'Continuar' }));
+   
+  }
+  // Continuar
+  else{ 
+    await backendTools.updateBackend_Answer(previous, data)
+    conv.add(new Simple({
+      speech: '¡Gracias por enseñarme! La respuesta para (' + previous + ') es (' + data + '). Me siento más inteligente. Si deseas continuar con el proceso de aprendizaje, puedes vincular el enlace de una imagen relacionada con la cuestión ',
+      text: '¡Completado! La respuesta para (' + previous + ') es (' + data + '). '
+    }));
+    conv.add(new Suggestion({ title: 'Continuar' }));
+  }
+})
+
 
 module.exports = app;

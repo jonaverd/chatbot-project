@@ -41,15 +41,16 @@ exports.createBackend_Question = async function (input){
 }
 
 // Auxiliar - procesos de backend
-exports.updateBackend_Answer = async function(input){
-  const id = await apiTools.getIDIntent_Name(exports.lastQuestion);
+exports.updateBackend_Answer = async function(input, data){
+  const id = await apiTools.getIDIntent_Name(input);
   const struct = await apiTools.getIntent(id);
-  // La posicion 0 de mensajes indica el text, las siguientes: imagen y sugerencias
-  struct[0].messages[0]['card']['subtitle'] = input;
+  // La posicion 0 de mensajes indica el card actions, las siguientes: sugerencias y card dialogflow
+  struct[0].messages[0]['basicCard']['subtitle'] = data;
+  struct[0].messages[2]['card']['subtitle'] = data;
   // ... en los intents
   await apiTools.updateIntent(id, struct[0]);
   // ... en la base de datos  
-  await databaseTools.updateAnswer(exports.lastQuestion, input);
+  await databaseTools.updateAnswer(input, data);
 }
 
 // Auxiliar - procesos de backend
