@@ -8,6 +8,71 @@ const databaseTools = require('./Database/queries.js');
 // Nombre de la cuestión a guardar
 exports.lastQuestion;
 
+// Auxiliar - procesos de backend
+exports.createBackend_User = async function (email){
+  // ... en la base de datos  
+  await databaseTools.createUser(email);
+}
+
+// Auxiliar - procesos de backend
+exports.getBackend_User = async function(email){
+  // ... solo la base de datos  
+  const data =  await databaseTools.getUserData(email);
+  return data;
+}
+
+// Auxiliar - procesos de backend
+exports.getBackend_UserName = async function(email){
+  // ... solo la base de datos  
+  const data =  await databaseTools.getUserName(email);
+  return data;
+}
+
+// Auxiliar - procesos de backend
+exports.getBackend_UserLastName = async function(email){
+  // ... solo la base de datos  
+  const data =  await databaseTools.getUserLastName(email);
+  return data;
+}
+
+// Auxiliar - procesos de backend
+exports.getBackend_UserAge = async function(email){
+  // ... solo la base de datos  
+  const data =  await databaseTools.getUserAge(email);
+  return data;
+}
+
+// Auxiliar - procesos de backend
+exports.getBackend_UserPassword = async function(email){
+  // ... solo la base de datos  
+  const data =  await databaseTools.getUserPassword(email);
+  return data;
+}
+
+// Auxiliar - procesos de backend
+exports.updateBackend_UserName = async function(name, email){
+  // ... en la base de datos  
+  await databaseTools.updateUserName(name, email)
+}
+
+// Auxiliar - procesos de backend
+exports.updateBackend_UserLastName = async function(lastname, email){
+  // ... en la base de datos  
+  await databaseTools.updateUserLastName(lastname, email)
+}
+
+// Auxiliar - procesos de backend
+exports.updateBackend_UserAge = async function(age, email){
+  // ... en la base de datos  
+  await databaseTools.updateUserAge(age, email)
+}
+
+// Auxiliar - procesos de backend
+exports.updateBackend_UserPassword = async function(password, email){
+  // ... en la base de datos  
+  await databaseTools.updateUserPassword(password, email)
+}
+
 // Auxiliar - actualizar la interaccion donde espera un input
 exports.updateWaitingInput_Question = function(situation, input=""){
   // añadir la cuestion (input user) al aire - esperando la siguiente interaccion

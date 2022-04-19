@@ -31,11 +31,15 @@
     "@assistant/conversation": "^3.8.1",
     "@google-cloud/dialogflow": "^4.7.0",
     "actions-on-google": "^2.4.1",
+    "bcrypt": "^5.0.1",
     "dialogflow": "^1.2.0",
     "dialogflow-fulfillment": "^0.6.1",
+    "email-validator": "^2.0.4",
     "express": "^4.17.3",
     "mongoose": "^6.2.11",
-    "pug": "^3.0.2"
+    "password-validator": "^5.2.1",
+    "pug": "^3.0.2",
+    "regexp": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.14"

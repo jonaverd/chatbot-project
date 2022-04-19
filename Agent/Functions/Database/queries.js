@@ -2,6 +2,170 @@ require('./connection.js');
 
 // using the model 
 const LearningCollections = require('./Models/LearningCollections.js');
+const UserCollections = require('./Models/UserCollections.js');
+
+exports.createUser = async function (inputemail){
+
+    try {
+
+        // creating a new document base on the model
+        const userCollections = new UserCollections({
+            email: inputemail,
+        });
+
+        // saving the created document
+        const collectionSaved =  await userCollections.save();
+
+        console.log(collectionSaved)
+        return collectionSaved;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.getUserData = async function (inputemail){
+
+    try {
+   
+        // query data
+        const data =  await UserCollections.findOne({email: inputemail});
+
+        console.log(data);
+        return data;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.getUserName = async function (inputemail){
+
+    try {
+   
+        // query data
+        const data =  await UserCollections.findOne({email: inputemail}).select('name');
+
+        console.log(data);
+        return data.name;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.getUserLastName = async function (inputemail){
+
+    try {
+   
+        // query data
+        const data =  await UserCollections.findOne({email: inputemail}).select('lastname');
+
+        console.log(data);
+        return data.lastname;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.getUserAge = async function (inputemail){
+
+    try {
+   
+        // query data
+        const data =  await UserCollections.findOne({email: inputemail}).select('age');
+
+        console.log(data);
+        return data.age;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.getUserPassword = async function (inputemail){
+
+    try {
+   
+        // query data
+        const data =  await UserCollections.findOne({email: inputemail}).select('password');
+
+        console.log(data);
+        return data.password;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.updateUserName = async function (inputname, inputemail){
+
+    try {
+    
+        // update fields
+        const data =  await UserCollections.findOneAndUpdate({email: inputemail}, {
+            name: inputname
+        }, {new: true});
+
+        console.log(data);
+        return data;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.updateUserLastName = async function (inputlastname, inputemail){
+
+    try {
+    
+        // update fields
+        const data =  await UserCollections.findOneAndUpdate({email: inputemail}, {
+            lastname: inputlastname
+        }, {new: true});
+
+        console.log(data);
+        return data;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.updateUserAge = async function (inputage, inputemail){
+
+    try {
+    
+        // update fields
+        const data =  await UserCollections.findOneAndUpdate({email: inputemail}, {
+            age: inputage
+        }, {new: true});
+
+        console.log(data);
+        return data;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.updateUserPassword = async function (inputpassword, inputemail){
+
+    try {
+    
+        // update fields
+        const data =  await UserCollections.findOneAndUpdate({email: inputemail}, {
+            password: inputpassword
+        }, {new: true});
+
+        console.log(data);
+        return data;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 exports.createVoidQuestion = async function (userQuestion){
 
