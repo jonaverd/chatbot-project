@@ -150,7 +150,10 @@ class Assistant {
     }
     // Continuar
     else{ 
-      await backendTools.updateBackend_Answer(this.conv.user.params.input, this.conv.intent.query, this.conv.user.params.email)
+      // Solo actualiza una vez, evitar otros inputs
+      if(!await backendTools.getBackend_QuestionAnswer(this.conv.user.params.input, this.conv.user.params.email)){
+        await backendTools.updateBackend_Answer(this.conv.user.params.input, this.conv.intent.query, this.conv.user.params.email)
+      }
       this.conv.add(new Simple({
         speech: '¡Gracias por enseñarme! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Me siento más inteligente. Si deseas completar tu cuestión con información adicional di "Añadir Imagen" o "Añadir Mapa". De lo contarrio, di "Otras Funciones" ',
         text: '¡Completado! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas completar con más información escribe "Añadir Imagen" o "Añadir Mapa" Si deseas realizar otra operación, escribe "Otras funciones". '

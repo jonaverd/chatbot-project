@@ -5,8 +5,7 @@ const UserCollectionSchema = new Schema(
     {
         email: {
             type: String,
-            require: true,
-            unique: true
+            default: null
         },
         name: {
             type: String,

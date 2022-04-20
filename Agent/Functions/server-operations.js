@@ -89,8 +89,6 @@ exports.createBackend_Question = async function (question, user){
   await databaseTools.createVoidQuestion(question, user);
 }
 
-
-
 // Auxiliar - procesos de backend
 exports.updateBackend_Answer = async function(input, data, user){
   const id = await apiTools.getIDIntent_Name(user+'_'+input);
@@ -103,6 +101,18 @@ exports.updateBackend_Answer = async function(input, data, user){
   // ... en la base de datos  
   await databaseTools.updateAnswer(input, data, user);
 }
+
+// Auxiliar - procesos de backend
+exports.getBackend_QuestionAnswer = async function(question, user){
+  // ... solo la base de datos  
+  const data =  await databaseTools.getQuestionAnswer(question, user)
+  return data;
+}
+
+
+
+
+
 
 // Auxiliar - procesos de backend
 exports.updateBackend_Photo = async function(input){

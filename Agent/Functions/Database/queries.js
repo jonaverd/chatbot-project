@@ -209,16 +209,31 @@ exports.updateAnswer = async function (inputquestion, inputanswer, inputuser){
     try {
         
         // update fields
-        const question = await LearningCollections.findOne({question: inputquestion, user: inputuser});
+        const question =  await LearningCollections.findOneAndUpdate({question: inputquestion, user: inputuser}, {
+            answer: inputanswer
+        }, {new: true});
         console.log(question);
-
-        question.answer = inputanswer;
-        question.save()
         return question;
 
     } catch (err) {
         console.log(err);
     }
+}
+
+exports.getQuestionAnswer = async function(inputquestion, inputuser){
+
+    try {
+   
+        // query data
+        const data =  await LearningCollections.findOne({question: inputquestion, user: inputuser}).select('answer');
+
+        console.log(data);
+        return data.answer;
+
+    } catch (err) {
+        console.log(err);
+    }
+
 }
 
 exports.updatePhoto = async function (userQuestion, userPhoto){
