@@ -15,12 +15,16 @@ const referencesURI = require('./Assets/references.js');
 const usersAuth = require('./Users/validators.js');
 
 // Create an app instance
-const app = conversation()//{debug:true}
+const app = conversation({debug:true})
 console.log('Google Assistant Detected')
 
 // middleware for errors
 app.catch((conv, error) => {
   console.error(error);
+  this.conv.add(new Image({
+    url: referencesURI.imageURI_Error,
+    alt: 'Odiseo Chatbot',
+  }))
   conv.add(new Simple({
     speech: 'Lo siento. Se ha producido un error en el servidor.',
     text: 'Se ha producido un error interno.'
@@ -34,7 +38,7 @@ class Assistant {
   }
   input_welcome() {
     this.conv.add(new Image({
-      url: referencesURI.imageURI_Welcome,
+      url: referencesURI.imageURI_Public,
       alt: 'Odiseo Chatbot',
     }))
     this.conv.add(new Simple({
@@ -48,12 +52,20 @@ class Assistant {
     this.conv.add(new Suggestion({ title: 'Hasta luego' }));
   }
   input_exit() {
+    this.conv.add(new Image({
+      url: referencesURI.imageURI_Public,
+      alt: 'Odiseo Chatbot',
+    }))
     this.conv.add(new Simple({
       speech: 'Un placer trabajar contigo, ¡Nos vemos pronto!',
       text: '¡Hasta la próxima!'
     }));
   }
   input_unknown(){
+    this.conv.add(new Image({
+      url: referencesURI.imageURI_Error,
+      alt: 'Odiseo Chatbot',
+    }))
     this.conv.add(new Simple({
       speech: 'Lo siento, no te entiendo. ¿Te puedo ayudar en algo? Si quieres conocer mis comandos prueba a decir: Otras funciones',
       text: 'No puedo encontrar ninguna referencia. Escribe "Otras funciones" para ver mi lista de comandos'
@@ -63,13 +75,13 @@ class Assistant {
   }
   input_options(){
     this.conv.add(new Simple({
-      speech: 'Aquí tienes una lista de referencias con todos mis comandos. Para ir a la página de bienvenida di "Hola Odiseo". Para terminar la conversación di "Hasta luego". Para conocer todas las referencias di "Opciones". Para activar el asistente guiado de aprendizaje di "Quiero enseñarte".',
+      speech: 'Aquí tienes una lista de referencias con todos mis comandos.',
       text: 'Aquí tienes una lista de referencias con todos mis comandos. ¿Qué quieres hacer?'
     }));
     this.conv.add(new Table({
       "title": "Comandos de referencias",
       "image": new Image({
-        url: referencesURI.imageURI_Navegation,
+        url: referencesURI.imageURI_Public,
         alt: 'Odiseo Chatbot'
       }),
       "columns": [{
@@ -101,12 +113,19 @@ class Assistant {
         }, {
           "text": "Activa el aprendizaje guiado del agente"
         }]
+      }, {
+        "cells": [{
+          "text": "Referencia visual"
+        }, {
+          "text": "Añade o modifica la imagen de una pregunta"
+        }]
       }]
     }));
     this.conv.add(new Suggestion({ title: 'Hola Odiseo' }));
     this.conv.add(new Suggestion({ title: 'Hasta luego' }));
     this.conv.add(new Suggestion({ title: 'Opciones' }));
     this.conv.add(new Suggestion({ title: 'Quiero enseñarte' }));
+    this.conv.add(new Suggestion({ title: 'Referencia visual' }));
   }
   input_new_question(){
     this.conv.add(new Image({
@@ -122,6 +141,10 @@ class Assistant {
   async input_new_question_request_question(){
     // Error ya existe
     if(await backendTools.existsBackend_Question(this.conv.intent.query, this.conv.user.params.email)){
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Error,
+        alt: 'Odiseo Chatbot',
+      }))
       this.conv.add(new Simple({
         speech: 'Lo siento, no he podido aprender la cuestión (' + this.conv.intent.query + ') porque ya existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
         text: '¡Esta pregunta ya la tenía guardada! (' + this.conv.intent.query + ') Si deseas realizar otra consulta, escribe (Continuar)'
@@ -133,6 +156,10 @@ class Assistant {
       await backendTools.createBackend_Question(this.conv.intent.query, this.conv.user.params.email)
       // save question temporal data
       this.conv.user.params.input = this.conv.intent.query;
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Teaching,
+        alt: 'Odiseo Chatbot',
+      }))
       this.conv.add(new Simple({
         speech: '¡Perfecto! Acabo de añadir esta cuestión (' + this.conv.intent.query + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
         text: '¡Correcto! La cuestión (' + this.conv.intent.query + ') ha sido guardada. ¿Cuál es su respuesta?'
@@ -142,6 +169,10 @@ class Assistant {
   async input_new_question_request_answer(){
     // Error no existe 
     if(!await backendTools.existsBackend_Question(this.conv.user.params.input, this.conv.user.params.email)){
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Error,
+        alt: 'Odiseo Chatbot',
+      }))
       this.conv.add(new Simple({
         speech: 'Lo siento, se ha producido un error al modificar la respuesta para la cuestion (' + this.conv.user.params.input + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
         text: 'No se encuentra la cuestión (' + this.conv.user.params.input + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
@@ -154,29 +185,30 @@ class Assistant {
       if(!await backendTools.getBackend_QuestionAnswer(this.conv.user.params.input, this.conv.user.params.email)){
         await backendTools.updateBackend_Answer(this.conv.user.params.input, this.conv.intent.query, this.conv.user.params.email)
       }
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Teaching,
+        alt: 'Odiseo Chatbot',
+      }))
       this.conv.add(new Simple({
-        speech: '¡Gracias por enseñarme! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Me siento más inteligente. Si deseas completar tu cuestión con información adicional di "Añadir Imagen" o "Añadir Mapa". De lo contarrio, di "Otras Funciones" ',
-        text: '¡Completado! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas completar con más información escribe "Añadir Imagen" o "Añadir Mapa" Si deseas realizar otra operación, escribe "Otras funciones". '
+        speech: '¡Gracias por enseñarme! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Me siento más inteligente. Si deseas completar tu cuestión con información adicional di "Actualizar referencia visual" o "Actualizar referencia geográfica". De lo contrario, di "Otras Funciones" ',
+        text: '¡Completado! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas completar con más información escribe "Actualizar referencia visual" o "Actualizar referencia geográfica". Si deseas realizar otra operación, escribe "Otras funciones". '
       }));
-      this.conv.add(new Suggestion({ title: 'Añadir Imagen' }));
-      this.conv.add(new Suggestion({ title: 'Añadir Mapa' }));
-      this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+      this.conv.add(new Suggestion({ title: 'Referencia visual' }));
+      this.conv.add(new Suggestion({ title: 'Referencia geográfica' }));
       this.conv.add(new Suggestion({ title: 'Guardar otra pregunta' }));
+      this.conv.add(new Suggestion({ title: 'Otras funciones' }));
     }
   }
   async input_update_question_image(){
-    if(this.conv.intent.query=="Añadir Imagen"){
-      this.conv.add(new Simple({
-        speech: 'Te tengo: '+ this.conv.user.params.input,
-        text: 'Te tengo: '+ this.conv.user.params.input
-      }));
-    }
-    else{
-      this.conv.add(new Simple({
-        speech: 'Lista',
-        text: 'Lista'
-      }));
-    }
+    this.conv.add(new Image({
+      url: referencesURI.imageURI_Teaching,
+      alt: 'Odiseo Chatbot',
+    }))
+    this.conv.add(new Simple({
+      speech: '¡Gracias por enseñarme!',
+      text: '¡Completado! La respuesta para'
+    }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
   }
 }
 // middleware for users login 
@@ -255,7 +287,7 @@ app.middleware(async (conv) => {
         // formato incorrecto
         else{
           conv.add(new Image({
-            url: referencesURI.imageURI_Login,
+            url: referencesURI.imageURI_Error,
             alt: 'Odiseo Chatbot',
           }))
           conv.add(new Simple({
@@ -288,7 +320,7 @@ app.middleware(async (conv) => {
             // login error
             else{
               conv.add(new Image({
-                url: referencesURI.imageURI_Login,
+                url: referencesURI.imageURI_Error,
                 alt: 'Odiseo Chatbot',
               }))
               conv.add(new Simple({
@@ -331,7 +363,7 @@ app.middleware(async (conv) => {
             // formato incorrecto
             else{
               conv.add(new Image({
-                url: referencesURI.imageURI_Login,
+                url: referencesURI.imageURI_Error,
                 alt: 'Odiseo Chatbot',
               }))
               conv.add(new Simple({
@@ -361,7 +393,7 @@ app.middleware(async (conv) => {
               // formato incorrecto
               else{
                 conv.add(new Image({
-                  url: referencesURI.imageURI_Login,
+                  url: referencesURI.imageURI_Error,
                   alt: 'Odiseo Chatbot',
                 }))
                 conv.add(new Simple({
@@ -392,7 +424,7 @@ app.middleware(async (conv) => {
                 // formato incorrecto
                 else{
                   conv.add(new Image({
-                    url: referencesURI.imageURI_Login,
+                    url: referencesURI.imageURI_Error,
                     alt: 'Odiseo Chatbot',
                   }))
                   conv.add(new Simple({
