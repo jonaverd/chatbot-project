@@ -172,7 +172,7 @@ exports.checkQuestionExists = async function (inputquestion, inputuser){
     try {
    
         // query function
-        const [check] =  await LearningCollections.find({question: inputquestion, user: inputuser});
+        const check =  await LearningCollections.find({question: inputquestion, user: inputuser});
         
         console.log(check);
         if(check.length === 0){ return false; }
@@ -207,13 +207,13 @@ exports.createVoidQuestion = async function (inputquestion, inputuser){
 exports.updateAnswer = async function (inputquestion, inputanswer, inputuser){
 
     try {
-    
+        
         // update fields
-        const question =  await LearningCollections.findOneAndUpdate({question: inputquestion, user: inputuser}, {
-            answer: inputanswer
-        }, {new: true});
-
+        const question = await LearningCollections.findOne({question: inputquestion, user: inputuser});
         console.log(question);
+
+        question.answer = inputanswer;
+        question.save()
         return question;
 
     } catch (err) {

@@ -15,7 +15,7 @@ const referencesURI = require('./Assets/references.js');
 const usersAuth = require('./Users/validators.js');
 
 // Create an app instance
-const app = conversation({debug:true})
+const app = conversation()//{debug:true}
 console.log('Google Assistant Detected')
 
 // middleware for errors
@@ -120,51 +120,59 @@ class Assistant {
     this.conv.add(new Suggestion({ title: 'Otras funciones' }));
   }
   async input_new_question_request_question(){
-    const input = this.conv.intent.query;
     // Error ya existe
-    if(await backendTools.existsBackend_Question(input, this.conv.user.params.email)){
+    if(await backendTools.existsBackend_Question(this.conv.intent.query, this.conv.user.params.email)){
       this.conv.add(new Simple({
-        speech: 'Lo siento, no he podido aprender la cuestión (' + input + ') porque ya existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
-        text: '¡Esta pregunta ya la tenía guardada! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)'
+        speech: 'Lo siento, no he podido aprender la cuestión (' + this.conv.intent.query + ') porque ya existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
+        text: '¡Esta pregunta ya la tenía guardada! (' + this.conv.intent.query + ') Si deseas realizar otra consulta, escribe (Continuar)'
       }));
       this.conv.add(new Suggestion({ title: 'Continuar' }));
-      this.conv.user.params.input = '';
     }
     // Continuar
     else{ 
-      await backendTools.createBackend_Question(input, this.conv.user.params.email);
+      await backendTools.createBackend_Question(this.conv.intent.query, this.conv.user.params.email)
       // save question temporal data
-      this.conv.user.params.input = input;
+      this.conv.user.params.input = this.conv.intent.query;
       this.conv.add(new Simple({
-        speech: '¡Perfecto! Acabo de añadir esta cuestión (' + input + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
-        text: '¡Correcto! La cuestión (' + input + ') ha sido guardada. ¿Cuál es su respuesta?'
+        speech: '¡Perfecto! Acabo de añadir esta cuestión (' + this.conv.intent.query + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
+        text: '¡Correcto! La cuestión (' + this.conv.intent.query + ') ha sido guardada. ¿Cuál es su respuesta?'
       }));
     }
   }
   async input_new_question_request_answer(){
-    // get previous question temporal data
-    const previous = this.conv.user.params.input;
-    const data = this.conv.intent.query;
     // Error no existe 
-    if(!await backendTools.existsBackend_Question(previous, this.conv.user.params.email)){
+    if(!await backendTools.existsBackend_Question(this.conv.user.params.input, this.conv.user.params.email)){
       this.conv.add(new Simple({
-        speech: 'Lo siento, se ha producido un error al modificar la respuesta para la cuestion (' + previous + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
-        text: 'No se encuentra la cuestión (' + previous + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
+        speech: 'Lo siento, se ha producido un error al modificar la respuesta para la cuestion (' + this.conv.user.params.input + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
+        text: 'No se encuentra la cuestión (' + this.conv.user.params.input + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
       }));
       this.conv.add(new Suggestion({ title: 'Continuar' }));
-      this.conv.user.params.input = '';
     }
     // Continuar
     else{ 
-      await backendTools.updateBackend_Answer(previous, data, this.conv.user.params.email)
+      await backendTools.updateBackend_Answer(this.conv.user.params.input, this.conv.intent.query, this.conv.user.params.email)
       this.conv.add(new Simple({
-        speech: '¡Gracias por enseñarme! La respuesta para (' + previous + ') es (' + data + '). Me siento más inteligente. Si deseas completar tu cuestión con información adicional di "Añadir Imagen" o "Añadir Mapa". De lo contarrio, di "Otras Funciones" ',
-        text: '¡Completado! La respuesta para (' + previous + ') es (' + data + '). Si deseas realizar otra operación, escribe "Otras funciones". Puedes modificar tus cuestiones más adelante. '
+        speech: '¡Gracias por enseñarme! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Me siento más inteligente. Si deseas completar tu cuestión con información adicional di "Añadir Imagen" o "Añadir Mapa". De lo contarrio, di "Otras Funciones" ',
+        text: '¡Completado! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas completar con más información escribe "Añadir Imagen" o "Añadir Mapa" Si deseas realizar otra operación, escribe "Otras funciones". '
       }));
       this.conv.add(new Suggestion({ title: 'Añadir Imagen' }));
       this.conv.add(new Suggestion({ title: 'Añadir Mapa' }));
       this.conv.add(new Suggestion({ title: 'Otras funciones' }));
-      this.conv.user.params.input = '';
+      this.conv.add(new Suggestion({ title: 'Guardar otra pregunta' }));
+    }
+  }
+  async input_update_question_image(){
+    if(this.conv.intent.query=="Añadir Imagen"){
+      this.conv.add(new Simple({
+        speech: 'Te tengo: '+ this.conv.user.params.input,
+        text: 'Te tengo: '+ this.conv.user.params.input
+      }));
+    }
+    else{
+      this.conv.add(new Simple({
+        speech: 'Lista',
+        text: 'Lista'
+      }));
     }
   }
 }
@@ -457,6 +465,11 @@ app.handle('ConversationOperations_TeachingAssistant_InputQuestion', async conv 
 // input.new.question.request.answer
 app.handle('ConversationOperations_TeachingAssistant_InputAnswer', async conv => {
   await conv.assistant?.input_new_question_request_answer()
+})
+
+// input.update.question.image
+app.handle('ConversationOperations_TeachingAssistant_UpdateImage', async conv => {
+  await conv.assistant?.input_update_question_image()
 })
 
 module.exports = app;

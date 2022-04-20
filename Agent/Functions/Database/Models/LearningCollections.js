@@ -5,20 +5,19 @@ const LearningCollectionSchema = new Schema(
     {
         question: {
             type: String,
-            required: true,
+            default: null
         },
         answer: {
             type: String,
-            default: "null"
+            default: null
         },
         image: {
             type: String,
-            default: "null"
+            default: null
         },
         user: {
             type: String,
-            required: true,
-            unique: true
+            default: null
         }
     },
     {timestamps: true}
