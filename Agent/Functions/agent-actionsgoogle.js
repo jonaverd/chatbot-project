@@ -128,6 +128,7 @@ class Assistant {
         text: '¡Esta pregunta ya la tenía guardada! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)'
       }));
       this.conv.add(new Suggestion({ title: 'Continuar' }));
+      this.conv.user.params.input = '';
     }
     // Continuar
     else{ 
@@ -138,6 +139,32 @@ class Assistant {
         speech: '¡Perfecto! Acabo de añadir esta cuestión (' + input + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
         text: '¡Correcto! La cuestión (' + input + ') ha sido guardada. ¿Cuál es su respuesta?'
       }));
+    }
+  }
+  async input_new_question_request_answer(){
+    // get previous question temporal data
+    const previous = this.conv.user.params.input;
+    const data = this.conv.intent.query;
+    // Error no existe 
+    if(!await backendTools.existsBackend_Question(previous, this.conv.user.params.email)){
+      this.conv.add(new Simple({
+        speech: 'Lo siento, se ha producido un error al modificar la respuesta para la cuestion (' + previous + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
+        text: 'No se encuentra la cuestión (' + previous + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
+      }));
+      this.conv.add(new Suggestion({ title: 'Continuar' }));
+      this.conv.user.params.input = '';
+    }
+    // Continuar
+    else{ 
+      await backendTools.updateBackend_Answer(previous, data, this.conv.user.params.email)
+      this.conv.add(new Simple({
+        speech: '¡Gracias por enseñarme! La respuesta para (' + previous + ') es (' + data + '). Me siento más inteligente. Si deseas completar tu cuestión con información adicional di "Añadir Imagen" o "Añadir Mapa". De lo contarrio, di "Otras Funciones" ',
+        text: '¡Completado! La respuesta para (' + previous + ') es (' + data + '). Si deseas realizar otra operación, escribe "Otras funciones". Puedes modificar tus cuestiones más adelante. '
+      }));
+      this.conv.add(new Suggestion({ title: 'Añadir Imagen' }));
+      this.conv.add(new Suggestion({ title: 'Añadir Mapa' }));
+      this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+      this.conv.user.params.input = '';
     }
   }
 }
@@ -429,27 +456,7 @@ app.handle('ConversationOperations_TeachingAssistant_InputQuestion', async conv 
 
 // input.new.question.request.answer
 app.handle('ConversationOperations_TeachingAssistant_InputAnswer', async conv => {
-  // get previous question temporal data
-  const previous = conv.user.params.input;
-  const data = conv.intent.query;
-  // Error no existe 
-  if(!await backendTools.existsBackend_Question(previous)){
-    conv.add(new Simple({
-      speech: 'Lo siento, se ha producido un error al modificar la respuesta para la cuestion (' + previous + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
-      text: 'No se encuentra la cuestión (' + previous + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
-    }));
-    conv.add(new Suggestion({ title: 'Continuar' }));
-   
-  }
-  // Continuar
-  else{ 
-    await backendTools.updateBackend_Answer(previous, data)
-    conv.add(new Simple({
-      speech: '¡Gracias por enseñarme! La respuesta para (' + previous + ') es (' + data + '). Me siento más inteligente. Si deseas continuar con el proceso de aprendizaje, puedes vincular el enlace de una imagen relacionada con la cuestión ',
-      text: '¡Completado! La respuesta para (' + previous + ') es (' + data + '). '
-    }));
-    conv.add(new Suggestion({ title: 'Continuar' }));
-  }
+  await conv.assistant?.input_new_question_request_answer()
 })
 
 module.exports = app;

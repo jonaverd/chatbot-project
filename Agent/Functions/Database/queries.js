@@ -204,18 +204,13 @@ exports.createVoidQuestion = async function (inputquestion, inputuser){
     }
 }
 
-
-
-
-
-
-exports.updateAnswer = async function (userQuestion, userAnswer){
+exports.updateAnswer = async function (inputquestion, inputanswer, inputuser){
 
     try {
     
         // update fields
-        const question =  await LearningCollections.findOneAndUpdate({question: userQuestion}, {
-            answer: userAnswer
+        const question =  await LearningCollections.findOneAndUpdate({question: inputquestion, user: inputuser}, {
+            answer: inputanswer
         }, {new: true});
 
         console.log(question);

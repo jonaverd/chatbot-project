@@ -92,8 +92,8 @@ exports.createBackend_Question = async function (question, user){
 
 
 // Auxiliar - procesos de backend
-exports.updateBackend_Answer = async function(input, data){
-  const id = await apiTools.getIDIntent_Name(input);
+exports.updateBackend_Answer = async function(input, data, user){
+  const id = await apiTools.getIDIntent_Name(user+'_'+input);
   const struct = await apiTools.getIntent(id);
   // La posicion 0 de mensajes indica el card actions, las siguientes: sugerencias y card dialogflow
   struct[0].messages[0]['basicCard']['subtitle'] = data;
@@ -101,7 +101,7 @@ exports.updateBackend_Answer = async function(input, data){
   // ... en los intents
   await apiTools.updateIntent(id, struct[0]);
   // ... en la base de datos  
-  await databaseTools.updateAnswer(input, data);
+  await databaseTools.updateAnswer(input, data, user);
 }
 
 // Auxiliar - procesos de backend
