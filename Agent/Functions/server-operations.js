@@ -5,9 +5,6 @@ const apiTools = require('./api-google.js');
 // Libreria necesaria para operar Database MongoDB
 const databaseTools = require('./Database/queries.js');
 
-// Nombre de la cuestión a guardar
-exports.lastQuestion;
-
 // Auxiliar - procesos de backend
 exports.createBackend_User = async function (email){
   // ... en la base de datos  
@@ -73,37 +70,26 @@ exports.updateBackend_UserPassword = async function(password, email){
   await databaseTools.updateUserPassword(password, email)
 }
 
-// Auxiliar - actualizar la interaccion donde espera un input
-exports.updateWaitingInput_Question = function(situation, input=""){
-  // añadir la cuestion (input user) al aire - esperando la siguiente interaccion
-  if(situation=="required"){ exports.lastQuestion = input; }
-  // preguntar si existe alguna cuestion en el aire (de antes)
-  else if(situation=="progress") { 
-    if(exports.lastQuestion != ""){ return true } 
-    else { return false }
-  }
-  // borrar las cuestiones en el aire previas, para seguir con la conversacion normal
-  else { exports.lastQuestion = "";  } // Similar to situation = "exit", "free", ...
+// Auxiliar - procesos de backend
+exports.existsBackend_Question = async function (question, user){
+   // ... en los intents
+   const check1 = await apiTools.checkIntentExists(user+'_'+question);
+   // ... en la base de datos
+   const check2 = await databaseTools.checkQuestionExists(question, user);
+   // ¿Existe en alguno de los dos?
+   if(check1 == true || check2 == true){ return true; }
+   else { return false; }
 }
 
 // Auxiliar - procesos de backend
-exports.existsBackend_Question = async function (input){
+exports.createBackend_Question = async function (question, user){
   // ... en los intents
-  const check1 = await apiTools.checkIntentExists(input);
-  // ... en la base de datos
-  const check2 = await databaseTools.checkQuestionExists(input);
-  // ¿Existe en alguno de los dos?
-  if(check1 == true || check2 == true){ return true; }
-  else { return false; }
-}
-
-// Auxiliar - procesos de backend
-exports.createBackend_Question = async function (input){
-  // ... en los intents
-  await apiTools.createIntent(input);
+  await apiTools.createIntent(question, user);
   // ... en la base de datos  
-  await databaseTools.createVoidQuestion(input);
+  await databaseTools.createVoidQuestion(question, user);
 }
+
+
 
 // Auxiliar - procesos de backend
 exports.updateBackend_Answer = async function(input, data){

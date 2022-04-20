@@ -87,10 +87,10 @@ exports.checkIntentExists = async function(displayName){
 };
 
 // Metodo para crear un intent con ese nombre
-exports.createIntent = async function(displayNameParam){
+exports.createIntent = async function(displayNameParam, user){
 
   // Arguments information
-  const displayName = displayNameParam;
+  const displayName = user+'_'+displayNameParam;
   const trainingPhrasesParts = [displayNameParam];
   const quickRepliesParts = ['Continuar'];
   const suggestions = ['Continuar'];
@@ -113,7 +113,7 @@ exports.createIntent = async function(displayNameParam){
 
   // respuesta por defecto
   const element = {
-    title: displayName,
+    title: displayNameParam,
     subtitle: messageTexts,
     imageUri: image,
   };
@@ -125,7 +125,7 @@ exports.createIntent = async function(displayNameParam){
   const actions_card = {
     platform: "ACTIONS_ON_GOOGLE",
     basicCard: {
-      title: displayName,
+      title: displayNameParam,
       subtitle: messageTexts,
       formattedText: "Generado con el asistente de Google",
       image: {

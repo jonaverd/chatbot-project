@@ -56,7 +56,7 @@ class Assistant {
   input_unknown(){
     this.conv.add(new Simple({
       speech: 'Lo siento, no te entiendo. ¿Te puedo ayudar en algo? Si quieres conocer mis comandos prueba a decir: Otras funciones',
-      text: 'No puedo encontrar ninguna referencia.'
+      text: 'No puedo encontrar ninguna referencia. Escribe "Otras funciones" para ver mi lista de comandos'
     }));
     this.conv.add(new Suggestion({ title: 'Otras funciones' }));
     this.conv.add(new Suggestion({ title: 'Salir' }));
@@ -105,8 +105,40 @@ class Assistant {
     }));
     this.conv.add(new Suggestion({ title: 'Hola Odiseo' }));
     this.conv.add(new Suggestion({ title: 'Hasta luego' }));
-    this.conv.add(new Suggestion({ title: 'Muéstrame más sugerencias' }));
+    this.conv.add(new Suggestion({ title: 'Opciones' }));
     this.conv.add(new Suggestion({ title: 'Quiero enseñarte' }));
+  }
+  input_new_question(){
+    this.conv.add(new Image({
+      url: referencesURI.imageURI_Teaching,
+      alt: 'Odiseo Chatbot',
+    }))
+    this.conv.add(new Simple({
+      speech: 'De acuerdo. Acabas de activar mi asistente guiado de aprendizaje. Pronuncia de forma clara la cuestión que deseas enseñarme. Si necesitas salir del asistente: Di "Otras funciones"',
+      text: 'Dime la cuestión que deseas guardar en mi aprendizaje. Si quieres detener el asistente, escribe "Otras funciones"'
+    }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+  }
+  async input_new_question_request_question(){
+    const input = this.conv.intent.query;
+    // Error ya existe
+    if(await backendTools.existsBackend_Question(input, this.conv.user.params.email)){
+      this.conv.add(new Simple({
+        speech: 'Lo siento, no he podido aprender la cuestión (' + input + ') porque ya existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
+        text: '¡Esta pregunta ya la tenía guardada! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)'
+      }));
+      this.conv.add(new Suggestion({ title: 'Continuar' }));
+    }
+    // Continuar
+    else{ 
+      await backendTools.createBackend_Question(input, this.conv.user.params.email);
+      // save question temporal data
+      this.conv.user.params.input = input;
+      this.conv.add(new Simple({
+        speech: '¡Perfecto! Acabo de añadir esta cuestión (' + input + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
+        text: '¡Correcto! La cuestión (' + input + ') ha sido guardada. ¿Cuál es su respuesta?'
+      }));
+    }
   }
 }
 // middleware for users login 
@@ -387,48 +419,12 @@ app.handle('ConversationBasic_Options', conv => {
 
 // input.new.question
 app.handle('ConversationMain_TeachingAssistant', conv => {
-  conv.add(new Image({
-    url: referencesURI.imageURI_Teaching,
-    alt: 'Odiseo Chatbot',
-  }))
-  conv.add(new Simple({
-    speech: 'De acuerdo. Acabas de activar mi asistente guiado de aprendizaje. Pronuncia de forma clara la cuestión que deseas enseñarme. Si necesitas salir del asistente: Di "Cancelar operación"',
-    text: 'Dime la cuestión que deseas guardar en mi aprendizaje.'
-  }));
-  conv.add(new Suggestion({ title: 'Cancelar operación' }));
+  conv.assistant?.input_new_question()
 })
 
  // input.new.question.request.question
 app.handle('ConversationOperations_TeachingAssistant_InputQuestion', async conv => {
-  // Se cancela la operacion
-  const input = conv.intent.query;
-  if(input == "Cancelar operación"){
-    conv.add(new Simple({
-      speech: 'He cancelado el asistente de enseñanza. Si deseas realizar otra consulta, di "Continuar"',
-      text: 'He cancelado el asistente de enseñanza. Escribe "Continuar"'
-    }));
-    conv.add(new Suggestion({ title: 'Continuar' }));
-  }
-  // Error ya existe
-  else{
-    if(await backendTools.existsBackend_Question(input)){
-      conv.add(new Simple({
-        speech: 'Lo siento, no he podido aprender la cuestión (' + input + ') porque ya existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
-        text: '¡Esta pregunta ya la tenía guardada! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)'
-      }));
-      conv.add(new Suggestion({ title: 'Continuar' }));
-    }
-    // Continuar
-    else{ 
-      await backendTools.createBackend_Question(input);
-      // save question temporal data
-      conv.user.params.input = input;
-      conv.add(new Simple({
-        speech: '¡Perfecto! Acabo de añadir esta cuestión (' + input + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
-        text: '¡Correcto! La cuestión (' + input + ') ha sido guardada. ¿Cuál es su respuesta?'
-      }));
-    }
-  }
+  await conv.assistant?.input_new_question_request_question()
 })
 
 // input.new.question.request.answer

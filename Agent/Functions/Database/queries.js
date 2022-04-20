@@ -167,13 +167,30 @@ exports.updateUserPassword = async function (inputpassword, inputemail){
     }
 }
 
-exports.createVoidQuestion = async function (userQuestion){
+exports.checkQuestionExists = async function (inputquestion, inputuser){
+
+    try {
+   
+        // query function
+        const [check] =  await LearningCollections.find({question: inputquestion, user: inputuser});
+        
+        console.log(check);
+        if(check.length === 0){ return false; }
+        else{ return true; }
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.createVoidQuestion = async function (inputquestion, inputuser){
 
     try {
 
         // creating a new document base on the model
         const learningCollections = new LearningCollections({
-            question: userQuestion
+            question: inputquestion,
+            user: inputuser
         });
 
         // saving the created document
@@ -186,6 +203,11 @@ exports.createVoidQuestion = async function (userQuestion){
         console.log(err);
     }
 }
+
+
+
+
+
 
 exports.updateAnswer = async function (userQuestion, userAnswer){
 
@@ -250,20 +272,7 @@ exports.getQuestionData = async function (userQuestion){
     }
 }
 
-exports.checkQuestionExists = async function (userQuestion){
 
-    try {
-   
-        // query function
-        const check =  await LearningCollections.exists({question: userQuestion});
-        
-        console.log(check);
-        return check;
-
-    } catch (err) {
-        console.log(err);
-    }
-}
 
 exports.deleteQuestion = async function (userQuestion){
 

@@ -5,7 +5,7 @@ const LearningCollectionSchema = new Schema(
     {
         question: {
             type: String,
-            default: "null"
+            required: true,
         },
         answer: {
             type: String,
@@ -17,7 +17,8 @@ const LearningCollectionSchema = new Schema(
         },
         user: {
             type: String,
-            default: "null"
+            required: true,
+            unique: true
         }
     },
     {timestamps: true}
