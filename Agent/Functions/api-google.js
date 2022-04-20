@@ -95,7 +95,7 @@ exports.createIntent = async function(displayNameParam, user){
   const quickRepliesParts = ['Continuar'];
   const suggestions = ['Continuar'];
   const messageTexts = 'null';
-  const image = referencesURI.imageURI_Welcome;
+  const image = referencesURI.imageURI_Public;
 
   // frase de entrenamiento por defecto
   const trainingPhrases = [];

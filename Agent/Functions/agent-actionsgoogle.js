@@ -42,13 +42,10 @@ class Assistant {
       alt: 'Odiseo Chatbot',
     }))
     this.conv.add(new Simple({
-      speech: '¡Bienvenido! Soy Odiseo, tu agente personalizado. Estoy diseñado para aprender cualquier cuestión educativa. ¿Quieres que empecemos? ¡Aquí te dejo algunas sugerencias! Por ejemplo, puedes decirme que aprenda algo nuevo, que te muestre tus enseñanzas guardadas, que responda algo aleatorio o que te muestre mas opciones',
+      speech: '¡Bienvenido! Soy Odiseo, tu agente personalizado. Estoy diseñado para aprender cualquier cuestión educativa. ¿Quieres que empecemos? ¡Aquí te dejo algunas sugerencias!',
       text: '¡Bienvenido! Soy Odiseo, tu agente educativo. ¿Que quieres hacer?'
     }));
-    this.conv.add(new Suggestion({ title: 'Dime alguna curiosidad' }));
-    this.conv.add(new Suggestion({ title: 'Aprende algo nuevo' }));
-    this.conv.add(new Suggestion({ title: 'Cambiar una respuesta' }));
-    this.conv.add(new Suggestion({ title: 'Muéstrame más opciones' }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
     this.conv.add(new Suggestion({ title: 'Hasta luego' }));
   }
   input_exit() {
@@ -71,7 +68,7 @@ class Assistant {
       text: 'No puedo encontrar ninguna referencia. Escribe "Otras funciones" para ver mi lista de comandos'
     }));
     this.conv.add(new Suggestion({ title: 'Otras funciones' }));
-    this.conv.add(new Suggestion({ title: 'Salir' }));
+    this.conv.add(new Suggestion({ title: 'Hasta luego' }));
   }
   input_options(){
     this.conv.add(new Simple({
@@ -103,7 +100,7 @@ class Assistant {
         }]
       }, {
         "cells": [{
-          "text": "Opciones"
+          "text": "Otras funciones"
         }, {
           "text": "Muestra los comandos disponibles"
         }]
@@ -115,17 +112,15 @@ class Assistant {
         }]
       }, {
         "cells": [{
-          "text": "Referencia visual"
+          "text": "Limpiar consulta"
         }, {
-          "text": "Añade o modifica la imagen de una pregunta"
+          "text": "Elimina una pregunta almacenada"
         }]
       }]
     }));
     this.conv.add(new Suggestion({ title: 'Hola Odiseo' }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
     this.conv.add(new Suggestion({ title: 'Hasta luego' }));
-    this.conv.add(new Suggestion({ title: 'Opciones' }));
-    this.conv.add(new Suggestion({ title: 'Quiero enseñarte' }));
-    this.conv.add(new Suggestion({ title: 'Referencia visual' }));
   }
   input_new_question(){
     this.conv.add(new Image({
@@ -190,25 +185,96 @@ class Assistant {
         alt: 'Odiseo Chatbot',
       }))
       this.conv.add(new Simple({
-        speech: '¡Gracias por enseñarme! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Me siento más inteligente. Si deseas completar tu cuestión con información adicional di "Actualizar referencia visual" o "Actualizar referencia geográfica". De lo contrario, di "Otras Funciones" ',
-        text: '¡Completado! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas completar con más información escribe "Actualizar referencia visual" o "Actualizar referencia geográfica". Si deseas realizar otra operación, escribe "Otras funciones". '
+        speech: '¡Gracias por enseñarme! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas realizar otra operación, di "Otras funciones".',
+        text: '¡Completado! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas realizar otra operación, escribe "Otras funciones".'
       }));
-      this.conv.add(new Suggestion({ title: 'Referencia visual' }));
-      this.conv.add(new Suggestion({ title: 'Referencia geográfica' }));
-      this.conv.add(new Suggestion({ title: 'Guardar otra pregunta' }));
+      this.conv.add(new Suggestion({ title: 'Quiero enseñarte' }));
       this.conv.add(new Suggestion({ title: 'Otras funciones' }));
     }
   }
   async input_update_question_image(){
+    const list = await backendTools.listBackend_Question(this.conv.user.params.email);
     this.conv.add(new Image({
       url: referencesURI.imageURI_Teaching,
       alt: 'Odiseo Chatbot',
     }))
     this.conv.add(new Simple({
-      speech: '¡Gracias por enseñarme!',
-      text: '¡Completado! La respuesta para'
+      speech: 'De acuerdo. Acabas de activar el modo "modificar referencia visual". Aquí te dejo una lista de cuestiones disponibles. Pronuncia de forma clara la cuestión que deseas modificar. Si necesitas salir del asistente: Di "Otras funciones"',
+      text: 'Selecciona la cuestión para modificar la imagen. Si quieres detener el asistente, escribe "Otras funciones"'
+    }));
+    list.forEach(element => { 
+      this.conv.add(new Suggestion({ title: element.question }));
+    }); 
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+  }
+
+  async input_delete_question(){
+    const list = await backendTools.listBackend_Question(this.conv.user.params.email);
+    // Rellenar lista de intents
+    const elements = []
+    list.forEach(element => { 
+      const item = { 
+        cells: [
+          {
+            text: element.question
+          }, 
+          {
+            text: element.answer
+          }
+        ]
+      }
+      elements.push(item)
+    })
+    this.conv.add(new Simple({
+      speech: 'De acuerdo. Acabas de activar el modo "eliminar pregunta". Aquí te dejo una lista de cuestiones disponibles. Pronuncia de forma clara la cuestión que deseas modificar. Si necesitas salir del asistente: Di "Otras funciones"',
+      text: 'Selecciona la cuestión para eliminar. Si quieres detener el asistente, escribe "Otras funciones"'
+    }));
+    this.conv.add(new Table({
+      "title": "Almacén",
+      "subtitle": "Usuario: " + this.conv.user.params.name,
+      "image": new Image({
+        url: referencesURI.imageURI_Public,
+        alt: 'Odiseo Chatbot'
+      }),
+      "columns": [{
+        "header": "Pregunta"
+      }, {
+        "header": "Detalles"
+      }],
+      "rows": [elements], 
     }));
     this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+  }
+
+  async input_delete_question_confirm(){
+    // Error no existe 
+    if(!await backendTools.existsBackend_Question(this.conv.intent.query, this.conv.user.params.email)){
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Error,
+        alt: 'Odiseo Chatbot',
+      }))
+      this.conv.add(new Simple({
+        speech: 'Lo siento, se ha producido un error al modificar la cuestion (' + this.conv.intent.query + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
+        text: 'No se encuentra la cuestión (' + this.conv.intent.query + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
+      }));
+      this.conv.add(new Suggestion({ title: 'Continuar' }));
+    }
+    // Continuar
+    else{ 
+      // Solo actualiza una vez, evitar otros inputs
+      if(await backendTools.existsBackend_Question(this.conv.intent.query, this.conv.user.params.email)){
+        //await backendTools.deleteBackend_Question(this.conv.intent.query, this.conv.user.params.email)
+      }
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Teaching,
+        alt: 'Odiseo Chatbot',
+      }))
+      this.conv.add(new Simple({
+        speech: '¡Vaya! Acabo de olvidar la cuestión (' + this.conv.intent.query + '). Gracias por corregirme. Para finalizar la operación di "Continuar"',
+        text: '¡Cuestión eliminada! (' + this.conv.intent.query + '). Para finalizar la operación escribe "Continuar"'
+      }));
+      this.conv.add(new Suggestion({ title: 'Continuar' }));
+    }
   }
 }
 // middleware for users login 
@@ -505,6 +571,16 @@ app.handle('ConversationOperations_TeachingAssistant_InputAnswer', async conv =>
 // input.update.question.image
 app.handle('ConversationOperations_TeachingAssistant_UpdateImage', async conv => {
   await conv.assistant?.input_update_question_image()
+})
+
+// input.delete.question
+app.handle('ConversationOperations_TeachingAssistant_DeleteQuestion', async conv => {
+  await conv.assistant?.input_delete_question()
+})
+
+// input.delete.question.confirm
+app.handle('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', async conv => {
+  await conv.assistant?.input_delete_question_confirm()
 })
 
 module.exports = app;

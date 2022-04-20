@@ -109,8 +109,21 @@ exports.getBackend_QuestionAnswer = async function(question, user){
   return data;
 }
 
+// Auxiliar - procesos de backend
+exports.listBackend_Question = async function(user){
+  // ... solo la base de datos  
+  const list =  await databaseTools.getQuestionsList(user);
+  return list;
+}
 
-
+// Auxiliar - procesos de backend
+exports.deleteBackend_Question = async function(input, user){
+  const id = await apiTools.getIDIntent_Name(user+'_'+input);
+  // ... en los intents
+  await apiTools.deleteIntent(id)
+  // ... en la base de datos  
+  await databaseTools.deleteQuestion(input, user);
+}
 
 
 
@@ -126,18 +139,5 @@ exports.updateBackend_Photo = async function(input){
   await databaseTools.updatePhoto(exports.lastQuestion, input);
 }
 
-// Auxiliar - procesos de backend
-exports.listBackend_Question = async function(user){
-  // ... solo la base de datos  
-  const list =  await databaseTools.getQuestionsList(user);
-  return list;
-}
 
-// Auxiliar - procesos de backend
-exports.deleteBackend_Question = async function(input){
-  const id = await apiTools.getIDIntent_Name(input);
-  // ... en los intents
-  await apiTools.deleteIntent(id)
-  // ... en la base de datos  
-  await databaseTools.deleteQuestion(input);
-}
+

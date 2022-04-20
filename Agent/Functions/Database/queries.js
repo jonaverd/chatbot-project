@@ -236,6 +236,35 @@ exports.getQuestionAnswer = async function(inputquestion, inputuser){
 
 }
 
+exports.getQuestionsList = async function (inputuser){
+
+    try {
+        // search all questions
+        const list =  await LearningCollections.find({user: inputuser}).select('question').select('answer');
+
+        console.log(list);
+        return list;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+exports.deleteQuestion = async function (inputquestion, inputuser){
+
+    try {
+   
+        // query function
+        const result =  await LearningCollections.findAndDelete({question: inputquestion, user: inputuser});
+        
+        console.log(result);
+        return result;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 exports.updatePhoto = async function (userQuestion, userPhoto){
 
     try {
@@ -253,19 +282,7 @@ exports.updatePhoto = async function (userQuestion, userPhoto){
     }
 }
 
-exports.getQuestionsList = async function (){
 
-    try {
-        // search all questions
-        const list =  await LearningCollections.find().sort({question:1});
-
-        console.log(list);
-        return list;
-
-    } catch (err) {
-        console.log(err);
-    }
-}
 
 exports.getQuestionData = async function (userQuestion){
 
@@ -284,17 +301,3 @@ exports.getQuestionData = async function (userQuestion){
 
 
 
-exports.deleteQuestion = async function (userQuestion){
-
-    try {
-   
-        // query function
-        const result =  await LearningCollections.findOneAndDelete({question: userQuestion});
-        
-        console.log(result);
-        return result;
-
-    } catch (err) {
-        console.log(err);
-    }
-}
