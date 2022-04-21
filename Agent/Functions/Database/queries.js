@@ -54,21 +54,6 @@ exports.getUserName = async function (inputemail){
     }
 }
 
-exports.getUserLastName = async function (inputemail){
-
-    try {
-   
-        // query data
-        const data =  await UserCollections.findOne({email: inputemail}).select('lastname');
-
-        console.log(data);
-        return data.lastname;
-
-    } catch (err) {
-        console.log(err);
-    }
-}
-
 exports.getUserAge = async function (inputemail){
 
     try {
@@ -116,23 +101,6 @@ exports.updateUserName = async function (inputname, inputemail){
     }
 }
 
-exports.updateUserLastName = async function (inputlastname, inputemail){
-
-    try {
-    
-        // update fields
-        const data =  await UserCollections.findOneAndUpdate({email: inputemail}, {
-            lastname: inputlastname
-        }, {new: true});
-
-        console.log(data);
-        return data;
-
-    } catch (err) {
-        console.log(err);
-    }
-}
-
 exports.updateUserAge = async function (inputage, inputemail){
 
     try {
@@ -166,6 +134,14 @@ exports.updateUserPassword = async function (inputpassword, inputemail){
         console.log(err);
     }
 }
+
+
+
+
+
+
+
+
 
 exports.checkQuestionExists = async function (inputquestion, inputuser){
 
@@ -255,7 +231,7 @@ exports.deleteQuestion = async function (inputquestion, inputuser){
     try {
    
         // query function
-        const result =  await LearningCollections.findAndDelete({question: inputquestion, user: inputuser});
+        const result =  await LearningCollections.findOneAndDelete({question: inputquestion, user: inputuser});
         
         console.log(result);
         return result;

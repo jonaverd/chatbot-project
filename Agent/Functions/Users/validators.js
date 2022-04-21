@@ -7,17 +7,28 @@ exports.validatorNames = function(input){
     if(input.match(alphaExp)){ return true; } 
     else{ return false; }
 }
+
 exports.validatorNumbers = function(input) {
-    const intExp = new RegExp('^[0-9][0-9]*$');
-    if(intExp.test(input)){ return true; } 
+    const interExp = new RegExp('^[0-9][0-9]*$');
+    if(input.match(interExp)){ return true; } 
     else{ return false; }
 }
 
 // Create a schema
 exports.schema = new passwordValidator();
+
 // Should not have spaces
 exports.schema.has().not().spaces()  
-  
+// Minimum length 6
+
+exports.schema.is().min(6)   
+// Maximum length 6 
+
+exports.schema.is().max(6)   
+
+// Must have at least 6 digits  
+exports.schema.has().digits(6);   
+
 // cifrado
 const bcrypt = require('bcrypt')
 exports.gethashPassword = async function (password) {
@@ -26,6 +37,7 @@ exports.gethashPassword = async function (password) {
     console.log(hash)
     if(hash!=null) { return hash };
 }
+
 exports.comparehashPassword = async function(password, saved) { 
     const isSame = await bcrypt.compare(password, saved) // updated
     console.log(isSame, password, saved) // updated

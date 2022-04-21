@@ -11,7 +11,11 @@ const LearningCollectionSchema = new Schema(
             type: String,
             default: null
         },
-        image: {
+        visual: {
+            type: String,
+            default: null
+        },
+        location: {
             type: String,
             default: null
         },

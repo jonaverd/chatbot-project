@@ -26,13 +26,6 @@ exports.getBackend_UserName = async function(email){
 }
 
 // Auxiliar - procesos de backend
-exports.getBackend_UserLastName = async function(email){
-  // ... solo la base de datos  
-  const data =  await databaseTools.getUserLastName(email);
-  return data;
-}
-
-// Auxiliar - procesos de backend
 exports.getBackend_UserAge = async function(email){
   // ... solo la base de datos  
   const data =  await databaseTools.getUserAge(email);
@@ -50,12 +43,6 @@ exports.getBackend_UserPassword = async function(email){
 exports.updateBackend_UserName = async function(name, email){
   // ... en la base de datos  
   await databaseTools.updateUserName(name, email)
-}
-
-// Auxiliar - procesos de backend
-exports.updateBackend_UserLastName = async function(lastname, email){
-  // ... en la base de datos  
-  await databaseTools.updateUserLastName(lastname, email)
 }
 
 // Auxiliar - procesos de backend

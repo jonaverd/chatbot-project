@@ -112,7 +112,7 @@ class Assistant {
         }]
       }, {
         "cells": [{
-          "text": "Limpiar consulta"
+          "text": "Quiero limpiar consulta"
         }, {
           "text": "Elimina una pregunta almacenada"
         }]
@@ -134,80 +134,57 @@ class Assistant {
     this.conv.add(new Suggestion({ title: 'Otras funciones' }));
   }
   async input_new_question_request_question(){
+    const input = this.conv.intent.query;
     // Error ya existe
-    if(await backendTools.existsBackend_Question(this.conv.intent.query, this.conv.user.params.email)){
+    if(input && await backendTools.existsBackend_Question(input, this.conv.user.params.email)){
       this.conv.add(new Image({
         url: referencesURI.imageURI_Error,
         alt: 'Odiseo Chatbot',
       }))
       this.conv.add(new Simple({
-        speech: 'Lo siento, no he podido aprender la cuestión (' + this.conv.intent.query + ') porque ya existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
-        text: '¡Esta pregunta ya la tenía guardada! (' + this.conv.intent.query + ') Si deseas realizar otra consulta, escribe (Continuar)'
+        speech: 'Lo siento, no he podido aprender la cuestión (' + input + ') porque ya existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
+        text: '¡Esta pregunta ya la tenía guardada! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)'
       }));
       this.conv.add(new Suggestion({ title: 'Continuar' }));
     }
     // Continuar
-    else{ 
-      await backendTools.createBackend_Question(this.conv.intent.query, this.conv.user.params.email)
+    else{
+      // se guardará cuando tenga su respuesta 
+      //await backendTools.createBackend_Question(input, this.conv.user.params.email)
       // save question temporal data
-      this.conv.user.params.input = this.conv.intent.query;
+      this.conv.user.params.input = input;
       this.conv.add(new Image({
         url: referencesURI.imageURI_Teaching,
         alt: 'Odiseo Chatbot',
       }))
       this.conv.add(new Simple({
-        speech: '¡Perfecto! Acabo de añadir esta cuestión (' + this.conv.intent.query + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
-        text: '¡Correcto! La cuestión (' + this.conv.intent.query + ') ha sido guardada. ¿Cuál es su respuesta?'
+        speech: '¡Perfecto! Añadiré esta cuestión (' + input + ') a mi base de aprendizaje. A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
+        text: '¡Correcto! La cuestión se guardará como (' + input + '). ¿Cuál es su respuesta?'
       }));
     }
   }
   async input_new_question_request_answer(){
-    // Error no existe 
-    if(!await backendTools.existsBackend_Question(this.conv.user.params.input, this.conv.user.params.email)){
-      this.conv.add(new Image({
-        url: referencesURI.imageURI_Error,
-        alt: 'Odiseo Chatbot',
-      }))
-      this.conv.add(new Simple({
-        speech: 'Lo siento, se ha producido un error al modificar la respuesta para la cuestion (' + this.conv.user.params.input + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
-        text: 'No se encuentra la cuestión (' + this.conv.user.params.input + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
-      }));
-      this.conv.add(new Suggestion({ title: 'Continuar' }));
+    const input = this.conv.intent.query;
+    // Solo actualiza una vez, evitar otros inputs
+    if(this.conv.user.params.input != null){
+      // se crea pregunta + respuesta
+      await backendTools.createBackend_Question(this.conv.user.params.input, this.conv.user.params.email)
+      await backendTools.updateBackend_Answer(this.conv.user.params.input, input, this.conv.user.params.email)
+      // flag para guardar ultima pregunta (solo para mostrar)
+      this.conv.user.params.last = this.conv.user.params.input;
+      this.conv.user.params.input = null;
     }
-    // Continuar
-    else{ 
-      // Solo actualiza una vez, evitar otros inputs
-      if(!await backendTools.getBackend_QuestionAnswer(this.conv.user.params.input, this.conv.user.params.email)){
-        await backendTools.updateBackend_Answer(this.conv.user.params.input, this.conv.intent.query, this.conv.user.params.email)
-      }
-      this.conv.add(new Image({
-        url: referencesURI.imageURI_Teaching,
-        alt: 'Odiseo Chatbot',
-      }))
-      this.conv.add(new Simple({
-        speech: '¡Gracias por enseñarme! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas realizar otra operación, di "Otras funciones".',
-        text: '¡Completado! La respuesta para (' + this.conv.user.params.input + ') es (' + this.conv.intent.query + '). Si deseas realizar otra operación, escribe "Otras funciones".'
-      }));
-      this.conv.add(new Suggestion({ title: 'Quiero enseñarte' }));
-      this.conv.add(new Suggestion({ title: 'Otras funciones' }));
-    }
-  }
-  async input_update_question_image(){
-    const list = await backendTools.listBackend_Question(this.conv.user.params.email);
     this.conv.add(new Image({
       url: referencesURI.imageURI_Teaching,
       alt: 'Odiseo Chatbot',
     }))
     this.conv.add(new Simple({
-      speech: 'De acuerdo. Acabas de activar el modo "modificar referencia visual". Aquí te dejo una lista de cuestiones disponibles. Pronuncia de forma clara la cuestión que deseas modificar. Si necesitas salir del asistente: Di "Otras funciones"',
-      text: 'Selecciona la cuestión para modificar la imagen. Si quieres detener el asistente, escribe "Otras funciones"'
+      speech: '¡Gracias por enseñarme! La respuesta para (' + this.conv.user.params.last + ') es (' + input + '). Si deseas realizar otra operación, di "Otras funciones".',
+      text: '¡Completado! La respuesta para (' + this.conv.user.params.last + ') es (' + input + '). Si deseas realizar otra operación, escribe "Otras funciones".'
     }));
-    list.forEach(element => { 
-      this.conv.add(new Suggestion({ title: element.question }));
-    }); 
+    this.conv.add(new Suggestion({ title: 'Quiero enseñarte' }));
     this.conv.add(new Suggestion({ title: 'Otras funciones' }));
   }
-
   async input_delete_question(){
     const list = await backendTools.listBackend_Question(this.conv.user.params.email);
     // Rellenar lista de intents
@@ -225,12 +202,14 @@ class Assistant {
       }
       elements.push(item)
     })
+    // flag para activar modo borrado (siguiente intent)
+    this.conv.user.params.delete = true;
     this.conv.add(new Simple({
       speech: 'De acuerdo. Acabas de activar el modo "eliminar pregunta". Aquí te dejo una lista de cuestiones disponibles. Pronuncia de forma clara la cuestión que deseas modificar. Si necesitas salir del asistente: Di "Otras funciones"',
       text: 'Selecciona la cuestión para eliminar. Si quieres detener el asistente, escribe "Otras funciones"'
     }));
     this.conv.add(new Table({
-      "title": "Almacén",
+      "title": "Eliminar",
       "subtitle": "Usuario: " + this.conv.user.params.name,
       "image": new Image({
         url: referencesURI.imageURI_Public,
@@ -245,33 +224,34 @@ class Assistant {
     }));
     this.conv.add(new Suggestion({ title: 'Otras funciones' }));
   }
-
   async input_delete_question_confirm(){
+    const input = this.conv.intent.query;
     // Error no existe 
-    if(!await backendTools.existsBackend_Question(this.conv.intent.query, this.conv.user.params.email)){
+    if(input && !await backendTools.existsBackend_Question(input, this.conv.user.params.email)){
       this.conv.add(new Image({
         url: referencesURI.imageURI_Error,
         alt: 'Odiseo Chatbot',
       }))
       this.conv.add(new Simple({
-        speech: 'Lo siento, se ha producido un error al modificar la cuestion (' + this.conv.intent.query + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
-        text: 'No se encuentra la cuestión (' + this.conv.intent.query + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
+        speech: 'Lo siento, se ha producido un error al eliminar la cuestion (' + input + '). No existe o no está disponible. Si deseas realizar otra consulta, di "Continuar"',
+        text: 'No se encuentra la cuestión (' + input + ') o no está disponible. Si deseas realizar otra consulta, escribe (Continuar)'
       }));
       this.conv.add(new Suggestion({ title: 'Continuar' }));
     }
     // Continuar
     else{ 
       // Solo actualiza una vez, evitar otros inputs
-      if(await backendTools.existsBackend_Question(this.conv.intent.query, this.conv.user.params.email)){
-        //await backendTools.deleteBackend_Question(this.conv.intent.query, this.conv.user.params.email)
+      if(input && this.conv.user.params.delete){
+        await backendTools.deleteBackend_Question(input, this.conv.user.params.email)
+        this.conv.user.params.delete = false;
       }
       this.conv.add(new Image({
         url: referencesURI.imageURI_Teaching,
         alt: 'Odiseo Chatbot',
       }))
       this.conv.add(new Simple({
-        speech: '¡Vaya! Acabo de olvidar la cuestión (' + this.conv.intent.query + '). Gracias por corregirme. Para finalizar la operación di "Continuar"',
-        text: '¡Cuestión eliminada! (' + this.conv.intent.query + '). Para finalizar la operación escribe "Continuar"'
+        speech: '¡Vaya! Acabo de olvidar la cuestión (' + input + '). Gracias por corregirme. Para finalizar la operación di "Continuar"',
+        text: '¡Cuestión eliminada! (' + input + '). Para finalizar la operación escribe "Continuar"'
       }));
       this.conv.add(new Suggestion({ title: 'Continuar' }));
     }
@@ -280,18 +260,17 @@ class Assistant {
 // middleware for users login 
 app.middleware(async (conv) => {
   // Controlar entradas de los formularios
-  let input;
-  if(conv.user.params.request){ input = conv.intent.query }
-  else{ input = null }
+  let input = conv.intent.query
   // No hay sesión de email
   if(!conv.user.params.email){
     // No hay temporal activado (sigue peticion de email)
     if(!conv.user.params.temporal){
       // ¿formato válido?
-      if (input && usersAuth.validatorEmail.validate(input)){
+      if (usersAuth.validatorEmail.validate(input)){
         // No hay email registrado 
         if(!await backendTools.getBackend_User(input)){
-          await backendTools.createBackend_User(input)
+          // el email se crea mas adelante (con la contraseña)
+          //await backendTools.createBackend_User(input)
           // email temporal de comprobacion
           if(!conv.user.params.temporal){ conv.user.params.temporal = input; }
           conv.add(new Image({
@@ -299,10 +278,9 @@ app.middleware(async (conv) => {
             alt: 'Odiseo Chatbot',
           }))
           conv.add(new Simple({
-            speech: 'Gracias. Para continuar con el registro necesito crear una contraseña personal. Recuerda que tus datos serán encriptados por seguridad: ¿Puedes introducir tu contraseña?',
-            text: 'Recuerda que tus datos serán encriptados por seguridad. Para continuar (introduce tu contraseña):'
+            speech: 'Gracias. Para continuar con el registro necesito crear una contraseña personal. Recuerda que tus datos serán encriptados por seguridad: ¿Puedes introducir tu contraseña? (PIN de 6 dígitos)',
+            text: 'Recuerda que tus datos serán encriptados por seguridad. Para continuar (introduce tu contraseña) (PIN de 6 dígitos):'
           }));
-          conv.user.params.request = true;
         }
         // Hay email registrado
         else{
@@ -313,10 +291,9 @@ app.middleware(async (conv) => {
             alt: 'Odiseo Chatbot',
           }))
           conv.add(new Simple({
-            speech: 'Email verificado: ' + conv.user.params.temporal + '. Introduce la contraseña para recuperar tus datos de usuario',
-            text: 'Email verificado (' + conv.user.params.temporal + ') Introduce tu contraseña para acceder a tu cuenta:'
+            speech: 'Email verificado: ' + conv.user.params.temporal + '. Introduce la contraseña para recuperar tus datos de usuario (PIN de 6 dígitos)',
+            text: 'Email verificado (' + conv.user.params.temporal + ') Introduce tu contraseña para acceder a tu cuenta (PIN de 6 dígitos):'
           }));
-          conv.user.params.request = true;
         }
       }
       // formato incorrecto (entrada normal)
@@ -329,26 +306,26 @@ app.middleware(async (conv) => {
           speech: 'Hola. Bienvenido al asistente de voz de Odiseo. Para continuar necesito tu identificación. ¿Puedes introducir tu correo electrónico?',
           text: 'Bienvenido al asistente educativo Odiseo. Para continuar necesitas identificarte (introduce tu email)'
         }));
-        conv.user.params.request = true;
       }
     }
     // Temporal activado
     else{
       // No hay contraseña registrada
-      if (!await backendTools.getBackend_UserPassword(conv.user.params.temporal)){
+      if (input && await backendTools.getBackend_UserPassword(conv.user.params.temporal)==null){
         // ¿formato válido?
-        if(input && usersAuth.schema.validate(input)){
+        if(usersAuth.schema.validate(input)){
+          // se crea el email y la contraseña
+          await backendTools.createBackend_User(conv.user.params.temporal)
           await backendTools.updateBackend_UserPassword(await usersAuth.gethashPassword(input), conv.user.params.temporal)
           conv.add(new Image({
             url: referencesURI.imageURI_Login,
             alt: 'Odiseo Chatbot',
           }))
           conv.add(new Simple({
-            speech: 'Correcto. Para completar el registro de tu usuario necesito algunos datos adicionales. Recuerda que tus datos mantendrán su privacidad y no serán compartidos. ¿Puedes introducir tu nombre',
-            text: 'Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para continuar el registro (introduce tu nombre)'
-          }));
-          conv.user.params.request = true;  
-          conv.user.params.password = await backendTools.getBackend_UserPassword(conv.user.params.temporal);
+            speech: 'Correcto. Para completar el registro de tu usuario necesito algunos datos adicionales. Recuerda que tus datos mantendrán su privacidad y no serán compartidos. ¿Puedes introducir tu nombre y apellidos?',
+            text: 'Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para continuar el registro (introduce tu nombre y apellidos)'
+          }));  
+          conv.user.params.password = true;
         }
         // formato incorrecto
         else{
@@ -357,10 +334,9 @@ app.middleware(async (conv) => {
             alt: 'Odiseo Chatbot',
           }))
           conv.add(new Simple({
-            speech: 'No se puede completar el registro. Por favor, introduce tu contraseña con un formato válido',
-            text: 'Error en el registro. Introduce una contraseña válida:'
+            speech: 'No se puede completar el registro. Por favor, introduce tu contraseña con un formato válido (PIN de 6 dígitos)',
+            text: 'Error en el registro. Introduce una contraseña válida (PIN de 6 dígitos):'
           }));
-          conv.user.params.request = true;
         }   
       }
       // Hay contraseña registrada
@@ -368,9 +344,9 @@ app.middleware(async (conv) => {
         // No hay sesión de contraseña (¿Login?)
         if(!conv.user.params.password){
           // ¿formato válido?
-          if(input && usersAuth.schema.validate(input)){
+          if(usersAuth.schema.validate(input)){
             // login válido
-            if(await usersAuth.comparehashPassword(input, await backendTools.getBackend_UserPassword(conv.user.params.temporal))){
+            if(input && await usersAuth.comparehashPassword(input, await backendTools.getBackend_UserPassword(conv.user.params.temporal))){
               conv.add(new Image({
                 url: referencesURI.imageURI_Login,
                 alt: 'Odiseo Chatbot',
@@ -379,9 +355,8 @@ app.middleware(async (conv) => {
                 speech: 'Contraseña verificada. Identificado como: ' + conv.user.params.temporal + '. Para completar el acceso a tu cuenta, di "Iniciar Sesión',
                 text: 'Contraseña verificada. Identificado como: ' + conv.user.params.temporal + '. Para acceder a tu cuenta, escribe "Iniciar Sesión"'
               }));
-              conv.add(new Suggestion({ title: 'Iniciar Sesión' }));
-              conv.user.params.request = false;  
-              conv.user.params.password = await backendTools.getBackend_UserPassword(conv.user.params.temporal);
+              conv.add(new Suggestion({ title: 'Iniciar Sesión' })); 
+              conv.user.params.password = true;
             }
             // login error
             else{
@@ -390,10 +365,9 @@ app.middleware(async (conv) => {
                 alt: 'Odiseo Chatbot',
               }))
               conv.add(new Simple({
-                speech: 'La contraseña introducida no es correcta. Por favor, ingresa tu contraseña para iniciar sesión con este usuario (' + conv.user.params.temporal + '):',
-                text: 'La contraseña no es correcta. Introduce la contraseña asociada a este usuario (' + conv.user.params.temporal + '):'
+                speech: 'La contraseña introducida no es correcta. Por favor, ingresa tu contraseña para iniciar sesión con este usuario (' + conv.user.params.temporal + ') (PIN de 6 dígitos):',
+                text: 'La contraseña no es correcta. Introduce la contraseña asociada a este usuario (' + conv.user.params.temporal + ') (PIN de 6 dígitos):'
               }));
-              conv.user.params.request = true;
             }
           }
           // formato incorrecto (entrada normal)
@@ -403,28 +377,26 @@ app.middleware(async (conv) => {
               alt: 'Odiseo Chatbot',
             }))
             conv.add(new Simple({
-              speech: 'Email verificado: ' + conv.user.params.temporal + '. Introduce la contraseña para recuperar tus datos de usuario',
-              text: 'Email verificado (' + conv.user.params.temporal + ') Introduce tu contraseña para iniciar sesión:'
+              speech: 'Email verificado: ' + conv.user.params.temporal + '. Introduce la contraseña para recuperar tus datos de usuario (PIN de 6 dígitos)',
+              text: 'Email verificado (' + conv.user.params.temporal + ') Introduce tu contraseña para iniciar sesión (PIN de 6 dígitos):'
             }));
-            conv.user.params.request = true;
           }
         }
         // Hay sesión de contraseña
         else{
           // No hay nombre registrado
-          if(!await backendTools.getBackend_UserName(conv.user.params.temporal)) {
+          if(input && await backendTools.getBackend_UserName(conv.user.params.temporal)==null) {
             // ¿formato válido?
-            if(input && usersAuth.validatorNames(input)){
+            if(usersAuth.validatorNames(input)){
               await backendTools.updateBackend_UserName(input, conv.user.params.temporal)
               conv.add(new Image({
                 url: referencesURI.imageURI_Login,
                 alt: 'Odiseo Chatbot',
               }))
               conv.add(new Simple({
-                speech: 'Perfecto. Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para el siguiente proceso: ¿Puedes introducir tus apellidos?',
-                text: 'Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para continuar (introduce tus apellidos):'
+                speech: 'Perfecto. Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para el siguiente proceso: ¿Puedes introducir tu edad?',
+                text: 'Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para continuar (introduce tu edad):'
               }));
-              conv.user.params.request = true;
             }
             // formato incorrecto
             else{
@@ -433,28 +405,27 @@ app.middleware(async (conv) => {
                 alt: 'Odiseo Chatbot',
               }))
               conv.add(new Simple({
-                speech: 'No se puede completar el registro. Por favor, introduce tu nombre con un formato válido',
-                text: 'Error en el registro. Introduce un nombre válido:'
+                speech: 'No se puede completar el registro. Por favor, introduce tu nombre y apellidos con un formato válido',
+                text: 'Error en el registro. Introduce un nombre y apellidos válidos:'
               }));
-              conv.user.params.request = true;
             }
           }
           // Hay nombre registrado
           else{
-            // No hay apellidos registrados
-            if (!await backendTools.getBackend_UserLastName(conv.user.params.temporal)){
+            // No hay edad registrada
+            if (input && await backendTools.getBackend_UserAge(conv.user.params.temporal)==null){
               // ¿formato válido?
-              if(input && usersAuth.validatorNames(input)){
-                await backendTools.updateBackend_UserLastName(input, conv.user.params.temporal)
+              if(usersAuth.validatorNumbers(input)){
+                await backendTools.updateBackend_UserAge(input, conv.user.params.temporal)
                 conv.add(new Image({
                   url: referencesURI.imageURI_Login,
                   alt: 'Odiseo Chatbot',
                 }))
                 conv.add(new Simple({
-                  speech: 'Correcto. Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para el último dato: ¿Puedes introducir tu edad?',
-                  text: 'Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para continuar (introduce tu edad):'
+                  speech: '¡Registro completado! Usuario: ' + conv.user.params.temporal + '. Gracias por tu paciencia. La próxima vez que te identifiques podré reconocerte. Para completar el acceso a tu cuenta, di "Iniciar Sesión"',
+                  text: '¡Completado! Usuario: ' + conv.user.params.temporal + '. Para acceder a tu cuenta, escribe "Iniciar Sesión"'
                 }));
-                conv.user.params.request = true;
+                conv.add(new Suggestion({ title: 'Iniciar Sesión' }));
               }
               // formato incorrecto
               else{
@@ -463,62 +434,26 @@ app.middleware(async (conv) => {
                   alt: 'Odiseo Chatbot',
                 }))
                 conv.add(new Simple({
-                  speech: 'No se puede completar el registro. Por favor, introduce tus apellidos con un formato válido',
-                  text: 'Error en el registro. Introduce unos apellidos válidos:'
+                  speech: 'No se puede completar el registro. Por favor, introduce tu edad con un formato válido (numérico)',
+                  text: 'Error en el registro. Introduce una edad válida (numérico):'
                 }));
-                conv.user.params.request = true;
-              }  
+              }   
             }
-            // Hay apellidos registrados
+            // Hay edad registrada
             else{
-              // No hay edad registrada
-              if (!await backendTools.getBackend_UserAge(conv.user.params.temporal)){
-                // ¿formato válido?
-                if(input && usersAuth.validatorNumbers(input)){
-                  await backendTools.updateBackend_UserAge(input, conv.user.params.temporal)
-                  conv.add(new Image({
-                    url: referencesURI.imageURI_Login,
-                    alt: 'Odiseo Chatbot',
-                  }))
-                  conv.add(new Simple({
-                    speech: '¡Registro completado! Usuario: ' + conv.user.params.temporal + '. Gracias por tu paciencia. La próxima vez que te identifiques podré reconocerte. Para completar el acceso a tu cuenta, di "Iniciar Sesión"',
-                    text: '¡Completado! Usuario: ' + conv.user.params.temporal + '. Para acceder a tu cuenta, escribe "Iniciar Sesión"'
-                  }));
-                  conv.add(new Suggestion({ title: 'Iniciar Sesión' }));
-                  conv.user.params.request = true;
-                }
-                // formato incorrecto
-                else{
-                  conv.add(new Image({
-                    url: referencesURI.imageURI_Error,
-                    alt: 'Odiseo Chatbot',
-                  }))
-                  conv.add(new Simple({
-                    speech: 'No se puede completar el registro. Por favor, introduce tu edad con un formato válido',
-                    text: 'Error en el registro. Introduce una edad válida:'
-                  }));
-                  conv.user.params.request = true;
-                }   
-              }
-              // Hay edad registrada
-              else{
-                // Hay contraseña registrada (todos los campos disponibles)
-                conv.user.params.email = conv.user.params.temporal;
-                conv.user.params.name = await backendTools.getBackend_UserName(conv.user.params.email)
-                conv.user.params.lastname = await backendTools.getBackend_UserLastName(conv.user.params.email)
-                conv.user.params.age = await backendTools.getBackend_UserAge(conv.user.params.email)
-                conv.user.params.password = await backendTools.getBackend_UserPassword(conv.user.params.email)
-                conv.add(new Image({
-                  url: referencesURI.imageURI_Login,
-                  alt: 'Odiseo Chatbot',
-                }))
-                conv.add(new Simple({
-                  speech: 'Bienvenido de nuevo: ' + conv.user.params.name + ' ' + conv.user.params.lastname + '. Me alegra verte de nuevo. Si quieres comenzar prueba a decir "Hola Odiseo"',
-                  text: 'Bienvenido de nuevo: ' + conv.user.params.name + ' ' + conv.user.params.lastname + '. Para iniciar el asistente di "Hola Odiseo"'
-                }));
-                conv.add(new Suggestion({ title: 'Hola Odiseo' }));
-                conv.user.params.request = false;
-              }
+              // Hay contraseña registrada (todos los campos disponibles)
+              conv.user.params.email = conv.user.params.temporal;
+              conv.user.params.name = await backendTools.getBackend_UserName(conv.user.params.email)
+              conv.user.params.age = await backendTools.getBackend_UserAge(conv.user.params.email)
+              conv.add(new Image({
+                url: referencesURI.imageURI_Login,
+                alt: 'Odiseo Chatbot',
+              }))
+              conv.add(new Simple({
+                speech: 'Bienvenido de nuevo: ' + conv.user.params.name + '. Me alegra verte de nuevo. Si quieres comenzar prueba a decir "Hola Odiseo"',
+                text: 'Bienvenido de nuevo: ' + conv.user.params.name + '. Para iniciar el asistente di "Hola Odiseo"'
+              }));
+              conv.add(new Suggestion({ title: 'Hola Odiseo' }));
             }
           }
         }
@@ -566,11 +501,6 @@ app.handle('ConversationOperations_TeachingAssistant_InputQuestion', async conv 
 // input.new.question.request.answer
 app.handle('ConversationOperations_TeachingAssistant_InputAnswer', async conv => {
   await conv.assistant?.input_new_question_request_answer()
-})
-
-// input.update.question.image
-app.handle('ConversationOperations_TeachingAssistant_UpdateImage', async conv => {
-  await conv.assistant?.input_update_question_image()
 })
 
 // input.delete.question
