@@ -1,0 +1,29 @@
+- el tipo "any" cambiarlo por "cualquier expresion"
+
+- guardar cada frase de entrada y cada escena de intents para que el asistente lo coja bien
+
+- poner la ip del webhook
+
+- reiniciar el server de vez en cuando
+
+- es poisble que alguna vez falle con el emulador:
+	- porque es una accion con Google Assistant físico
+	- errores inesperados por el cuelgue del server o cosa del asistente 
+
+- intentar guardar preguntas de tamaño estandar y si ser muy confusas con las palabras del sistema
+
+- la mayoria de cosas suele ir bien, incluyendo sus mensajes de validacion
+
+- respetar las validaciones del usuario:
+	- correo con @.com
+	- contraseña pin de 6 cifras
+	- nombre sin numeros ni simbolos raros
+	- edad dos digitos
+
+- se pueden guardar preguntas con el mismo titulo pero diferente usuario
+
+- en la ventana de login:
+	si existe el correo logea
+	si no existe, registra
+
+- se interceptan los intents de aprendizaje, en cualquier momento (salvo que lo hace cogiendo de la base de datos la primera coincidencia)
