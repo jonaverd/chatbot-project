@@ -5,7 +5,8 @@ const {
   Image,
   Suggestion,
   Simple,
-  Table
+  Table,
+  Card
 } = require('@assistant/conversation')
 
 // archivo con las funciones para trabajar con el backend
@@ -691,8 +692,29 @@ app.middleware(async (conv) => {
   }
   // Hay sesión de email
   else{
-    // Existe usuario en la sesión
-    conv.assistant = new Assistant(conv);
+    // Enlaza con un intent-cuestión: se responde
+    if(await backendTools.existsBackend_Question(input, conv.user.params.email)){
+      const data = await backendTools.getBackend_Question(input);
+      conv.add(new Simple({
+        speech: data.answer,
+        text: '¡Aquí tienes tu respuesta!'
+      }));
+      conv.add(new Card({
+        "title": data.question,
+        "subtitle": 'Profesor: ' + data.user,
+        "text": data.answer,
+        "image": new Image({
+          url: data.visual,
+          alt: data.question
+        })
+      }));
+      conv.add(new Suggestion({ title: 'Continuar' }));
+    }
+    // Intents del sistema: se actúa
+    else{
+      // Existe usuario en la sesión
+      conv.assistant = new Assistant(conv);
+    }
   }
 });
 

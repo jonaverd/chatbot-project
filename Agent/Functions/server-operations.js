@@ -118,5 +118,11 @@ exports.updateBackend_Image = async function(input, data, user){
   await databaseTools.updateImage(input, data, user);
 }
 
+// Auxiliar - procesos de backend
+exports.getBackend_Question = async function(input){
+  // ... solo la base de datos  
+  const data =  await databaseTools.getQuestion(input)
+  return data;
+}
 
 

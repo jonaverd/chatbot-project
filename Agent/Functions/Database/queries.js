@@ -234,6 +234,20 @@ exports.updateImage = async function (inputquestion, inputimage, inputuser){
         console.log(err);
     }
 }
+exports.getQuestion = async function (inputquestion){
+
+    try {
+   
+        // query data
+        const data =  await LearningCollections.findOne({question: inputquestion}).select('question').select('answer').select('visual').select('user');
+
+        console.log(data);
+        return data;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 
 
