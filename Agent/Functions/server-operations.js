@@ -125,4 +125,10 @@ exports.getBackend_Question = async function(input){
   return data;
 }
 
+// Auxiliar - procesos de backend
+exports.listBackend_QuestionAll = async function(){
+  // ... solo la base de datos  
+  const list =  await databaseTools.getQuestionsListAll();
+  return list;
+}
 

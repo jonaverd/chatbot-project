@@ -194,7 +194,7 @@ exports.getQuestionsList = async function (inputuser){
 
     try {
         // search all questions
-        const list =  await LearningCollections.find({user: inputuser}).select('question').select('answer');
+        const list =  await LearningCollections.find({user: inputuser}).select('question').select('answer').select('visual').select('user');
 
         console.log(list);
         return list;
@@ -234,6 +234,7 @@ exports.updateImage = async function (inputquestion, inputimage, inputuser){
         console.log(err);
     }
 }
+
 exports.getQuestion = async function (inputquestion){
 
     try {
@@ -249,6 +250,19 @@ exports.getQuestion = async function (inputquestion){
     }
 }
 
+exports.getQuestionsListAll = async function (){
+
+    try {
+        // search all questions
+        const list =  await LearningCollections.find().select('question');
+
+        console.log(list);
+        return list;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 
 

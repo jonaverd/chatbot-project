@@ -27,3 +27,5 @@
 	si no existe, registra
 
 - se interceptan los intents de aprendizaje, en cualquier momento (salvo que lo hace cogiendo de la base de datos la primera coincidencia)
+
+- darle tiempo entre petición y petición, o se puede petar

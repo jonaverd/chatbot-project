@@ -125,9 +125,9 @@ class Assistant {
         }]
       }, {
         "cells": [{
-          "text": "Quiero actualizar imagen"
+          "text": "Quiero añadir visual"
         }, {
-          "text": "Actualiza el visual de una pregunta almacenada"
+          "text": "Actualiza la imagen de una pregunta almacenada"
         }]
       }, {
         "cells": [{
@@ -135,13 +135,26 @@ class Assistant {
         }, {
           "text": "Muestra todas las cuestiones creadas por el usuario"
         }]
+      }, {
+        "cells": [{
+          "text": "Quiero aprender <pregunta>"
+        }, {
+          "text": "El agente busca una respuesta (en su base de conocimiento) para ayudar al usuario"
+        }]
+      }, {
+        "cells": [{
+          "text": "Dime alguna curiosidad"
+        }, {
+          "text": "El agente busca una pregunta al azar para responder al usuario"
+        }]
       }]
     }));
-    this.conv.add(new Suggestion({ title: 'Enseñar' }));
+    this.conv.add(new Suggestion({ title: 'Quiero enseñar' }));
     this.conv.add(new Suggestion({ title: 'Limpiar consulta' }));
     this.conv.add(new Suggestion({ title: 'Actualizar respuesta' }));
-    this.conv.add(new Suggestion({ title: 'Actualizar imagen' }));
+    this.conv.add(new Suggestion({ title: 'Añadir visual' }));
     this.conv.add(new Suggestion({ title: 'Ver mi lista' }));
+    this.conv.add(new Suggestion({ title: 'Dime curiosidad' }));
   }
   input_new_question(){
     this.conv.add(new Image({
@@ -215,9 +228,6 @@ class Assistant {
         cells: [
           {
             text: element.question
-          }, 
-          {
-            text: element.answer
           }
         ]
       }
@@ -238,8 +248,6 @@ class Assistant {
       }),
       "columns": [{
         "header": "Pregunta"
-      }, {
-        "header": "Detalles"
       }],
       "rows": [elements], 
     }));
@@ -286,9 +294,6 @@ class Assistant {
         cells: [
           {
             text: element.question
-          }, 
-          {
-            text: element.answer
           }
         ]
       }
@@ -307,8 +312,6 @@ class Assistant {
       }),
       "columns": [{
         "header": "Pregunta"
-      }, {
-        "header": "Detalles"
       }],
       "rows": [elements], 
     }));
@@ -372,9 +375,6 @@ class Assistant {
         cells: [
           {
             text: element.question
-          }, 
-          {
-            text: element.answer
           }
         ]
       }
@@ -393,8 +393,6 @@ class Assistant {
       }),
       "columns": [{
         "header": "Pregunta"
-      }, {
-        "header": "Detalles"
       }],
       "rows": [elements], 
     }));
@@ -453,7 +451,10 @@ class Assistant {
     const list = await backendTools.listBackend_Question(this.conv.user.params.email);
     // Rellenar lista de intents
     const elements = []
+    var visual = "";
     list.forEach(element => { 
+      if(element.visual == referencesURI.imageURI_Public){ visual = "Default" }
+      else{ visual = "Custom" }
       const item = { 
         cells: [
           {
@@ -461,6 +462,9 @@ class Assistant {
           }, 
           {
             text: element.answer
+          },
+          {
+            text: visual
           }
         ]
       }
@@ -481,10 +485,48 @@ class Assistant {
         "header": "Pregunta"
       }, {
         "header": "Detalles"
+      }, {
+        "header": "Visual"
       }],
       "rows": [elements], 
     }));
     this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+  }
+  async input_random_question(){
+    // Enlaza con un intent-cuestión random
+    const list = await backendTools.listBackend_QuestionAll();
+    // La lista está vacía
+    if(list.length===0){
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Error,
+        alt: 'Odiseo Chatbot',
+      }))
+      this.conv.add(new Simple({
+        speech: 'Lo siento, no existen cuestiones en mi base de conocimiento aún. Si quieres enseñarme alguna di "Quiero enseñarte". Si quieres ver mis otros comandos di "Continuar"',
+        text: 'Mi base de conocimiento está vacía. Si quieres añadir alguna cuestión escribe "Quiero enseñarte" o "Continuar" para ver mi lista de comandos'
+      }));
+      this.conv.add(new Suggestion({ title: 'Quiero enseñarte' }));
+    }
+    // La lista no está vacía
+    else{
+      const index = Math.floor(Math.random() * (Math.floor(list.length) - Math.ceil(0) + 1)) + Math.ceil(0);;
+      const question = list[index].question
+      const data = await backendTools.getBackend_Question(question);
+      this.conv.add(new Simple({
+        speech: '¿Sabías qué? La respuesta para ' + data.question + ' es ' + data.answer,
+        text: '¿Sabías qué?...'
+      }));
+      this.conv.add(new Card({
+        "title": data.question,
+        "subtitle": 'Profesor: ' + data.user,
+        "text": data.answer,
+        "image": new Image({
+          url: data.visual,
+          alt: data.question
+        })
+      }));
+    }
+    this.conv.add(new Suggestion({ title: 'Continuar' }));
   }
 }
 // middleware for users login 
@@ -692,23 +734,33 @@ app.middleware(async (conv) => {
   }
   // Hay sesión de email
   else{
-    // Enlaza con un intent-cuestión: se responde
-    if(await backendTools.existsBackend_Question(input, conv.user.params.email)){
-      const data = await backendTools.getBackend_Question(input);
-      conv.add(new Simple({
-        speech: data.answer,
-        text: '¡Aquí tienes tu respuesta!'
-      }));
-      conv.add(new Card({
-        "title": data.question,
-        "subtitle": 'Profesor: ' + data.user,
-        "text": data.answer,
-        "image": new Image({
-          url: data.visual,
-          alt: data.question
-        })
-      }));
-      conv.add(new Suggestion({ title: 'Continuar' }));
+    // Contiene la orden "Responde"
+    if(input.includes("Responde")){
+      var substring = input.split("Responde ")
+      var question = substring[1].toString();
+      // Enlaza con un intent-cuestión: se responde
+      if(await backendTools.existsBackend_Question(question, conv.user.params.email)){
+        const data = await backendTools.getBackend_Question(question);
+        conv.add(new Simple({
+          speech: data.answer,
+          text: '¡Aquí tienes tu respuesta!'
+        }));
+        conv.add(new Card({
+          "title": data.question,
+          "subtitle": 'Profesor: ' + data.user,
+          "text": data.answer,
+          "image": new Image({
+            url: data.visual,
+            alt: data.question
+          })
+        }));
+        conv.add(new Suggestion({ title: 'Continuar' }));
+      }
+      // No enlaza con ningun intent-cuestión
+      else{
+        // Existe usuario en la sesión
+        conv.assistant = new Assistant(conv);
+      }
     }
     // Intents del sistema: se actúa
     else{
@@ -797,6 +849,11 @@ app.handle('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', as
 // input.list.question
 app.handle('ConversationOperations_TeachingAssistant_List', async conv => {
   await conv.assistant?.input_list_question()
+})
+
+// input.random.question
+app.handle('ConversationOperations_TeachingAssistant_RandomQuestion', async conv => {
+  await conv.assistant?.input_random_question()
 })
 
 module.exports = app;
