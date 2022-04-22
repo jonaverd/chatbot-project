@@ -538,7 +538,7 @@ app.middleware(async (conv) => {
     // No hay temporal activado (sigue peticion de email)
     if(!conv.user.params.temporal){
       // ¿formato válido?
-      if (usersAuth.validatorEmail.validate(input)){
+      if (input=="usuario" || usersAuth.validatorEmail.validate(input)){
         // No hay email registrado 
         if(!await backendTools.getBackend_User(input)){
           // el email se crea mas adelante (con la contraseña)
@@ -734,9 +734,36 @@ app.middleware(async (conv) => {
   }
   // Hay sesión de email
   else{
-    // Contiene la orden "Responde"
-    if(input.includes("Responde")){
-      var substring = input.split("Responde ")
+    // Contiene la orden "R(r)esponde"
+    if(input.includes("quiero aprender")){
+      var substring = input.split("quiero aprender ")
+      var question = substring[1].toString();
+      // Enlaza con un intent-cuestión: se responde
+      if(await backendTools.existsBackend_Question(question, conv.user.params.email)){
+        const data = await backendTools.getBackend_Question(question);
+        conv.add(new Simple({
+          speech: data.answer,
+          text: '¡Aquí tienes tu respuesta!'
+        }));
+        conv.add(new Card({
+          "title": data.question,
+          "subtitle": 'Profesor: ' + data.user,
+          "text": data.answer,
+          "image": new Image({
+            url: data.visual,
+            alt: data.question
+          })
+        }));
+        conv.add(new Suggestion({ title: 'Continuar' }));
+      }
+      // No enlaza con ningun intent-cuestión
+      else{
+        // Existe usuario en la sesión
+        conv.assistant = new Assistant(conv);
+      }
+    }
+    else if(input.includes("Quiero aprender")){
+      var substring = input.split("Quiero aprender ")
       var question = substring[1].toString();
       // Enlaza con un intent-cuestión: se responde
       if(await backendTools.existsBackend_Question(question, conv.user.params.email)){
