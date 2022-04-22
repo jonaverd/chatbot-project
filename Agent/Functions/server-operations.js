@@ -90,13 +90,6 @@ exports.updateBackend_Answer = async function(input, data, user){
 }
 
 // Auxiliar - procesos de backend
-exports.getBackend_QuestionAnswer = async function(question, user){
-  // ... solo la base de datos  
-  const data =  await databaseTools.getQuestionAnswer(question, user)
-  return data;
-}
-
-// Auxiliar - procesos de backend
 exports.listBackend_Question = async function(user){
   // ... solo la base de datos  
   const list =  await databaseTools.getQuestionsList(user);
@@ -112,18 +105,17 @@ exports.deleteBackend_Question = async function(input, user){
   await databaseTools.deleteQuestion(input, user);
 }
 
-
-
 // Auxiliar - procesos de backend
-exports.updateBackend_Photo = async function(input){
-  const id = await apiTools.getIDIntent_Name(exports.lastQuestion);
+exports.updateBackend_Image = async function(input, data, user){
+  const id = await apiTools.getIDIntent_Name(user+'_'+input);
   const struct = await apiTools.getIntent(id);
-  // La posicion 0 de mensajes indica el text, las siguientes: imagen y sugerencias
-  struct[0].messages[0]['card']['imageUri'] = input;
+  // La posicion 0 de mensajes indica el card actions, las siguientes: sugerencias y card dialogflow
+  struct[0].messages[0]['basicCard']['image']['imageUri'] = data;
+  struct[0].messages[2]['card']['imageUri'] = data;
   // ... en los intents
   await apiTools.updateIntent(id, struct[0]);
   // ... en la base de datos  
-  await databaseTools.updatePhoto(exports.lastQuestion, input);
+  await databaseTools.updateImage(input, data, user);
 }
 
 

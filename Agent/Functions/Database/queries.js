@@ -3,6 +3,7 @@ require('./connection.js');
 // using the model 
 const LearningCollections = require('./Models/LearningCollections.js');
 const UserCollections = require('./Models/UserCollections.js');
+const referencesURI = require('../Assets/references.js');
 
 exports.createUser = async function (inputemail){
 
@@ -135,14 +136,6 @@ exports.updateUserPassword = async function (inputpassword, inputemail){
     }
 }
 
-
-
-
-
-
-
-
-
 exports.checkQuestionExists = async function (inputquestion, inputuser){
 
     try {
@@ -166,7 +159,8 @@ exports.createVoidQuestion = async function (inputquestion, inputuser){
         // creating a new document base on the model
         const learningCollections = new LearningCollections({
             question: inputquestion,
-            user: inputuser
+            user: inputuser,
+            visual: referencesURI.imageURI_Public
         });
 
         // saving the created document
@@ -194,22 +188,6 @@ exports.updateAnswer = async function (inputquestion, inputanswer, inputuser){
     } catch (err) {
         console.log(err);
     }
-}
-
-exports.getQuestionAnswer = async function(inputquestion, inputuser){
-
-    try {
-   
-        // query data
-        const data =  await LearningCollections.findOne({question: inputquestion, user: inputuser}).select('answer');
-
-        console.log(data);
-        return data.answer;
-
-    } catch (err) {
-        console.log(err);
-    }
-
 }
 
 exports.getQuestionsList = async function (inputuser){
@@ -241,15 +219,14 @@ exports.deleteQuestion = async function (inputquestion, inputuser){
     }
 }
 
-exports.updatePhoto = async function (userQuestion, userPhoto){
+exports.updateImage = async function (inputquestion, inputimage, inputuser){
 
     try {
-    
+        
         // update fields
-        const question =  await LearningCollections.findOneAndUpdate({question: userQuestion}, {
-            image: userPhoto
+        const question =  await LearningCollections.findOneAndUpdate({question: inputquestion, user: inputuser}, {
+            visual: inputimage
         }, {new: true});
-
         console.log(question);
         return question;
 
@@ -258,22 +235,6 @@ exports.updatePhoto = async function (userQuestion, userPhoto){
     }
 }
 
-
-
-exports.getQuestionData = async function (userQuestion){
-
-    try {
-   
-        // query data
-        const question =  await LearningCollections.findOne({question: userQuestion});
-
-        console.log(question);
-        return question;
-
-    } catch (err) {
-        console.log(err);
-    }
-}
 
 
 

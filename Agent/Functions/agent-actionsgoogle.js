@@ -116,11 +116,31 @@ class Assistant {
         }, {
           "text": "Elimina una pregunta almacenada"
         }]
+      }, {
+        "cells": [{
+          "text": "Quiero actualizar respuesta"
+        }, {
+          "text": "Actualiza la respuesta de una pregunta almacenada"
+        }]
+      }, {
+        "cells": [{
+          "text": "Quiero actualizar imagen"
+        }, {
+          "text": "Actualiza el visual de una pregunta almacenada"
+        }]
+      }, {
+        "cells": [{
+          "text": "Quiero ver mi lista"
+        }, {
+          "text": "Muestra todas las cuestiones creadas por el usuario"
+        }]
       }]
     }));
-    this.conv.add(new Suggestion({ title: 'Hola Odiseo' }));
-    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
-    this.conv.add(new Suggestion({ title: 'Hasta luego' }));
+    this.conv.add(new Suggestion({ title: 'Enseñar' }));
+    this.conv.add(new Suggestion({ title: 'Limpiar consulta' }));
+    this.conv.add(new Suggestion({ title: 'Actualizar respuesta' }));
+    this.conv.add(new Suggestion({ title: 'Actualizar imagen' }));
+    this.conv.add(new Suggestion({ title: 'Ver mi lista' }));
   }
   input_new_question(){
     this.conv.add(new Image({
@@ -255,6 +275,215 @@ class Assistant {
       }));
       this.conv.add(new Suggestion({ title: 'Continuar' }));
     }
+  }
+  async input_update_question_answer(){
+    const list = await backendTools.listBackend_Question(this.conv.user.params.email);
+    // Rellenar lista de intents
+    const elements = []
+    list.forEach(element => { 
+      const item = { 
+        cells: [
+          {
+            text: element.question
+          }, 
+          {
+            text: element.answer
+          }
+        ]
+      }
+      elements.push(item)
+    })
+    this.conv.add(new Simple({
+      speech: 'De acuerdo. Acabas de activar el modo "modificar pregunta". Aquí te dejo una lista de cuestiones disponibles. Pronuncia de forma clara la cuestión que deseas modificar. Si necesitas salir del asistente: Di "Otras funciones"',
+      text: 'Selecciona la cuestión para modificar. Si quieres detener el asistente, escribe "Otras funciones"'
+    }));
+    this.conv.add(new Table({
+      "title": "Actualizar",
+      "subtitle": "Usuario: " + this.conv.user.params.name,
+      "image": new Image({
+        url: referencesURI.imageURI_Public,
+        alt: 'Odiseo Chatbot'
+      }),
+      "columns": [{
+        "header": "Pregunta"
+      }, {
+        "header": "Detalles"
+      }],
+      "rows": [elements], 
+    }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+  }
+  async input_update_question_answer_select(){
+    const input = this.conv.intent.query;
+    // Error no existe
+    if(input && !await backendTools.existsBackend_Question(input, this.conv.user.params.email)){
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Error,
+        alt: 'Odiseo Chatbot',
+      }))
+      this.conv.add(new Simple({
+        speech: 'Lo siento, no he podido modificar la cuestión (' + input + ') porque no existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
+        text: '¡Esta pregunta no existe! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)'
+      }));
+      this.conv.add(new Suggestion({ title: 'Continuar' }));
+    }
+    // Continuar
+    else{
+      // se actualizara cuando tenga su respuesta 
+      // save question temporal data
+      this.conv.user.params.input = input;
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Teaching,
+        alt: 'Odiseo Chatbot',
+      }))
+      this.conv.add(new Simple({
+        speech: 'Cuestión seleccionada (' + input + '). A continuación, pronuncia de forma clara la respuesta que deseas vincular a esta cuestión',
+        text: 'Modificar la cuestión (' + input + '). Introduce la nueva respuesta:'
+      }));
+    }
+  }
+  async input_update_question_answer_input(){
+    const input = this.conv.intent.query;
+    // Solo actualiza una vez, evitar otros inputs
+    if(this.conv.user.params.input != null){
+      // se modifica respuesta
+      await backendTools.updateBackend_Answer(this.conv.user.params.input, input, this.conv.user.params.email)
+      // flag para guardar ultima pregunta (solo para mostrar)
+      this.conv.user.params.last = this.conv.user.params.input;
+      this.conv.user.params.input = null;
+    }
+    this.conv.add(new Image({
+      url: referencesURI.imageURI_Teaching,
+      alt: 'Odiseo Chatbot',
+    }))
+    this.conv.add(new Simple({
+      speech: '¡Gracias por corregirme! La respuesta para (' + this.conv.user.params.last + ') ahora es (' + input + '). Si deseas realizar otra operación, di "Otras funciones".',
+      text: '¡Corregido! La respuesta para (' + this.conv.user.params.last + ') ahora es (' + input + '). Si deseas realizar otra operación, escribe "Otras funciones".'
+    }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+  }
+  async input_update_question_image(){
+    const list = await backendTools.listBackend_Question(this.conv.user.params.email);
+    // Rellenar lista de intents
+    const elements = []
+    list.forEach(element => { 
+      const item = { 
+        cells: [
+          {
+            text: element.question
+          }, 
+          {
+            text: element.answer
+          }
+        ]
+      }
+      elements.push(item)
+    })
+    this.conv.add(new Simple({
+      speech: 'De acuerdo. Acabas de activar el modo "modificar foto". Aquí te dejo una lista de cuestiones disponibles. Pronuncia de forma clara la cuestión que deseas modificar. Si necesitas salir del asistente: Di "Otras funciones"',
+      text: 'Selecciona la cuestión para modificar. Si quieres detener el asistente, escribe "Otras funciones"'
+    }));
+    this.conv.add(new Table({
+      "title": "Modificar Visual",
+      "subtitle": "Usuario: " + this.conv.user.params.name,
+      "image": new Image({
+        url: referencesURI.imageURI_Public,
+        alt: 'Odiseo Chatbot'
+      }),
+      "columns": [{
+        "header": "Pregunta"
+      }, {
+        "header": "Detalles"
+      }],
+      "rows": [elements], 
+    }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+  }
+  async input_update_question_image_select(){
+    const input = this.conv.intent.query;
+    // Error no existe
+    if(input && !await backendTools.existsBackend_Question(input, this.conv.user.params.email)){
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Error,
+        alt: 'Odiseo Chatbot',
+      }))
+      this.conv.add(new Simple({
+        speech: 'Lo siento, no he podido modificar la imagen de la cuestión (' + input + ') porque no existe en mi base de conocimiento. Si deseas realizar otra consulta, di "Continuar"',
+        text: '¡Esta pregunta no existe! (' + input + ') Si deseas realizar otra consulta, escribe (Continuar)'
+      }));
+      this.conv.add(new Suggestion({ title: 'Continuar' }));
+    }
+    // Continuar
+    else{
+      // se actualizara cuando tenga su respuesta 
+      // save question temporal data
+      this.conv.user.params.input = input;
+      this.conv.add(new Image({
+        url: referencesURI.imageURI_Teaching,
+        alt: 'Odiseo Chatbot',
+      }))
+      this.conv.add(new Simple({
+        speech: 'Cuestión seleccionada (' + input + '). A continuación, pronuncia de forma clara la referencia que deseas vincular a esta cuestión',
+        text: 'Modificar imagen de la cuestión (' + input + '). Introduce el nuevo enlace:'
+      }));
+    }
+  }
+  async input_update_question_image_input(){
+    const input = this.conv.intent.query;
+    // Solo actualiza una vez, evitar otros inputs
+    if(this.conv.user.params.input != null){
+      // se modifica respuesta
+      await backendTools.updateBackend_Image(this.conv.user.params.input, input, this.conv.user.params.email)
+      // flag para guardar ultima pregunta (solo para mostrar)
+      this.conv.user.params.last = this.conv.user.params.input;
+      this.conv.user.params.input = null;
+    }
+    this.conv.add(new Image({
+      url: referencesURI.imageURI_Teaching,
+      alt: 'Odiseo Chatbot',
+    }))
+    this.conv.add(new Simple({
+      speech: '¡Ha quedado muy bien! La imagen para (' + this.conv.user.params.last + ') ha sido actualizada. Si deseas realizar otra operación, di "Otras funciones".',
+      text: '¡Que elegancia! La imagen para (' + this.conv.user.params.last + ') ha sido actualizada. Si deseas realizar otra operación, escribe "Otras funciones".'
+    }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
+  }
+  async input_list_question(){
+    const list = await backendTools.listBackend_Question(this.conv.user.params.email);
+    // Rellenar lista de intents
+    const elements = []
+    list.forEach(element => { 
+      const item = { 
+        cells: [
+          {
+            text: element.question
+          }, 
+          {
+            text: element.answer
+          }
+        ]
+      }
+      elements.push(item)
+    })
+    this.conv.add(new Simple({
+      speech: 'Aquí te dejo tu lista personal de cuestiones. Si necesitas realizar alguna operación: Di "Otras funciones"',
+      text: 'Mostrando lista personal. Para realizar alguna operación escribe "Otras funciones"'
+    }));
+    this.conv.add(new Table({
+      "title": "Almacén",
+      "subtitle": "Usuario: " + this.conv.user.params.name,
+      "image": new Image({
+        url: referencesURI.imageURI_Public,
+        alt: 'Odiseo Chatbot'
+      }),
+      "columns": [{
+        "header": "Pregunta"
+      }, {
+        "header": "Detalles"
+      }],
+      "rows": [elements], 
+    }));
+    this.conv.add(new Suggestion({ title: 'Otras funciones' }));
   }
 }
 // middleware for users login 
@@ -511,6 +740,41 @@ app.handle('ConversationOperations_TeachingAssistant_DeleteQuestion', async conv
 // input.delete.question.confirm
 app.handle('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', async conv => {
   await conv.assistant?.input_delete_question_confirm()
+})
+
+// input.update.question.answer
+app.handle('ConversationMain_TeachingAssistant_UpdateAnswer', async conv => {
+  await conv.assistant?.input_update_question_answer()
+})
+
+ // input.update.question.answer.select
+app.handle('ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion', async conv => {
+  await conv.assistant?.input_update_question_answer_select()
+})
+
+// input.update.question.answer.input 
+app.handle('ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer', async conv => {
+  await conv.assistant?.input_update_question_answer_input()
+})
+
+// input.update.question.image
+app.handle('ConversationOperations_TeachingAssistant_UpdateImage', async conv => {
+  await conv.assistant?.input_update_question_image()
+})
+
+ // input.update.question.image.select
+app.handle('ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion', async conv => {
+  await conv.assistant?.input_update_question_image_select()
+})
+
+// input.update.question.image.input 
+app.handle('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', async conv => {
+  await conv.assistant?.input_update_question_image_input()
+})
+
+// input.list.question
+app.handle('ConversationOperations_TeachingAssistant_List', async conv => {
+  await conv.assistant?.input_list_question()
 })
 
 module.exports = app;
