@@ -31,3 +31,5 @@
 - darle tiempo entre petición y petición, o se puede petar
 
 - el asistente de voz introduce todo en minuscula (es sensible)
+
+- para las pruebas se ha tenido que cojer un usuario sin correo, porque no se puede decir el @ por voz
