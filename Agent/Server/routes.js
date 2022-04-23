@@ -2,6 +2,7 @@
 const apiTools = require('../Functions/api-google.js')
 const dialogFlowApp = require('../Functions/agent-dialogflow.js')
 const actionsGoogleApp = require('../Functions/agent-actionsgoogle.js')
+const path = require('path');
 
 // Add the router
 const express = require('express');
@@ -16,6 +17,13 @@ router.use(function timeLog(req, res, next) {
 // Express App fulfillment route (POST). 
 router.post('/agent/dialogflow', async function (req, res){
     await dialogFlowApp.agent(req, res);
+})
+
+// Express App fulfillment Chat Web. 
+router.get('/agent/dialogflow', async function (req, res){
+  res.sendFile('dialogflow.html', {
+    root: path.join(__dirname, './Views')
+  })
 })
 
 // Express App fulfillment route (POST). 
