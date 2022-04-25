@@ -5,6 +5,22 @@ const apiTools = require('./api-google.js');
 // Libreria necesaria para operar Database MongoDB
 const databaseTools = require('./Database/queries.js');
 
+// Nombre de la cuestión a guardar
+exports.lastinput
+
+// Auxiliar - actualizar la interaccion donde espera un input
+exports.updateWaitingInput_Question = function(situation, input=""){
+  // añadir la cuestion (input user) al aire - esperando la siguiente interaccion
+  if(situation=="required"){ exports.lastinput = input; }
+  // preguntar si existe alguna cuestion en el aire (de antes)
+  else if(situation=="progress?") { 
+    if(exports.lastinput != ""){ return true } 
+    else { return false }
+  }
+  // borrar las cuestiones en el aire previas, para seguir con la conversacion normal
+  else { exports.lastinput = "";  } // Similar to situation = "exit", "free", ...
+}
+
 // Auxiliar - procesos de backend
 exports.createBackend_User = async function (email){
   // ... en la base de datos  

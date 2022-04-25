@@ -2,7 +2,7 @@
 // See https://github.com/dialogflow/dialogflow-fulfillment-nodejs
 // for Dialogflow fulfillment library docs, samples, and to report issues
 const {WebhookClient} = require('dialogflow-fulfillment');
-const {Suggestion, Image, Card} = require('dialogflow-fulfillment');
+const {Suggestion, Image, Card, Payload} = require('dialogflow-fulfillment');
 
 // archivo con las funciones para trabajar con el backend
 // y los inputs del usuario que se quedan pendientes "en el aire"
@@ -25,129 +25,407 @@ exports.agent = async function (req, res) {
 
   // input.welcome 
   function ConversationBasic_Welcome(agent) {
-    agent.add(new Image(referencesURI.imageURI_Public));
-    agent.add('¡Bienvenido! Soy Odiseo, tu agente personalizado. Estoy diseñado para aprender cualquier cuestión educativa. ¿Quieres que empecemos? Para conocer todos mis comandos, escribe "Otras funciones"');
-    agent.add(new Suggestion('Otras funciones'));
-    agent.add(new Suggestion('Hasta luego'));
+    const response = {
+      "richContent": [
+        [
+          {
+            "type": "info",
+            "title": "Hola",
+            "subtitle": "¡Bienvenido! Soy Odiseo, tu agente educativo. ¿Que quieres hacer?",
+            "image": {
+              "src": {
+                "rawUrl": referencesURI.imageURI_Public
+              }
+            },
+          },
+          {
+            "type": "chips",
+            "options": [
+              {
+                "text": "Otras funciones",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              },
+              {
+                "text": "Hasta luego",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ]
+    }
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.exit
   function ConversationBasic_Exit(agent) {
-    agent.add(new Image(referencesURI.imageURI_Public));
-    agent.add('Un placer trabajar contigo, ¡Nos vemos pronto!');
+    const response = {
+      "richContent": [
+        [
+          {
+            "type": "info",
+            "title": "Hasta luego",
+            "subtitle": "Un placer trabajar contigo, ¡Nos vemos pronto!",
+            "image": {
+              "src": {
+                "rawUrl": referencesURI.imageURI_Public
+              }
+            },
+          }
+        ]
+      ]
+    }
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.unknown
   function ConversationBasic_Fallback(agent) {
-    agent.add(new Image(referencesURI.imageURI_Error))
-    agent.add('Lo siento, no te entiendo. ¿Te puedo ayudar en algo? Si quieres conocer mis comandos escribe "Otras funciones"');
-    agent.add(new Suggestion('Otras funciones'));
-    agent.add(new Suggestion('Hasta luego'));
+    const response = {
+      "richContent": [
+        [
+          {
+            "type": "info",
+            "title": "Error",
+            "subtitle": "No puedo encontrar ninguna referencia. Escribe 'Otras funciones' para ver mi lista de comandos",
+            "image": {
+              "src": {
+                "rawUrl": referencesURI.imageURI_Error
+              }
+            },
+          },
+          {
+            "type": "chips",
+            "options": [
+              {
+                "text": "Otras funciones",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              },
+              {
+                "text": "Hasta luego",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ]
+    }
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.options
   function ConversationBasic_Options(agent) {
-    agent.add('Aquí tienes una lista de referencias con todos mis comandos. ¿Qué quieres hacer?');
-    agent.add('his is the body text of a card.  You can even use line\n  breaks and emoji!💁');
-    agent.add(new Card({
-      title: `Title: this is a card title`,
-      text: `This is the body text of a card.  You can even use line\n  breaks and emoji! 💁`,
-    }));
-    agent.add(new Card({
-      title: `Title: this is a card title`,
-      text: `This is the body text of a card.  You can even use line\n  breaks and emoji! 💁`,
-    }));
-    /*agent.add(new Table({
-      "title": "Comandos de referencias",
-      "image": new Image({
-        url: referencesURI.imageURI_Public,
-        alt: 'Odiseo Chatbot'
-      }),
-      "columns": [{
-        "header": "Sugerencia"
-      }, {
-        "header": "Detalles"
-      }],
-      "rows": [{
-        "cells": [{
-          "text": "Hola Odiseo"
-        }, {
-          "text": "El agente te da la bienvenida"
-        }]
-      }, {
-        "cells": [{
-          "text": "Hasta luego"
-        }, {
-          "text": "La conversación finaliza"
-        }]
-      }, {
-        "cells": [{
-          "text": "Otras funciones"
-        }, {
-          "text": "Muestra los comandos disponibles"
-        }]
-      }, {
-        "cells": [{
-          "text": "Quiero enseñarte"
-        }, {
-          "text": "Activa el aprendizaje guiado del agente"
-        }]
-      }, {
-        "cells": [{
-          "text": "Quiero limpiar consulta"
-        }, {
-          "text": "Elimina una pregunta almacenada"
-        }]
-      }, {
-        "cells": [{
-          "text": "Quiero actualizar respuesta"
-        }, {
-          "text": "Actualiza la respuesta de una pregunta almacenada"
-        }]
-      }, {
-        "cells": [{
-          "text": "Quiero añadir visual"
-        }, {
-          "text": "Actualiza la imagen de una pregunta almacenada"
-        }]
-      }, {
-        "cells": [{
-          "text": "Quiero ver mi lista"
-        }, {
-          "text": "Muestra todas las cuestiones creadas por el usuario"
-        }]
-      }, {
-        "cells": [{
-          "text": "Quiero aprender <pregunta>"
-        }, {
-          "text": "El agente busca una respuesta (en su base de conocimiento) para ayudar al usuario"
-        }]
-      }, {
-        "cells": [{
-          "text": "Dime alguna curiosidad"
-        }, {
-          "text": "El agente busca una pregunta al azar para responder al usuario"
-        }]
-      }]
-    }));*/
-    agent.add(new Suggestion('Quiero enseñar'));
-    agent.add(new Suggestion('Limpiar consulta'));
-    agent.add(new Suggestion('Actualizar respuesta'));
-    agent.add(new Suggestion('Añadir visual'));
-    agent.add(new Suggestion('Ver mi lista'));
-    agent.add(new Suggestion('Dime curiosidad'));
+    const response = {
+      "richContent": [
+        [
+          {
+            "type": "info",
+            "title": "Menú principal",
+            "subtitle": "Aquí tienes una lista de referencias con todos mis comandos. ¿Qué quieres hacer?",
+            "image": {
+              "src": {
+                "rawUrl": referencesURI.imageURI_Public
+              }
+            },
+          },
+          {
+            "type": "list",
+            "title": "Hola Odiseo",
+            "subtitle": "El agente te da la bienvenida",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Hasta luego",
+            "subtitle": "La conversación finaliza",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Otras funciones",
+            "subtitle": "Muestra los comandos disponibles",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Quiero enseñarte",
+            "subtitle": "Activa el aprendizaje guiado del agente",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Quiero limpiar consulta",
+            "subtitle": "Elimina una pregunta almacenada",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Quiero actualizar respuesta",
+            "subtitle": "Actualiza la respuesta de una pregunta almacenada",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Quiero añadir visual",
+            "subtitle": "Actualiza la imagen de una pregunta almacenada",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Quiero ver mi lista",
+            "subtitle": "Muestra todas las cuestiones creadas por el usuario",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Quiero aprender <pregunta>",
+            "subtitle": "El agente busca una respuesta (en su base de conocimiento) para ayudar al usuario",
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "list",
+            "title": "Dime alguna curiosidad",
+            "subtitle": "El agente busca una pregunta al azar para responder al usuario",
+          },
+          {
+            "type": "chips",
+            "options": [
+              {
+                "text": "Quiero enseñarte",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              },
+              {
+                "text": "Limpiar consulta",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              },
+              {
+                "text": "Actualizar respuesta",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              },
+              {
+                "text": "Añadir visual",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              },
+              {
+                "text": "Ver mi lista",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              },
+              {
+                "text": "Dime curiosidad",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ]
+    }
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.new.question
   function ConversationMain_TeachingAssistant(agent) {
+    const response = {
+      "richContent": [
+        [
+          {
+            "type": "info",
+            "title": "Nueva cuestión 1/3",
+            "subtitle": "Dime la cuestión que deseas guardar en mi aprendizaje. Si quieres detener el asistente, escribe 'Otras funciones'",
+            "image": {
+              "src": {
+                "rawUrl": referencesURI.imageURI_Teaching
+              }
+            },
+          },
+          {
+            "type": "chips",
+            "options": [
+              {
+                "text": "Otras funciones",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      ]
+    }
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.new.question.request.question
-  function ConversationOperations_TeachingAssistant_InputQuestion(agent) {
+  async function ConversationOperations_TeachingAssistant_InputQuestion(agent) {
+    const input = agent.parameters.any;
+    // Se sigue con el proceso
+    if(input != "Otras funciones"){
+      // Ya existe
+      if(input && await backendTools.existsBackend_Question(input,"fredy")){
+        backendTools.updateWaitingInput_Question("exit");
+        const response = {
+          "richContent": [
+            [
+              {
+                "type": "info",
+                "title": "Error",
+                "subtitle": "¡Esta pregunta ya la tenía guardada! (" + input + ") Si deseas realizar otra consulta, escribe 'Continuar'",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Error
+                  }
+                },
+              },
+              {
+                "type": "chips",
+                "options": [
+                  {
+                    "text": "Continuar",
+                    "image": {
+                      "src": {
+                        "rawUrl": referencesURI.imageURI_Public
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+      // Se puede guardar
+      else{
+        // se guardará cuando tenga su respuesta 
+        backendTools.updateWaitingInput_Question("required", input);
+        const response = {
+          "richContent": [
+            [
+              {
+                "type": "info",
+                "title": "Nueva cuestión 2/3",
+                "subtitle": "¡Correcto! La cuestión se guardará como (" + input + "). ¿Cuál es su respuesta?",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Teaching
+                  }
+                },
+              }
+            ]
+          ]
+        }
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+    }
+    // Se cancela operacion
+    else{
+      backendTools.updateWaitingInput_Question("exit");
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "info",
+              "title": "Cancelado",
+              "subtitle": "He cancelado la operación",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Error
+                }
+              },
+            },
+            {
+              "type": "chips",
+              "options": [
+                {
+                  "text": "Continuar",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
   }
 
   // input.new.question.request.answer
   function ConversationOperations_TeachingAssistant_InputAnswer(agent) {
+    const input = agent.parameters.any;
+    // ¿Hay alguna pregunta pendiente?
+    if(backendTools.updateWaitingInput_Question("progress")){
+      // se crea pregunta + respuesta
+      await backendTools.createBackend_Question(backendTools.lastinput, "fredy")
+      await backendTools.updateBackend_Answer(backendTools.lastinput, input, "fredy")
+      // flag para guardar ultima pregunta (solo para mostrar)
+      this.conv.user.params.last = this.conv.user.params.input;
+      backendTools.updateWaitingInput_Question("exit");
+    }
+    else{
+
+    }
   }
 
   // input.delete.question
