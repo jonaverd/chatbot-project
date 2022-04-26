@@ -6,6 +6,7 @@ const apiTools = require('./api-google.js');
 const databaseTools = require('./Database/queries.js');
 
 // Auxiliar - actualizar la interaccion donde espera un input
+// Similar a los user.params del Asistente (datos de la sesion)
 exports.WaitingInput = function (){
   // Nombre de la cuestión a guardar
   var currentinput = "";

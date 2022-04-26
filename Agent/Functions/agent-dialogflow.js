@@ -10,7 +10,8 @@ const backendTools = require('./server-operations.js');
 const referencesURI = require('./Assets/references.js');
 const RichContentResponses = require('./conversations.js');
 const usersAuth = require('./Users/validators.js');
-// Auxiliar - actualizar la interaccion donde espera un input
+// Actualizar la interaccion donde espera un input
+// Similar a los user.params del Asistente (datos de la sesion)
 const WaitingInput = backendTools.WaitingInput();
 
 // User temporal
@@ -245,7 +246,9 @@ exports.agent = async function (req, res) {
   }
 
   // input.list.question
-  function ConversationOperations_TeachingAssistant_List(agent) {
+  async function ConversationOperations_TeachingAssistant_List(agent) {
+    const response = await RichContentResponses.show_basic_list(user);
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.random.question

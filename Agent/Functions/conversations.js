@@ -1,5 +1,6 @@
 // Respuestas de texto enriquecido utilizadas en dialogflow chat web
 const referencesURI = require('./Assets/references.js');
+const backendTools = require('./server-operations.js');
 module.exports = Object.freeze({
     options: {
         "richContent": [
@@ -265,5 +266,53 @@ module.exports = Object.freeze({
             }
           ]
         ]
+    },
+    show_basic_list: async function(user){
+        const list = await backendTools.listBackend_Question(user);
+        // Rellenar lista de intents
+        const elements = []
+        const info =  {
+            "type": "info",
+            "title": "Almacén",
+            "subtitle": "Mostrando lista personal. Para realizar alguna operación escribe 'Otras funciones'",
+            "image": {
+                "src": {
+                "rawUrl": referencesURI.imageURI_Public
+                }
+            },
+        }
+        elements.push(info);
+        list.forEach(element => { 
+            const divider = {
+            "type": "divider"
+            }
+            const item = {
+                "type": "list",
+                "title": element.question,
+                "subtitle": element.user,
+            }
+            elements.push(divider);
+            elements.push(item);
+        })
+        const suggestions = {
+            "type": "chips",
+            "options": [
+                {
+                "text": "Otras funciones",
+                "image": {
+                    "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                    }
+                }
+                }
+            ]
+        }
+        elements.push(suggestions);
+        const response = {
+            "richContent": [
+                elements
+            ]
+        }
+        return response;
     }
 });
