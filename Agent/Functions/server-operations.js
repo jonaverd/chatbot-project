@@ -5,20 +5,56 @@ const apiTools = require('./api-google.js');
 // Libreria necesaria para operar Database MongoDB
 const databaseTools = require('./Database/queries.js');
 
-// Nombre de la cuestión a guardar
-exports.lastinput
-
 // Auxiliar - actualizar la interaccion donde espera un input
-exports.updateWaitingInput_Question = function(situation, input=""){
-  // añadir la cuestion (input user) al aire - esperando la siguiente interaccion
-  if(situation=="required"){ exports.lastinput = input; }
-  // preguntar si existe alguna cuestion en el aire (de antes)
-  else if(situation=="progress?") { 
-    if(exports.lastinput != ""){ return true } 
-    else { return false }
+exports.WaitingInput = function (){
+  // Nombre de la cuestión a guardar
+  var currentinput = "";
+  // Nombre de la ultima cuestión guardada
+  var lastinput = "";
+  // siempre se guarda una copia de la ultima cuestion guardada
+  function update(){
+    if(currentinput != ""){ 
+      lastinput = currentinput 
+    }
   }
-  // borrar las cuestiones en el aire previas, para seguir con la conversacion normal
-  else { exports.lastinput = "";  } // Similar to situation = "exit", "free", ...
+  // preparar la cuestion en el aire (esperando la siguiente interaccion)
+  function required(input){
+    currentinput = input;
+    update();
+  }
+  // preguntar si existe alguna cuestion en el aire (de antes)
+  function progress(){
+    update();
+    if(currentinput != ""){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  // recuperar la cuestion en el aire (de antes)
+  function current(){
+    update();
+    return currentinput;
+  }
+  // recuperar la ultima cuestion (fijada)
+  function last(){
+    update();
+    return lastinput;
+  }
+  // borrar las cuestiones en el aire (continuando la conversacion normal)
+  function exit(){
+    currentinput = "";
+    update();
+  }
+  return {
+    update: update,
+    required: required,
+    progress: progress,
+    current: current,
+    last: last,
+    exit: exit
+  };
 }
 
 // Auxiliar - procesos de backend
