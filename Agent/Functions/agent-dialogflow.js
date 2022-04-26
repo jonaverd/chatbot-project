@@ -206,6 +206,7 @@ exports.agent = async function (req, res) {
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
     else{
+      WaitingInput.exit();
       const response = RichContentResponses.options;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
