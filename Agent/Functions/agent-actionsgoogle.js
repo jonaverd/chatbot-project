@@ -734,7 +734,7 @@ app.middleware(async (conv) => {
   }
   // Hay sesión de email
   else{
-    // Contiene la orden "R(r)esponde"
+    // Contiene la orden "Q(q)uiero aprender"
     if(input.includes("quiero aprender")){
       var substring = input.split("quiero aprender ")
       var question = substring[1].toString();

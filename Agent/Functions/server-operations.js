@@ -58,6 +58,50 @@ exports.WaitingInput = function (){
   };
 }
 
+// Auxiliar - Parametros del middleware para el login en cada peticion
+// Similar a los user.params del Asistente (datos de la sesion)
+exports.UserParams = function (){
+  var temporal;
+  var password;
+  var session;
+  var user; // or email
+  var name;
+  var age;
+  function setTemporal(input){ temporal = input }
+  function getTemporal(){ return temporal }
+  function setPassword(boolean){ password = boolean }
+  function getPassword(){ return password }
+  function setUser(input){ user = input }
+  function getUser(){ return user }
+  function setName(input){ name = input }
+  function getName(){ return name }
+  function setAge(input){ age = input }
+  function getAge(){ return age }
+  function reload(request){
+    if(session != request){
+      temporal = null;
+      password = null;
+      user = null // or email
+      name = null;
+      age = null;
+      session = request;
+    }
+  }
+  return { 
+    setTemporal: setTemporal,
+    getTemporal: getTemporal,
+    setPassword: setPassword,
+    getPassword: getPassword,
+    setUser: setUser,
+    getUser: getUser,
+    setName: setName,
+    getName: getName,
+    setAge: setAge,
+    getAge: getAge,
+    reload: reload,
+  };
+}
+
 // Auxiliar - procesos de backend
 exports.createBackend_User = async function (email){
   // ... en la base de datos  

@@ -267,6 +267,23 @@ module.exports = Object.freeze({
           ]
         ]
     },
+    login:
+    {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Iniciar Sesión",
+                    "subtitle": "Bienvenido al asistente educativo Odiseo. Para continuar necesitas identificarte (introduce tu email)",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login
+                        }
+                    },
+                }
+            ]
+        ]
+    },
     show_basic_list: async function(user){
         const list = await backendTools.listBackend_Question(user);
         // Rellenar lista de intents
