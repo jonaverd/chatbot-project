@@ -623,7 +623,7 @@ exports.agent = async function (req, res) {
 
   // input.list.question
   async function ConversationOperations_TeachingAssistant_List(agent) {
-    const response = await RichContentResponses.show_basic_list(user);
+    const response = await RichContentResponses.show_details_list(UsersParams.getUser());
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 

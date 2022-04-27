@@ -306,7 +306,63 @@ module.exports = Object.freeze({
             const item = {
                 "type": "list",
                 "title": element.question,
+                "subtitle": element.answer,
+            }
+            elements.push(divider);
+            elements.push(item);
+        })
+        const suggestions = {
+            "type": "chips",
+            "options": [
+                {
+                "text": "Otras funciones",
+                "image": {
+                    "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                    }
+                }
+                }
+            ]
+        }
+        elements.push(suggestions);
+        const response = {
+            "richContent": [
+                elements
+            ]
+        }
+        return response;
+    },
+    show_details_list: async function(user){
+        const list = await backendTools.listBackend_Question(user);
+        // Rellenar lista de intents
+        const elements = []
+        const info =  {
+            "type": "info",
+            "title": "Almacén",
+            "subtitle": "Mostrando lista personal. Para realizar alguna operación escribe 'Otras funciones'",
+            "image": {
+                "src": {
+                "rawUrl": referencesURI.imageURI_Public
+                }
+            },
+        }
+        elements.push(info);
+        list.forEach(element => { 
+            const divider = {
+            "type": "divider"
+            }
+            const url = {
+                "rawUrl": element.visual
+            }
+            const image = {
+                "src": url
+            }
+            const item = {
+                "type": "accordion",
+                "title": element.question,
                 "subtitle": element.user,
+                "image": image,
+                "text": element.answer
             }
             elements.push(divider);
             elements.push(item);
