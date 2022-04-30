@@ -34,280 +34,32 @@ exports.agent = async function (req, res) {
   console.log('Dialogflow Request body: ' + JSON.stringify(req.body));
   console.log('DialogFlow Panel Detected')
 
-  // Actuar de middleware para el login en cada peticion
-  async function Middleware(agent){
-    // Controlar entradas de los formularios
-    let input = req.body.queryResult.queryText
-    // No hay temporal activado (sigue peticion de email)
-    if(!UsersParams.getTemporal()){
-      // ¿formato válido?
-      if (usersAuth.validatorEmail.validate(input)){
-        // No hay email registrado 
-        if(!await backendTools.getBackend_User(input)){
-          // el email se crea mas adelante (con la contraseña)
-          // email temporal de comprobacion
-          if(!UsersParams.getTemporal()){ UsersParams.setTemporal(input) }
-          const response = {
-            "richContent": [
-                [
-                    {
-                        "type": "info",
-                        "title": "Registro",
-                        "subtitle": "Gracias. Para continuar con el registro necesito crear una contraseña personal. Recuerda que tus datos serán encriptados por seguridad. Introduce tu contraseña (PIN de 6 dígitos)",
-                        "image": {
-                            "src": {
-                                "rawUrl": referencesURI.imageURI_Login
-                            }
-                        },
-                    }
-                ]
-            ]
-          }
-          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-        }
-        // Hay email registrado
-        else{
-          // email temporal de comprobacion
-          if(!UsersParams.getTemporal()){ UsersParams.setTemporal(input) }
-          const response = {
-            "richContent": [
-                [
-                    {
-                        "type": "info",
-                        "title": "Iniciar Sesión",
-                        "subtitle": "Email verificado (" + UsersParams.getTemporal() + ") Introduce tu contraseña para acceder a tu cuenta (clave PIN de 6 dígitos)",
-                        "image": {
-                            "src": {
-                                "rawUrl": referencesURI.imageURI_Login
-                            }
-                        },
-                    }
-                ]
-            ]
-          }
-          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-        }
-      }
-      // formato incorrecto (entrada normal)
-      else{
-        const response = RichContentResponses.login;
-        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-      }
-    }
-    // Temporal activado
-    else{
-      // No hay contraseña registrada
-      if (input && await backendTools.getBackend_UserPassword(UsersParams.getTemporal())==null){
-        // ¿formato válido?
-        if(usersAuth.schema.validate(input)){
-          // se crea el email y la contraseña
-          await backendTools.createBackend_User(UsersParams.getTemporal())
-          await backendTools.updateBackend_UserPassword(await usersAuth.gethashPassword(input), UsersParams.getTemporal())
-          const response = 
-          {
-            "richContent": 
-            [
+  // Comprobaciones del email temporal
+  async function operationsTemporal(agent, input){
+    // ¿formato válido?
+    if (usersAuth.validatorEmail.validate(input)){
+      // No hay email registrado 
+      if(!await backendTools.getBackend_User(input)){
+        UsersParams.setTemporal(null)
+        const response = {
+          "richContent": [
               [
-                {
-                  "type": "info",
-                  "title": "Registro",
-                  "subtitle": "Correcto. Para completar el registro de tu usuario necesito algunos datos adicionales. Recuerda que tus datos mantendrán su privacidad y no serán compartidos (Introduce tu nombre y apellidos)",
-                  "image": 
                   {
-                    "src": 
-                    {
-                      "rawUrl": referencesURI.imageURI_Login
-                    }
-                  }
-                }
-              ]
-            ]
-          }
-          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true})); 
-          UsersParams.setPassword(true);
-        }
-        // formato incorrecto
-        else{
-          const response = {
-            "richContent": 
-            [
-              [
-                {
-                  "type": "info",
-                  "title": "Registro",
-                  "subtitle": "No se puede completar el registro. Por favor, introduce tu contraseña con un formato válido (PIN de 6 dígitos)",
-                  "image": 
-                  {
-                    "src": 
-                    {
-                      "rawUrl": referencesURI.imageURI_Error
-                    }
-                  }
-                }
-              ]
-            ]
-          }
-          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-        }
-      }
-      // Hay contraseña registrada
-      else{
-        // No hay sesión de contraseña (¿Login?)
-        if(!UsersParams.getPassword()){
-          // ¿formato válido?
-          if(usersAuth.schema.validate(input)){
-            // login válido
-            if(input && await usersAuth.comparehashPassword(input, await backendTools.getBackend_UserPassword(UsersParams.getTemporal()))){
-              const response = {
-                "richContent": 
-                [
-                  [
-                    {
                       "type": "info",
-                      "title": "Iniciar Sesión",
-                      "subtitle": "Contraseña verificada. Identificado como: " + UsersParams.getTemporal() + ". Para acceder a tu cuenta, escribe 'Iniciar Sesión'",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    },
-                    {
-                      "type": "chips",
-                      "options": [
-                        {
-                          "text": "Iniciar Sesión",
-                          "image": {
-                            "src": {
-                              "rawUrl": referencesURI.imageURI_Public
-                            }
+                      "title": "Error",
+                      "subtitle": "El email " + input +" no está registrado en mi base de datos",
+                      "image": {
+                          "src": {
+                              "rawUrl": referencesURI.imageURI_Error
                           }
-                        }
-                      ]
-                    }
-                  ]
-                ]
-              }
-              agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-              UsersParams.setPassword(true);
-            }
-            // login error
-            else{
-              const response = {
-                "richContent": 
-                [
-                  [
-                    {
-                      "type": "info",
-                      "title": "Iniciar Sesión",
-                      "subtitle": "La contraseña no es correcta. Introduce la contraseña asociada a este usuario: " + UsersParams.getTemporal() + " (PIN de 6 dígitos)",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Error
-                        }
-                      }
-                    }
-                  ]
-                ]
-              }
-              agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-            }
-          }
-          // formato incorrecto (entrada normal)
-          else{
-            const response = {
-              "richContent": [
-                  [
-                      {
-                          "type": "info",
-                          "title": "Iniciar Sesión",
-                          "subtitle": "Email verificado (" + UsersParams.getTemporal() + ") Introduce tu contraseña para acceder a tu cuenta (clave PIN de 6 dígitos)",
-                          "image": {
-                              "src": {
-                                  "rawUrl": referencesURI.imageURI_Login
-                              }
-                          },
-                      }
-                  ]
-              ]
-            }
-            agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-          }
-        }
-        // Hay sesión de contraseña
-        else{
-          // No hay nombre registrado
-          if(input && await backendTools.getBackend_UserName(UsersParams.getTemporal())==null) {
-            // ¿formato válido?
-            if(usersAuth.validatorNames(input)){
-              await backendTools.updateBackend_UserName(input, UsersParams.getTemporal())
-              const response = 
-              {
-                "richContent": 
-                [
-                  [
-                    {
-                      "type": "info",
-                      "title": "Registro",
-                      "subtitle": "Perfecto. Recuerda que tus datos mantendrán su privacidad y no serán compartidos. Para el siguiente proceso (Introduce tu edad)",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                ]
-              }
-              agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-            }
-            // formato incorrecto
-            else{
-              const response = 
-              {
-                "richContent": 
-                [
-                  [
-                    {
-                      "type": "info",
-                      "title": "Registro",
-                      "subtitle": "No se puede completar el registro. Por favor, introduce tu nombre y apellidos con un formato válido",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Error
-                        }
-                      }
-                    }
-                  ]
-                ]
-              }
-              agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-            }
-          }
-          // Hay nombre registrado
-          else{
-            // No hay edad registrada
-            if (input && await backendTools.getBackend_UserAge(UsersParams.getTemporal())==null){
-              // ¿formato válido?
-              if(usersAuth.validatorNumbers(input)){
-                await backendTools.updateBackend_UserAge(input, UsersParams.getTemporal())
-                const response = 
-                {
-                  "richContent": 
-                  [
+                      },
+                  },
+                  {
+                    "type": "chips",
+                    "options": 
                     [
                       {
-                        "type": "info",
-                        "title": "Registro",
-                        "subtitle": "¡Registro completado! Usuario: " + UsersParams.getTemporal() + ". Gracias por tu paciencia. La próxima vez que te identifiques podré reconocerte. Para completar el acceso a tu cuenta, escribe 'Iniciar Sesión'",
+                        "text": "Cancelar",
                         "image": 
                         {
                           "src": 
@@ -315,65 +67,75 @@ exports.agent = async function (req, res) {
                             "rawUrl": referencesURI.imageURI_Login
                           }
                         }
-                      },
-                      {
-                        "type": "chips",
-                        "options": [
-                          {
-                            "text": "Iniciar Sesión",
-                            "image": {
-                              "src": {
-                                "rawUrl": referencesURI.imageURI_Public
-                              }
-                            }
-                          }
-                        ]
                       }
                     ]
-                  ]
-                }
-                agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-              }
-              // formato incorrecto
-              else{
-                const response = 
-                {
-                  "richContent": 
-                  [
+                  }
+              ]
+          ]
+        }
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+      // Hay email registrado
+      else{
+        // email temporal activado
+        UsersParams.setTemporal(input)
+        const response = {
+          "richContent": [
+              [
+                  {
+                      "type": "info",
+                      "title": "Iniciar Sesión",
+                      "subtitle": "Email verificado (" + UsersParams.getTemporal() + ") Introduce tu contraseña de 6 dígitos para acceder a tu cuenta.",
+                      "image": {
+                          "src": {
+                              "rawUrl": referencesURI.imageURI_Login
+                          }
+                      },
+                  },
+                  {
+                    "type": "chips",
+                    "options": 
                     [
                       {
-                        "type": "info",
-                        "title": "Registro",
-                        "subtitle": "No se puede completar el registro. Por favor, introduce tu edad con un formato válido (numérico 2 cifras)",
+                        "text": "Cancelar",
                         "image": 
                         {
                           "src": 
                           {
-                            "rawUrl": referencesURI.imageURI_Error
+                            "rawUrl": referencesURI.imageURI_Login
                           }
                         }
                       }
                     ]
-                  ]
-                }
-                agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-              }
-            }
-            // Hay edad registrada
-            else{
-              // Hay contraseña registrada (todos los campos disponibles)
-              UsersParams.setUser(UsersParams.getTemporal());
-              UsersParams.setName(await backendTools.getBackend_UserName(UsersParams.getUser()));
-              UsersParams.setAge(await backendTools.getBackend_UserAge(UsersParams.getUser()));
-              const response = 
-              {
-                "richContent": 
-                [
+                  }
+              ]
+          ]
+        }
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+    }
+    // formato incorrecto (entrada normal)
+    else{
+      UsersParams.setTemporal(null)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es un email con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
                   [
                     {
-                      "type": "info",
-                      "title": "Iniciar Sesión",
-                      "subtitle": "Bienvenido de nuevo: " + UsersParams.getName() + ". Para iniciar el asistente escribe 'Hola Odiseo'",
+                      "text": "Cancelar",
                       "image": 
                       {
                         "src": 
@@ -381,26 +143,632 @@ exports.agent = async function (req, res) {
                           "rawUrl": referencesURI.imageURI_Login
                         }
                       }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+  }
+
+  // Comprobaciones de la contraseña
+  async function operationsPassword(agent, input){
+    // ¿formato válido?
+    if (usersAuth.schema.validate(input)){
+      // No hay contraseña registrada 
+      if(await backendTools.getBackend_UserPassword(UsersParams.getTemporal())==null){
+        UsersParams.setPassword(null)
+        const response = {
+          "richContent": [
+              [
+                  {
+                      "type": "info",
+                      "title": "Error",
+                      "subtitle": "El email " + UsersParams.getLast() +" no tiene una contraseña registrada.",
+                      "image": {
+                          "src": {
+                              "rawUrl": referencesURI.imageURI_Error
+                          }
+                      },
+                  },
+                  {
+                    "type": "chips",
+                    "options": 
+                    [
+                      {
+                        "text": "Cancelar",
+                        "image": 
+                        {
+                          "src": 
+                          {
+                            "rawUrl": referencesURI.imageURI_Login
+                          }
+                        }
+                      }
+                    ]
+                  }
+              ]
+          ]
+        }
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+      // Hay contraseña registrada
+      else{
+        // login válido
+        if(await usersAuth.comparehashPassword(input, await backendTools.getBackend_UserPassword(UsersParams.getTemporal()))){
+          UsersParams.setPassword(true);
+          const response = {
+            "richContent": 
+            [
+              [
+                {
+                  "type": "info",
+                  "title": "Iniciar Sesión",
+                  "subtitle": "Contraseña verificada. Identificado como: " + UsersParams.getTemporal() + ". Para acceder a tu cuenta, escribe 'Continuar'",
+                  "image": 
+                  {
+                    "src": 
+                    {
+                      "rawUrl": referencesURI.imageURI_Login
+                    }
+                  }
+                },
+                {
+                  "type": "chips",
+                  "options": [
+                    {
+                      "text": "Continuar",
+                      "image": {
+                        "src": {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    },
+                    {
+                      "text": "Cancelar",
+                      "image": {
+                        "src": {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+        }
+        // login error
+        else{
+          UsersParams.setPassword(null)
+          const response = {
+            "richContent": 
+            [
+              [
+                {
+                  "type": "info",
+                  "title": "Error",
+                  "subtitle": "La contraseña no es correcta. Introduce la contraseña de 6 dígitos asociada a este usuario: " + UsersParams.getLast(),
+                  "image": 
+                  {
+                    "src": 
+                    {
+                      "rawUrl": referencesURI.imageURI_Error
+                    }
+                  }
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+        }
+      }
+    }
+    // formato incorrecto (entrada normal)
+    else{
+      UsersParams.setPassword(null)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+  }
+
+  // Inicio de sesión
+  async function UserLogin(agent, input){
+    // No hay temporal activo
+    if(!UsersParams.getTemporal()){
+      await operationsTemporal(agent, input)
+    }
+    // Temporal activado
+    else{
+      // No hay sesión de contraseña (¿Login?)
+      if(!UsersParams.getPassword()){
+        await operationsPassword(agent, input)
+      }
+      // Hay sesión de contraseña
+      else{
+        // No hay nombre registrado 
+        if(!await backendTools.getBackend_UserName(UsersParams.getTemporal())){
+          const response = {
+            "richContent": [
+                [
+                    {
+                        "type": "info",
+                        "title": "Error",
+                        "subtitle": "El email " + UsersParams.getLast() +" no tiene un nombre registrado.",
+                        "image": {
+                            "src": {
+                                "rawUrl": referencesURI.imageURI_Error
+                            }
+                        },
                     },
                     {
                       "type": "chips",
-                      "options": [
+                      "options": 
+                      [
                         {
-                          "text": "Hola Odiseo",
-                          "image": {
-                            "src": {
-                              "rawUrl": referencesURI.imageURI_Public
+                          "text": "Cancelar",
+                          "image": 
+                          {
+                            "src": 
+                            {
+                              "rawUrl": referencesURI.imageURI_Login
                             }
                           }
                         }
                       ]
                     }
-                  ]
                 ]
-              }
-              agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-            }
+            ]
           }
+          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+        }
+        // Hay nombre registrado
+        else{
+          // No hay edad registrada
+          if(!await backendTools.getBackend_UserAge(UsersParams.getTemporal())){
+            const response = {
+              "richContent": [
+                  [
+                      {
+                          "type": "info",
+                          "title": "Error",
+                          "subtitle": "El email " + UsersParams.getLast() +" no tiene una edad registrada.",
+                          "image": {
+                              "src": {
+                                  "rawUrl": referencesURI.imageURI_Error
+                              }
+                          },
+                      },
+                      {
+                        "type": "chips",
+                        "options": 
+                        [
+                          {
+                            "text": "Cancelar",
+                            "image": 
+                            {
+                              "src": 
+                              {
+                                "rawUrl": referencesURI.imageURI_Login
+                              }
+                            }
+                          }
+                        ]
+                      }
+                  ]
+              ]
+            }
+            agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+          }
+          // Hay edad registrada (todos los campos disponibles)
+          else{
+            UsersParams.setUser(UsersParams.getTemporal());
+            UsersParams.setName(await backendTools.getBackend_UserName(UsersParams.getUser()));
+            UsersParams.setAge(await backendTools.getBackend_UserAge(UsersParams.getUser()));
+            const response = RichContentResponses.welcome(UsersParams.getName());
+            agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+          }
+        }
+      }
+    }
+  }
+
+  // Registro
+  async function UserRegister(agent, input){
+    // No ha pasado por el registro del email
+    if(!UsersParams.getRegEmail()){
+      // No hay email registrado aún
+      if(!await backendTools.getBackend_User(input)){
+        await UserRegister_Email(agent, input);
+      }
+      // El email ya ha sido registrado
+      else{
+        UsersParams.setRegEmail(null)
+        const response = {
+          "richContent": [
+              [
+                  {
+                      "type": "info",
+                      "title": "Error",
+                      "subtitle": "¡El usuario con email " + input +" ya está registrado!",
+                      "image": {
+                          "src": {
+                              "rawUrl": referencesURI.imageURI_Error
+                          }
+                      },
+                  },
+                  {
+                    "type": "chips",
+                    "options": 
+                    [
+                      {
+                        "text": "Cancelar",
+                        "image": 
+                        {
+                          "src": 
+                          {
+                            "rawUrl": referencesURI.imageURI_Login
+                          }
+                        }
+                      }
+                    ]
+                  }
+              ]
+          ]
+        }
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+    }
+    // No ha pasado por el registro de la contraseña 
+    else{
+
+    }
+  }
+
+  // Registro de email
+  async function UserRegister_Email(agent, input){
+    // ¿formato válido?
+    if (usersAuth.validatorEmail.validate(input)){
+      // el usuario se crea mas adelante (con todos los datos)
+      UsersParams.setRegEmail(input)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "subtitle": "Recuerda que tus datos mantendrán su privacidad y no serán compartidos.",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Help
+                        }
+                    },
+                },
+                {
+                    "type": "info",
+                    "title": "Registro",
+                    "subtitle": "Gracias. Para continuar con el registro necesito crear una contraseña personal de 6 dígitos. Introduce tu 'contraseña'. Si quieres volver al inicio, escribe 'Cancelar'",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login 
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+    // formato incorrecto (entrada normal)
+    else{
+      UsersParams.setRegEmail(null)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es un email con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+  }
+
+  // Registro de contraseña
+  async function UserRegister_Password(agent, input){
+    // ¿formato válido?
+    if (usersAuth.schema.validate(input)){
+      // el usuario se crea mas adelante (con todos los datos)
+      UsersParams.setRegPassword(input)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "subtitle": "Recuerda que tus datos mantendrán su privacidad y no serán compartidos.",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Help
+                        }
+                    },
+                },
+                {
+                    "type": "info",
+                    "title": "Registro",
+                    "subtitle": "Gracias. Para continuar con el registro necesito algunos datos adicionales. Introduce tu 'nombre y apellidos'. Si quieres volver al inicio, escribe 'Cancelar'",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login 
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+    // formato incorrecto (entrada normal)
+    else{
+      UsersParams.setRegPassword(null)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+  }
+
+
+
+  await backendTools.createBackend_User(UsersParams.getTemporal())
+      await backendTools.updateBackend_UserPassword(await usersAuth.gethashPassword(input), UsersParams.getTemporal())
+      await backendTools.updateBackend_UserName(input, UsersParams.getTemporal())
+      await backendTools.updateBackend_UserAge(input, UsersParams.getTemporal())
+      usersAuth.validatorNames(input)
+      usersAuth.validatorNumbers(input)
+      await backendTools.getBackend_UserAge(UsersParams.getTemporal())==null
+ 
+  // Actuar de middleware para el login en cada peticion
+  async function Middleware(agent){
+    // Controlar entradas de los formularios
+    let input = req.body.queryResult.queryText
+    // Opcion Login
+    if(input == "Iniciar Sesión" && !UsersParams.getLogin()){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Iniciar Sesión",
+                    "subtitle": "De acuerdo. Para acceder a la aplicación, introduce tu 'correo electrónico'. Si quieres volver al inicio, escribe 'Cancelar'",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      UsersParams.setLogin(true)
+    }
+    // Opcion Registro
+    else if(input == "Registro" && !UsersParams.getRegister()){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "subtitle": "Recuerda que tus datos mantendrán su privacidad y no serán compartidos.",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Help
+                        }
+                    },
+                },
+                {
+                    "type": "info",
+                    "title": "Registro",
+                    "subtitle": "De acuerdo. Para registrarse en la aplicación, necesito que introduzcas tu 'correo electrónico'. Si quieres volver al inicio, escribe 'Cancelar'",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      UsersParams.setRegister(true)
+    }
+    // El usuario introduce otro input
+    else{
+      // Aun seguimos en el menu de login
+      if(input=="Cerrar Sesión" || (!UsersParams.getLogin() && !UsersParams.getRegister()) || (UsersParams.getLogin() && input=="Cancelar") || (UsersParams.getRegister() && input=="Cancelar")){
+        const response = RichContentResponses.login;
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+        UsersParams.setLogin(false)
+        UsersParams.setRegister(false)
+        UsersParams.setPassword(null)
+        UsersParams.setTemporal(null)
+        if(input=="Cerrar Sesión") { UsersParams.setUser(null) }
+      }
+      // Hemos entrado en alguna opcion antes
+      else{
+        // Continuamos en Login
+        if(UsersParams.getLogin()){
+          await UserLogin(agent, input);
+        }
+        // Por descarte estamos en Registro
+        else{
+          await UserRegister(agent, input);
         }
       }
     }
@@ -408,7 +776,7 @@ exports.agent = async function (req, res) {
 
   // input.welcome 
   function ConversationBasic_Welcome(agent) {
-    const response = RichContentResponses.welcome;
+    const response = RichContentResponses.welcome(UsersParams.getName());
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
@@ -632,46 +1000,54 @@ exports.agent = async function (req, res) {
   }
 
   // Asociamos el nombre del Intent de DialogFlow con su funcion
-  let intentMap = new Map();
-  // Hay sesión de email
-  if(UsersParams.getUser()){
-    intentMap.set('ConversationBasic_Welcome', ConversationBasic_Welcome);
-    intentMap.set('ConversationBasic_Exit', ConversationBasic_Exit);
-    intentMap.set('ConversationBasic_Fallback', ConversationBasic_Fallback);
-    intentMap.set('ConversationBasic_Options', ConversationBasic_Options);
-    intentMap.set('ConversationMain_TeachingAssistant', ConversationMain_TeachingAssistant);
-    intentMap.set('ConversationOperations_TeachingAssistant_InputQuestion', ConversationOperations_TeachingAssistant_InputQuestion);
-    intentMap.set('ConversationOperations_TeachingAssistant_InputAnswer', ConversationOperations_TeachingAssistant_InputAnswer);
-    intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion', ConversationOperations_TeachingAssistant_DeleteQuestion);
-    intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm);
-    intentMap.set('ConversationMain_TeachingAssistant_UpdateAnswer', ConversationMain_TeachingAssistant_UpdateAnswer);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion', ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer', ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage', ConversationOperations_TeachingAssistant_UpdateImage);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion', ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', ConversationOperations_TeachingAssistant_UpdateImage_InputImage);
-    intentMap.set('ConversationOperations_TeachingAssistant_List', ConversationOperations_TeachingAssistant_List);
-    intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', ConversationOperations_TeachingAssistant_RandomQuestion);
+  // Flujo normal (true) o login (false)
+  function setIntentsMap(middleware){
+    let intentMap = new Map();
+    if(!middleware){
+      intentMap.set('ConversationBasic_Welcome', ConversationBasic_Welcome);
+      intentMap.set('ConversationBasic_Exit', ConversationBasic_Exit);
+      intentMap.set('ConversationBasic_Fallback', ConversationBasic_Fallback);
+      intentMap.set('ConversationBasic_Options', ConversationBasic_Options);
+      intentMap.set('ConversationMain_TeachingAssistant', ConversationMain_TeachingAssistant);
+      intentMap.set('ConversationOperations_TeachingAssistant_InputQuestion', ConversationOperations_TeachingAssistant_InputQuestion);
+      intentMap.set('ConversationOperations_TeachingAssistant_InputAnswer', ConversationOperations_TeachingAssistant_InputAnswer);
+      intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion', ConversationOperations_TeachingAssistant_DeleteQuestion);
+      intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm);
+      intentMap.set('ConversationMain_TeachingAssistant_UpdateAnswer', ConversationMain_TeachingAssistant_UpdateAnswer);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion', ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer', ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage', ConversationOperations_TeachingAssistant_UpdateImage);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion', ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', ConversationOperations_TeachingAssistant_UpdateImage_InputImage);
+      intentMap.set('ConversationOperations_TeachingAssistant_List', ConversationOperations_TeachingAssistant_List);
+      intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', ConversationOperations_TeachingAssistant_RandomQuestion);
+    }
+    else{
+      intentMap.set('ConversationBasic_Welcome', Middleware);
+      intentMap.set('ConversationBasic_Exit', Middleware);
+      intentMap.set('ConversationBasic_Fallback', Middleware);
+      intentMap.set('ConversationBasic_Options', Middleware);
+      intentMap.set('ConversationMain_TeachingAssistant', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_InputQuestion', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_InputAnswer', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', Middleware);
+      intentMap.set('ConversationMain_TeachingAssistant_UpdateAnswer', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_List', Middleware);
+      intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', Middleware);
+    }
+    return intentMap;
   }
-  // No hay sesión de email
-  else{
-    intentMap.set('ConversationBasic_Welcome', Middleware);
-    intentMap.set('ConversationBasic_Exit', Middleware);
-    intentMap.set('ConversationBasic_Fallback', Middleware);
-    intentMap.set('ConversationBasic_Options', Middleware);
-    intentMap.set('ConversationMain_TeachingAssistant', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_InputQuestion', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_InputAnswer', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', Middleware);
-    intentMap.set('ConversationMain_TeachingAssistant_UpdateAnswer', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_List', Middleware);
-    intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', Middleware);
+  // Hay flujo normal
+  let middleware = false;
+  // Se cierra la sesión actual / No hay sesión de login
+  if(req.body.queryResult.queryText=="Cerrar Sesión" || !UsersParams.getUser()){
+    middleware = true;
   }
-  agent.handleRequest(intentMap);
+  agent.handleRequest(setIntentsMap(middleware));
 }

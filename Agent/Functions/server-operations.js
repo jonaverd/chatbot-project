@@ -62,12 +62,23 @@ exports.WaitingInput = function (){
 // Similar a los user.params del Asistente (datos de la sesion)
 exports.UserParams = function (){
   var temporal;
+  var last;
   var password;
   var session;
   var user; // or email
   var name;
   var age;
-  function setTemporal(input){ temporal = input }
+  var login; // check user option in login menu
+  var register; // check user option in login menu
+  var authorizate; // check user option in login menu
+  var reg_email; // user variables register
+  var reg_password; // user variables register
+  var reg_name; // user variables register
+  var reg_age; // user variables register
+  function setTemporal(input){ 
+    temporal = input
+    if(input!=null) { last = input }
+   }
   function getTemporal(){ return temporal }
   function setPassword(boolean){ password = boolean }
   function getPassword(){ return password }
@@ -77,6 +88,21 @@ exports.UserParams = function (){
   function getName(){ return name }
   function setAge(input){ age = input }
   function getAge(){ return age }
+  function setRegEmail(input){ reg_email = input }
+  function getRegEmail(){ return reg_email }
+  function setRegPassword(input){ reg_password = input }
+  function getRegPassword(){ return reg_password }
+  function setRegName(input){ reg_name = input }
+  function getRegName(){ return reg_name }
+  function setRegAge(input){ reg_age = input }
+  function getRegAge(){ return reg_age }
+  function setLogin(input){ login = input }
+  function getLogin(){ return login }
+  function setRegister(input){ register = input }
+  function getRegister(){ return register }
+  function setAuthorizate(input){ authorizate = input }
+  function getAuthorizate(){ return authorizate }
+  function getLast(){ return last }
   function reload(request){
     if(session != request){
       temporal = null;
@@ -84,6 +110,13 @@ exports.UserParams = function (){
       user = null // or email
       name = null;
       age = null;
+      login = null;
+      register = null;
+      authorizate = null;
+      reg_email = null;
+      reg_name = null;
+      reg_age = null;
+      reg_password = null;
       session = request;
     }
   }
@@ -99,6 +132,21 @@ exports.UserParams = function (){
     setAge: setAge,
     getAge: getAge,
     reload: reload,
+    setLogin: setLogin,
+    getLogin: getLogin,
+    setRegister: setRegister,
+    getRegister: getRegister,
+    setAuthorizate: setAuthorizate,
+    getAuthorizate: getAuthorizate,
+    getLast: getLast,
+    getRegEmail: getRegEmail,
+    setRegEmail:  setRegEmail,
+    getRegName: getRegName,
+    setRegName: setRegName,
+    getRegAge: getRegAge,
+    setRegAge: setRegAge,
+    getRegPassword: getRegPassword,
+    setRegPassword: setRegPassword
   };
 }
 

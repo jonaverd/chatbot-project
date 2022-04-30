@@ -25,7 +25,7 @@ module.exports = Object.freeze({
             },
             {
             "type": "list",
-            "title": "Hasta luego",
+            "title": "Salir",
             "subtitle": "La conversación finaliza",
             },
             {
@@ -93,6 +93,14 @@ module.exports = Object.freeze({
             "subtitle": "El agente busca una pregunta al azar para responder al usuario",
             },
             {
+            "type": "divider"
+            },
+            {
+            "type": "list",
+            "title": "Cerrar Sesión",
+            "subtitle": "Devuelve al usuario al menú de Login, cerrando su sesión",
+            },
+            {
             "type": "chips",
             "options": [
                 {
@@ -142,7 +150,15 @@ module.exports = Object.freeze({
                     "rawUrl": referencesURI.imageURI_Public
                     }
                 }
-                }
+                },
+                {
+                  "text": "Cerrar Sesión",
+                  "image": {
+                      "src": {
+                      "rawUrl": referencesURI.imageURI_Login
+                      }
+                  }
+                  }
             ]
             }
         ]
@@ -173,7 +189,7 @@ module.exports = Object.freeze({
                   }
                 },
                 {
-                  "text": "Hasta luego",
+                  "text": "Salir",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -190,7 +206,7 @@ module.exports = Object.freeze({
           [
             {
               "type": "info",
-              "title": "Hasta luego",
+              "title": "Salir",
               "subtitle": "Un placer trabajar contigo, ¡Nos vemos pronto!",
               "image": {
                 "src": {
@@ -201,13 +217,14 @@ module.exports = Object.freeze({
           ]
         ]
     },
-    welcome: {
+    welcome: function(name){
+      const response = {
         "richContent": [
           [
             {
               "type": "info",
-              "title": "Hola",
-              "subtitle": "¡Bienvenido! Soy Odiseo, tu agente educativo. ¿Que quieres hacer?",
+              "title": "Hola " + name,
+              "subtitle": "¡Bienvenido/a de nuevo! Soy Odiseo, tu agente educativo. ¿Que quieres hacer?",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Public
@@ -226,7 +243,15 @@ module.exports = Object.freeze({
                   }
                 },
                 {
-                  "text": "Hasta luego",
+                  "text": "Salir",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Cerrar Sesión",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -237,6 +262,8 @@ module.exports = Object.freeze({
             }
           ]
         ]
+      }
+      return response;
     },
     cancel: {
         "richContent": [
@@ -273,13 +300,39 @@ module.exports = Object.freeze({
             [
                 {
                     "type": "info",
-                    "title": "Iniciar Sesión",
-                    "subtitle": "Bienvenido al asistente educativo Odiseo. Para continuar necesitas identificarte (introduce tu email)",
+                    "title": "Identifícate",
+                    "subtitle": "Bienvenido al asistente educativo Odiseo. Para continuar es necesario que 'Inicies Sesión' con tu cuenta o te 'Registres'.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Login
                         }
                     },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Iniciar Sesión",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    },
+                    {
+                      "text": "Registro",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
                 }
             ]
         ]
