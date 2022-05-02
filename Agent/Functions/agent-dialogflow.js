@@ -35,7 +35,7 @@ exports.agent = async function (req, res) {
   console.log('DialogFlow Panel Detected')
 
   // Comprobaciones del email temporal
-  async function operationsTemporal(agent, input){
+  async function UserLogin_Temporal(agent, input){
     // ¿formato válido?
     if (usersAuth.validatorEmail.validate(input)){
       // No hay email registrado 
@@ -154,7 +154,7 @@ exports.agent = async function (req, res) {
   }
 
   // Comprobaciones de la contraseña
-  async function operationsPassword(agent, input){
+  async function UserLogin_Password(agent, input){
     // ¿formato válido?
     if (usersAuth.schema.validate(input)){
       // No hay contraseña registrada 
@@ -206,7 +206,7 @@ exports.agent = async function (req, res) {
                 {
                   "type": "info",
                   "title": "Iniciar Sesión",
-                  "subtitle": "Contraseña verificada. Identificado como: " + UsersParams.getTemporal() + ". Para acceder a tu cuenta, escribe 'Continuar'",
+                  "subtitle": "Contraseña verificada. Identificado como: " + await backendTools.getBackend_UserName(UsersParams.getTemporal()) + ". Para acceder a tu cuenta, escribe 'Acceder'",
                   "image": 
                   {
                     "src": 
@@ -219,7 +219,7 @@ exports.agent = async function (req, res) {
                   "type": "chips",
                   "options": [
                     {
-                      "text": "Continuar",
+                      "text": "Acceder",
                       "image": {
                         "src": {
                           "rawUrl": referencesURI.imageURI_Login
@@ -326,13 +326,13 @@ exports.agent = async function (req, res) {
   async function UserLogin(agent, input){
     // No hay temporal activo
     if(!UsersParams.getTemporal()){
-      await operationsTemporal(agent, input)
+      await UserLogin_Temporal(agent, input)
     }
     // Temporal activado
     else{
       // No hay sesión de contraseña (¿Login?)
       if(!UsersParams.getPassword()){
-        await operationsPassword(agent, input)
+        await UserLogin_Password(agent, input)
       }
       // Hay sesión de contraseña
       else{
@@ -423,58 +423,6 @@ exports.agent = async function (req, res) {
     }
   }
 
-  // Registro
-  async function UserRegister(agent, input){
-    // No ha pasado por el registro del email
-    if(!UsersParams.getRegEmail()){
-      // No hay email registrado aún
-      if(!await backendTools.getBackend_User(input)){
-        await UserRegister_Email(agent, input);
-      }
-      // El email ya ha sido registrado
-      else{
-        UsersParams.setRegEmail(null)
-        const response = {
-          "richContent": [
-              [
-                  {
-                      "type": "info",
-                      "title": "Error",
-                      "subtitle": "¡El usuario con email " + input +" ya está registrado!",
-                      "image": {
-                          "src": {
-                              "rawUrl": referencesURI.imageURI_Error
-                          }
-                      },
-                  },
-                  {
-                    "type": "chips",
-                    "options": 
-                    [
-                      {
-                        "text": "Cancelar",
-                        "image": 
-                        {
-                          "src": 
-                          {
-                            "rawUrl": referencesURI.imageURI_Login
-                          }
-                        }
-                      }
-                    ]
-                  }
-              ]
-          ]
-        }
-        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
-      }
-    }
-    // No ha pasado por el registro de la contraseña 
-    else{
-
-    }
-  }
-
   // Registro de email
   async function UserRegister_Email(agent, input){
     // ¿formato válido?
@@ -486,7 +434,7 @@ exports.agent = async function (req, res) {
             [
                 {
                     "type": "info",
-                    "subtitle": "Recuerda que tus datos mantendrán su privacidad y no serán compartidos.",
+                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Tu contraseña se guardará como una llave cifrada por razones de seguridad",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Help
@@ -574,7 +522,7 @@ exports.agent = async function (req, res) {
             [
                 {
                     "type": "info",
-                    "subtitle": "Recuerda que tus datos mantendrán su privacidad y no serán compartidos.",
+                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Los datos adicionales se recojerán únicamente para tu identificación personal, o bien, para extraer estadísticas relacionadas con el uso de la aplicación.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Help
@@ -584,7 +532,7 @@ exports.agent = async function (req, res) {
                 {
                     "type": "info",
                     "title": "Registro",
-                    "subtitle": "Gracias. Para continuar con el registro necesito algunos datos adicionales. Introduce tu 'nombre y apellidos'. Si quieres volver al inicio, escribe 'Cancelar'",
+                    "subtitle": "Perfecto. Si quieres completar el registro tendrás que facilitarme algunos datos adicionales. Introduce tu 'nombre y apellidos'. Si quieres volver al inicio, escribe 'Cancelar'",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Login 
@@ -651,16 +599,373 @@ exports.agent = async function (req, res) {
     }
   }
 
+  // Registro de nombre y apellidos
+  async function UserRegister_Name(agent, input){
+    // ¿formato válido?
+    if (usersAuth.validatorNames(input)){
+      // el usuario se crea mas adelante (con todos los datos)
+      UsersParams.setRegName(input)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Los datos adicionales se recojerán únicamente para tu identificación personal, o bien, para extraer estadísticas relacionadas con el uso de la aplicación.",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Help
+                        }
+                    },
+                },
+                {
+                    "type": "info",
+                    "title": "Registro",
+                    "subtitle": "Correcto. Para finalizar el registro de tu cuenta introduce tu 'edad'. Si quieres volver al inicio, escribe 'Cancelar'",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login 
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+    // formato incorrecto (entrada normal)
+    else{
+      UsersParams.setRegName(null)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es un nombre o apellidos con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+  }
 
+  // Registro de edad + guardar todos los datos
+  async function UserRegister_Age(agent, input){
+    // ¿formato válido?
+    if (usersAuth.validatorNumbers(input)){
+      // si hemos llegado aqui, ya tenemos todos los datos del usuario, registramos 
+      UsersParams.setRegAge(input)
+      await backendTools.createBackend_User(UsersParams.getRegEmail())
+      await backendTools.updateBackend_UserPassword(await usersAuth.gethashPassword(UsersParams.getRegPassword()), UsersParams.getRegEmail())
+      await backendTools.updateBackend_UserName(UsersParams.getRegName(), UsersParams.getRegEmail())
+      await backendTools.updateBackend_UserAge(UsersParams.getRegAge(), UsersParams.getRegEmail())
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Registro",
+                    "subtitle": "¡Registro completado! La próxima vez podré identificarte como " + UsersParams.getRegName() + ". Si quieres volver al inicio, escribe 'Finalizar'",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login 
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Finalizar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+    // formato incorrecto (entrada normal)
+    else{
+      UsersParams.setRegAge(null)
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es una edad con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+  }
 
-  await backendTools.createBackend_User(UsersParams.getTemporal())
-      await backendTools.updateBackend_UserPassword(await usersAuth.gethashPassword(input), UsersParams.getTemporal())
-      await backendTools.updateBackend_UserName(input, UsersParams.getTemporal())
-      await backendTools.updateBackend_UserAge(input, UsersParams.getTemporal())
-      usersAuth.validatorNames(input)
-      usersAuth.validatorNumbers(input)
-      await backendTools.getBackend_UserAge(UsersParams.getTemporal())==null
- 
+  // Registro
+  async function UserRegister(agent, input){
+    // No ha pasado por el registro del email
+    if(!UsersParams.getRegEmail()){
+      // No hay email registrado aún
+      if(!await backendTools.getBackend_User(input)){
+        await UserRegister_Email(agent, input);
+      }
+      // El email ya ha sido registrado
+      else{
+        UsersParams.setRegEmail(null)
+        const response = {
+          "richContent": [
+              [
+                  {
+                      "type": "info",
+                      "title": "Error",
+                      "subtitle": "¡El usuario con email " + input +" ya está registrado!",
+                      "image": {
+                          "src": {
+                              "rawUrl": referencesURI.imageURI_Error
+                          }
+                      },
+                  },
+                  {
+                    "type": "chips",
+                    "options": 
+                    [
+                      {
+                        "text": "Cancelar",
+                        "image": 
+                        {
+                          "src": 
+                          {
+                            "rawUrl": referencesURI.imageURI_Login
+                          }
+                        }
+                      }
+                    ]
+                  }
+              ]
+          ]
+        }
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+    }
+    else{
+      // No ha pasado por el registro de la contraseña
+      if(!UsersParams.getRegPassword()){
+        // No hay contraseña registrada aún
+        if(await backendTools.getBackend_UserPassword(UsersParams.getTemporal())==null){
+          await UserRegister_Password(agent, input);
+        }
+        // La contraseña ya ha sido registrada
+        else{
+          UsersParams.setRegPassword(null)
+          const response = {
+            "richContent": [
+                [
+                    {
+                        "type": "info",
+                        "title": "Error",
+                        "subtitle": "¡La contraseña para el email " + UsersParams.getRegEmail() +" ya está registrada!",
+                        "image": {
+                            "src": {
+                                "rawUrl": referencesURI.imageURI_Error
+                            }
+                        },
+                    },
+                    {
+                      "type": "chips",
+                      "options": 
+                      [
+                        {
+                          "text": "Cancelar",
+                          "image": 
+                          {
+                            "src": 
+                            {
+                              "rawUrl": referencesURI.imageURI_Login
+                            }
+                          }
+                        }
+                      ]
+                    }
+                ]
+            ]
+          }
+          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+        }
+      }
+      else{
+        // No ha pasado por el registro del nombre
+        if(!UsersParams.getRegName()){
+          // No hay nombre registrado aún
+          if(await backendTools.getBackend_UserName(UsersParams.getTemporal())==null){
+            await UserRegister_Name(agent, input);
+          }
+          // El nombre ya ha sido registrado
+          else{
+            UsersParams.setRegName(null)
+            const response = {
+              "richContent": [
+                  [
+                      {
+                          "type": "info",
+                          "title": "Error",
+                          "subtitle": "¡El nombre para el email " + UsersParams.getRegEmail() +" ya está registrado!",
+                          "image": {
+                              "src": {
+                                  "rawUrl": referencesURI.imageURI_Error
+                              }
+                          },
+                      },
+                      {
+                        "type": "chips",
+                        "options": 
+                        [
+                          {
+                            "text": "Cancelar",
+                            "image": 
+                            {
+                              "src": 
+                              {
+                                "rawUrl": referencesURI.imageURI_Login
+                              }
+                            }
+                          }
+                        ]
+                      }
+                  ]
+              ]
+            }
+            agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+          }
+        }
+        else{
+          // No ha pasado por el registro de la edad
+          if(!UsersParams.getRegAge()){
+            // No hay edad registrada aún
+            if(await backendTools.getBackend_UserAge(UsersParams.getTemporal())==null){
+              await UserRegister_Age(agent, input);
+            }
+            // La edad ya ha sido registrada
+            else{
+              UsersParams.setRegAge(null)
+              const response = {
+                "richContent": [
+                    [
+                        {
+                            "type": "info",
+                            "title": "Error",
+                            "subtitle": "¡La edad para el email " + UsersParams.getRegEmail() +" ya está registrada!",
+                            "image": {
+                                "src": {
+                                    "rawUrl": referencesURI.imageURI_Error
+                                }
+                            },
+                        },
+                        {
+                          "type": "chips",
+                          "options": 
+                          [
+                            {
+                              "text": "Cancelar",
+                              "image": 
+                              {
+                                "src": 
+                                {
+                                  "rawUrl": referencesURI.imageURI_Login
+                                }
+                              }
+                            }
+                          ]
+                        }
+                    ]
+                ]
+              }
+              agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+            }
+          }
+          else{
+            // El registro ya se completó con la edad, simplemente reseteamos valores y volvemos al menu principal
+            UsersParams.setRegister(false)
+            UsersParams.setRegEmail(null)
+            UsersParams.setRegPassword(null);
+            UsersParams.setRegName(null);
+            UsersParams.setRegAge(null);
+            const response = RichContentResponses.login;
+            agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+          }
+        }
+      }
+    }
+  }
+
   // Actuar de middleware para el login en cada peticion
   async function Middleware(agent){
     // Controlar entradas de los formularios
@@ -709,7 +1014,7 @@ exports.agent = async function (req, res) {
             [
                 {
                     "type": "info",
-                    "subtitle": "Recuerda que tus datos mantendrán su privacidad y no serán compartidos.",
+                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Help
@@ -758,6 +1063,10 @@ exports.agent = async function (req, res) {
         UsersParams.setRegister(false)
         UsersParams.setPassword(null)
         UsersParams.setTemporal(null)
+        UsersParams.setRegEmail(null)
+        UsersParams.setRegPassword(null)
+        UsersParams.setRegName(null)
+        UsersParams.setRegAge(null)
         if(input=="Cerrar Sesión") { UsersParams.setUser(null) }
       }
       // Hemos entrado en alguna opcion antes
