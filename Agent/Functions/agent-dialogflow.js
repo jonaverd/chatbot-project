@@ -41,114 +41,21 @@ exports.agent = async function (req, res) {
       // No hay email registrado 
       if(!await backendTools.getBackend_User(input)){
         UsersParams.setTemporal(null)
-        const response = {
-          "richContent": [
-              [
-                  {
-                      "type": "info",
-                      "title": "Error",
-                      "subtitle": "El email " + input +" no está registrado en mi base de datos",
-                      "image": {
-                          "src": {
-                              "rawUrl": referencesURI.imageURI_Error
-                          }
-                      },
-                  },
-                  {
-                    "type": "chips",
-                    "options": 
-                    [
-                      {
-                        "text": "Cancelar",
-                        "image": 
-                        {
-                          "src": 
-                          {
-                            "rawUrl": referencesURI.imageURI_Login
-                          }
-                        }
-                      }
-                    ]
-                  }
-              ]
-          ]
-        }
+        const response = RichContentResponses.error_users_login_emailnotexists(input);
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
       // Hay email registrado
       else{
         // email temporal activado
         UsersParams.setTemporal(input)
-        const response = {
-          "richContent": [
-              [
-                  {
-                      "type": "info",
-                      "title": "Iniciar Sesión",
-                      "subtitle": "Email verificado (" + UsersParams.getTemporal() + ") Introduce tu contraseña de 6 dígitos para acceder a tu cuenta.",
-                      "image": {
-                          "src": {
-                              "rawUrl": referencesURI.imageURI_Login
-                          }
-                      },
-                  },
-                  {
-                    "type": "chips",
-                    "options": 
-                    [
-                      {
-                        "text": "Cancelar",
-                        "image": 
-                        {
-                          "src": 
-                          {
-                            "rawUrl": referencesURI.imageURI_Login
-                          }
-                        }
-                      }
-                    ]
-                  }
-              ]
-          ]
-        }
+        const response = RichContentResponses.input_users_login_waitingpassword(UsersParams.getTemporal());
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
     }
     // formato incorrecto (entrada normal)
     else{
       UsersParams.setTemporal(null)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "title": "Error",
-                    "subtitle": "La entrada " + input +" no es un email con formato válido",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Error
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.error_users_login_emailnotformat(input);
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
   }
@@ -160,38 +67,7 @@ exports.agent = async function (req, res) {
       // No hay contraseña registrada 
       if(await backendTools.getBackend_UserPassword(UsersParams.getTemporal())==null){
         UsersParams.setPassword(null)
-        const response = {
-          "richContent": [
-              [
-                  {
-                      "type": "info",
-                      "title": "Error",
-                      "subtitle": "El email " + UsersParams.getLast() +" no tiene una contraseña registrada.",
-                      "image": {
-                          "src": {
-                              "rawUrl": referencesURI.imageURI_Error
-                          }
-                      },
-                  },
-                  {
-                    "type": "chips",
-                    "options": 
-                    [
-                      {
-                        "text": "Cancelar",
-                        "image": 
-                        {
-                          "src": 
-                          {
-                            "rawUrl": referencesURI.imageURI_Login
-                          }
-                        }
-                      }
-                    ]
-                  }
-              ]
-          ]
-        }
+        const response = RichContentResponses.error_users_login_passwordnotexists(UsersParams.getLast());
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
       // Hay contraseña registrada
@@ -199,86 +75,13 @@ exports.agent = async function (req, res) {
         // login válido
         if(await usersAuth.comparehashPassword(input, await backendTools.getBackend_UserPassword(UsersParams.getTemporal()))){
           UsersParams.setPassword(true);
-          const response = {
-            "richContent": 
-            [
-              [
-                {
-                  "type": "info",
-                  "title": "Iniciar Sesión",
-                  "subtitle": "Contraseña verificada. Identificado como: " + await backendTools.getBackend_UserName(UsersParams.getTemporal()) + ". Para acceder a tu cuenta, escribe 'Acceder'",
-                  "image": 
-                  {
-                    "src": 
-                    {
-                      "rawUrl": referencesURI.imageURI_Login
-                    }
-                  }
-                },
-                {
-                  "type": "chips",
-                  "options": [
-                    {
-                      "text": "Acceder",
-                      "image": {
-                        "src": {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    },
-                    {
-                      "text": "Cancelar",
-                      "image": {
-                        "src": {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
+          const response = RichContentResponses.info_users_login_access(await backendTools.getBackend_UserName(UsersParams.getTemporal()));
           agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
         }
         // login error
         else{
           UsersParams.setPassword(null)
-          const response = {
-            "richContent": 
-            [
-              [
-                {
-                  "type": "info",
-                  "title": "Error",
-                  "subtitle": "La contraseña no es correcta. Introduce la contraseña de 6 dígitos asociada a este usuario: " + UsersParams.getLast(),
-                  "image": 
-                  {
-                    "src": 
-                    {
-                      "rawUrl": referencesURI.imageURI_Error
-                    }
-                  }
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
+          const response = RichContentResponses.error_users_login_access(UsersParams.getLast());
           agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
         }
       }
@@ -286,38 +89,7 @@ exports.agent = async function (req, res) {
     // formato incorrecto (entrada normal)
     else{
       UsersParams.setPassword(null)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "title": "Error",
-                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Error
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.error_users_login_passwordnotformat(input);
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
   }
@@ -338,76 +110,14 @@ exports.agent = async function (req, res) {
       else{
         // No hay nombre registrado 
         if(!await backendTools.getBackend_UserName(UsersParams.getTemporal())){
-          const response = {
-            "richContent": [
-                [
-                    {
-                        "type": "info",
-                        "title": "Error",
-                        "subtitle": "El email " + UsersParams.getLast() +" no tiene un nombre registrado.",
-                        "image": {
-                            "src": {
-                                "rawUrl": referencesURI.imageURI_Error
-                            }
-                        },
-                    },
-                    {
-                      "type": "chips",
-                      "options": 
-                      [
-                        {
-                          "text": "Cancelar",
-                          "image": 
-                          {
-                            "src": 
-                            {
-                              "rawUrl": referencesURI.imageURI_Login
-                            }
-                          }
-                        }
-                      ]
-                    }
-                ]
-            ]
-          }
+          const response = RichContentResponses.error_users_login_namenotexists(UsersParams.getLast());
           agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
         }
         // Hay nombre registrado
         else{
           // No hay edad registrada
           if(!await backendTools.getBackend_UserAge(UsersParams.getTemporal())){
-            const response = {
-              "richContent": [
-                  [
-                      {
-                          "type": "info",
-                          "title": "Error",
-                          "subtitle": "El email " + UsersParams.getLast() +" no tiene una edad registrada.",
-                          "image": {
-                              "src": {
-                                  "rawUrl": referencesURI.imageURI_Error
-                              }
-                          },
-                      },
-                      {
-                        "type": "chips",
-                        "options": 
-                        [
-                          {
-                            "text": "Cancelar",
-                            "image": 
-                            {
-                              "src": 
-                              {
-                                "rawUrl": referencesURI.imageURI_Login
-                              }
-                            }
-                          }
-                        ]
-                      }
-                  ]
-              ]
-            }
+            const response = RichContentResponses.error_users_login_agenotexists(UsersParams.getLast());
             agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
           }
           // Hay edad registrada (todos los campos disponibles)
@@ -415,98 +125,27 @@ exports.agent = async function (req, res) {
             UsersParams.setUser(UsersParams.getTemporal());
             UsersParams.setName(await backendTools.getBackend_UserName(UsersParams.getUser()));
             UsersParams.setAge(await backendTools.getBackend_UserAge(UsersParams.getUser()));
-            const response = RichContentResponses.welcome(UsersParams.getName());
+            const response = RichContentResponses.info_basic_welcome(UsersParams.getName());
             agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
           }
         }
       }
     }
   }
-
+  
   // Registro de email
   async function UserRegister_Email(agent, input){
     // ¿formato válido?
     if (usersAuth.validatorEmail.validate(input)){
       // el usuario se crea mas adelante (con todos los datos)
       UsersParams.setRegEmail(input)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Tu contraseña se guardará como una llave cifrada por razones de seguridad",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Help
-                        }
-                    },
-                },
-                {
-                    "type": "info",
-                    "title": "Registro",
-                    "subtitle": "Gracias. Para continuar con el registro necesito crear una contraseña personal de 6 dígitos. Introduce tu 'contraseña'. Si quieres volver al inicio, escribe 'Cancelar'",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Login 
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.input_users_register_waitingpassword;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
     // formato incorrecto (entrada normal)
     else{
       UsersParams.setRegEmail(null)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "title": "Error",
-                    "subtitle": "La entrada " + input +" no es un email con formato válido",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Error
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.error_users_register_emailnotformat(input);
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
   }
@@ -517,84 +156,13 @@ exports.agent = async function (req, res) {
     if (usersAuth.schema.validate(input)){
       // el usuario se crea mas adelante (con todos los datos)
       UsersParams.setRegPassword(input)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Los datos adicionales se recojerán únicamente para tu identificación personal, o bien, para extraer estadísticas relacionadas con el uso de la aplicación.",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Help
-                        }
-                    },
-                },
-                {
-                    "type": "info",
-                    "title": "Registro",
-                    "subtitle": "Perfecto. Si quieres completar el registro tendrás que facilitarme algunos datos adicionales. Introduce tu 'nombre y apellidos'. Si quieres volver al inicio, escribe 'Cancelar'",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Login 
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.input_users_register_waitingname;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
     // formato incorrecto (entrada normal)
     else{
       UsersParams.setRegPassword(null)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "title": "Error",
-                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Error
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.error_users_register_passwordnotformat(input);
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
   }
@@ -605,84 +173,13 @@ exports.agent = async function (req, res) {
     if (usersAuth.validatorNames(input)){
       // el usuario se crea mas adelante (con todos los datos)
       UsersParams.setRegName(input)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Los datos adicionales se recojerán únicamente para tu identificación personal, o bien, para extraer estadísticas relacionadas con el uso de la aplicación.",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Help
-                        }
-                    },
-                },
-                {
-                    "type": "info",
-                    "title": "Registro",
-                    "subtitle": "Correcto. Para finalizar el registro de tu cuenta introduce tu 'edad'. Si quieres volver al inicio, escribe 'Cancelar'",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Login 
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.input_users_register_waitingage;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
     // formato incorrecto (entrada normal)
     else{
       UsersParams.setRegName(null)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "title": "Error",
-                    "subtitle": "La entrada " + input +" no es un nombre o apellidos con formato válido",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Error
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.error_users_register_namenotformat(input);
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
   }

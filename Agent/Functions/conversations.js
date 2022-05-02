@@ -217,7 +217,7 @@ module.exports = Object.freeze({
           ]
         ]
     },
-    welcome: function(name){
+    info_basic_welcome: function(name){
       const response = {
         "richContent": [
           [
@@ -440,5 +440,561 @@ module.exports = Object.freeze({
             ]
         }
         return response;
+    },
+    error_users_login_emailnotexists: function(input){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "El email " + input +" no está registrado en mi base de datos",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    input_users_login_waitingpassword: function(user){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Iniciar Sesión",
+                    "subtitle": "Email verificado (" + user + ") Introduce tu contraseña de 6 dígitos para acceder a tu cuenta.",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    error_users_login_emailnotformat: function(input){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es un email con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    error_users_login_passwordnotexists: function(email){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "El email " + email +" no tiene una contraseña registrada.",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    info_users_login_access: function(user){
+      const response = {
+        "richContent": 
+        [
+          [
+            {
+              "type": "info",
+              "title": "Iniciar Sesión",
+              "subtitle": "Contraseña verificada. Identificado como: " + user + ". Para acceder a tu cuenta, escribe 'Acceder'",
+              "image": 
+              {
+                "src": 
+                {
+                  "rawUrl": referencesURI.imageURI_Login
+                }
+              }
+            },
+            {
+              "type": "chips",
+              "options": [
+                {
+                  "text": "Acceder",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Login
+                    }
+                  }
+                },
+                {
+                  "text": "Cancelar",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Login
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      return response;
+    },
+    error_users_login_access: function(user){
+      const response = {
+        "richContent": 
+        [
+          [
+            {
+              "type": "info",
+              "title": "Error",
+              "subtitle": "La contraseña no es correcta. Introduce la contraseña de 6 dígitos asociada a este usuario: " + user,
+              "image": 
+              {
+                "src": 
+                {
+                  "rawUrl": referencesURI.imageURI_Error
+                }
+              }
+            },
+            {
+              "type": "chips",
+              "options": 
+              [
+                {
+                  "text": "Cancelar",
+                  "image": 
+                  {
+                    "src": 
+                    {
+                      "rawUrl": referencesURI.imageURI_Login
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      return response;
+    },
+    error_users_login_passwordnotformat: function(input){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    error_users_login_namenotexists(user){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "El email " + user +" no tiene un nombre registrado.",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    error_users_login_agenotexists(user){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "El email " + user +" no tiene una edad registrada.",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    input_users_register_waitingpassword: 
+    {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Tu contraseña se guardará como una llave cifrada por razones de seguridad",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Help
+                        }
+                    },
+                },
+                {
+                    "type": "info",
+                    "title": "Registro",
+                    "subtitle": "Gracias. Para continuar con el registro necesito crear una contraseña personal de 6 dígitos. Introduce tu 'contraseña'. Si quieres volver al inicio, escribe 'Cancelar'",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Login 
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+    },
+    error_users_register_emailnotformat: function(input){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es un email con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    input_users_register_waitingname: 
+    {
+      "richContent": [
+          [
+              {
+                  "type": "info",
+                  "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Los datos adicionales se recojerán únicamente para tu identificación personal, o bien, para extraer estadísticas relacionadas con el uso de la aplicación.",
+                  "image": {
+                      "src": {
+                          "rawUrl": referencesURI.imageURI_Help
+                      }
+                  },
+              },
+              {
+                  "type": "info",
+                  "title": "Registro",
+                  "subtitle": "Perfecto. Si quieres completar el registro tendrás que facilitarme algunos datos adicionales. Introduce tu 'nombre y apellidos'. Si quieres volver al inicio, escribe 'Cancelar'",
+                  "image": {
+                      "src": {
+                          "rawUrl": referencesURI.imageURI_Login 
+                      }
+                  },
+              },
+              {
+                "type": "chips",
+                "options": 
+                [
+                  {
+                    "text": "Cancelar",
+                    "image": 
+                    {
+                      "src": 
+                      {
+                        "rawUrl": referencesURI.imageURI_Login
+                      }
+                    }
+                  }
+                ]
+              }
+          ]
+      ]
+    },
+    error_users_register_passwordnotformat: function(input){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
+    },
+    input_users_register_waitingage: {
+      "richContent": [
+          [
+              {
+                  "type": "info",
+                  "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Los datos adicionales se recojerán únicamente para tu identificación personal, o bien, para extraer estadísticas relacionadas con el uso de la aplicación.",
+                  "image": {
+                      "src": {
+                          "rawUrl": referencesURI.imageURI_Help
+                      }
+                  },
+              },
+              {
+                  "type": "info",
+                  "title": "Registro",
+                  "subtitle": "Correcto. Para finalizar el registro de tu cuenta introduce tu 'edad'. Si quieres volver al inicio, escribe 'Cancelar'",
+                  "image": {
+                      "src": {
+                          "rawUrl": referencesURI.imageURI_Login 
+                      }
+                  },
+              },
+              {
+                "type": "chips",
+                "options": 
+                [
+                  {
+                    "text": "Cancelar",
+                    "image": 
+                    {
+                      "src": 
+                      {
+                        "rawUrl": referencesURI.imageURI_Login
+                      }
+                    }
+                  }
+                ]
+              }
+          ]
+      ]
+    },
+    error_users_register_namenotformat: function(input){
+      const response = {
+        "richContent": [
+            [
+                {
+                    "type": "info",
+                    "title": "Error",
+                    "subtitle": "La entrada " + input +" no es un nombre o apellidos con formato válido",
+                    "image": {
+                        "src": {
+                            "rawUrl": referencesURI.imageURI_Error
+                        }
+                    },
+                },
+                {
+                  "type": "chips",
+                  "options": 
+                  [
+                    {
+                      "text": "Cancelar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    }
+                  ]
+                }
+            ]
+        ]
+      }
+      return response;
     }
 });
