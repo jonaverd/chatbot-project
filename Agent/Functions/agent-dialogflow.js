@@ -194,75 +194,13 @@ exports.agent = async function (req, res) {
       await backendTools.updateBackend_UserPassword(await usersAuth.gethashPassword(UsersParams.getRegPassword()), UsersParams.getRegEmail())
       await backendTools.updateBackend_UserName(UsersParams.getRegName(), UsersParams.getRegEmail())
       await backendTools.updateBackend_UserAge(UsersParams.getRegAge(), UsersParams.getRegEmail())
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "title": "Registro",
-                    "subtitle": "¡Registro completado! La próxima vez podré identificarte como " + UsersParams.getRegName() + ". Si quieres volver al inicio, escribe 'Finalizar'",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Login 
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Finalizar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.info_users_register_completed(UsersParams.getRegName());
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
     // formato incorrecto (entrada normal)
     else{
       UsersParams.setRegAge(null)
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "title": "Error",
-                    "subtitle": "La entrada " + input +" no es una edad con formato válido",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Error
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.error_users_register_agenotformat(input);
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
   }
@@ -278,38 +216,7 @@ exports.agent = async function (req, res) {
       // El email ya ha sido registrado
       else{
         UsersParams.setRegEmail(null)
-        const response = {
-          "richContent": [
-              [
-                  {
-                      "type": "info",
-                      "title": "Error",
-                      "subtitle": "¡El usuario con email " + input +" ya está registrado!",
-                      "image": {
-                          "src": {
-                              "rawUrl": referencesURI.imageURI_Error
-                          }
-                      },
-                  },
-                  {
-                    "type": "chips",
-                    "options": 
-                    [
-                      {
-                        "text": "Cancelar",
-                        "image": 
-                        {
-                          "src": 
-                          {
-                            "rawUrl": referencesURI.imageURI_Login
-                          }
-                        }
-                      }
-                    ]
-                  }
-              ]
-          ]
-        }
+        const response = RichContentResponses.error_users_register_emailexists(input);
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
     }
@@ -323,38 +230,7 @@ exports.agent = async function (req, res) {
         // La contraseña ya ha sido registrada
         else{
           UsersParams.setRegPassword(null)
-          const response = {
-            "richContent": [
-                [
-                    {
-                        "type": "info",
-                        "title": "Error",
-                        "subtitle": "¡La contraseña para el email " + UsersParams.getRegEmail() +" ya está registrada!",
-                        "image": {
-                            "src": {
-                                "rawUrl": referencesURI.imageURI_Error
-                            }
-                        },
-                    },
-                    {
-                      "type": "chips",
-                      "options": 
-                      [
-                        {
-                          "text": "Cancelar",
-                          "image": 
-                          {
-                            "src": 
-                            {
-                              "rawUrl": referencesURI.imageURI_Login
-                            }
-                          }
-                        }
-                      ]
-                    }
-                ]
-            ]
-          }
+          const response = RichContentResponses.error_users_register_passwordexists(UsersParams.getRegEmail());
           agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
         }
       }
@@ -368,38 +244,7 @@ exports.agent = async function (req, res) {
           // El nombre ya ha sido registrado
           else{
             UsersParams.setRegName(null)
-            const response = {
-              "richContent": [
-                  [
-                      {
-                          "type": "info",
-                          "title": "Error",
-                          "subtitle": "¡El nombre para el email " + UsersParams.getRegEmail() +" ya está registrado!",
-                          "image": {
-                              "src": {
-                                  "rawUrl": referencesURI.imageURI_Error
-                              }
-                          },
-                      },
-                      {
-                        "type": "chips",
-                        "options": 
-                        [
-                          {
-                            "text": "Cancelar",
-                            "image": 
-                            {
-                              "src": 
-                              {
-                                "rawUrl": referencesURI.imageURI_Login
-                              }
-                            }
-                          }
-                        ]
-                      }
-                  ]
-              ]
-            }
+            const response = RichContentResponses.error_users_register_nameexists(UsersParams.getRegEmail());
             agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
           }
         }
@@ -413,38 +258,7 @@ exports.agent = async function (req, res) {
             // La edad ya ha sido registrada
             else{
               UsersParams.setRegAge(null)
-              const response = {
-                "richContent": [
-                    [
-                        {
-                            "type": "info",
-                            "title": "Error",
-                            "subtitle": "¡La edad para el email " + UsersParams.getRegEmail() +" ya está registrada!",
-                            "image": {
-                                "src": {
-                                    "rawUrl": referencesURI.imageURI_Error
-                                }
-                            },
-                        },
-                        {
-                          "type": "chips",
-                          "options": 
-                          [
-                            {
-                              "text": "Cancelar",
-                              "image": 
-                              {
-                                "src": 
-                                {
-                                  "rawUrl": referencesURI.imageURI_Login
-                                }
-                              }
-                            }
-                          ]
-                        }
-                    ]
-                ]
-              }
+              const response = RichContentResponses.error_users_register_ageexists(UsersParams.getRegEmail());
               agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
             }
           }
@@ -455,7 +269,7 @@ exports.agent = async function (req, res) {
             UsersParams.setRegPassword(null);
             UsersParams.setRegName(null);
             UsersParams.setRegAge(null);
-            const response = RichContentResponses.login;
+            const response = RichContentResponses.info_basic_login;
             agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
           }
         }
@@ -469,84 +283,13 @@ exports.agent = async function (req, res) {
     let input = req.body.queryResult.queryText
     // Opcion Login
     if(input == "Iniciar Sesión" && !UsersParams.getLogin()){
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "title": "Iniciar Sesión",
-                    "subtitle": "De acuerdo. Para acceder a la aplicación, introduce tu 'correo electrónico'. Si quieres volver al inicio, escribe 'Cancelar'",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Login
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.input_users_login_waitingemail;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       UsersParams.setLogin(true)
     }
     // Opcion Registro
     else if(input == "Registro" && !UsersParams.getRegister()){
-      const response = {
-        "richContent": [
-            [
-                {
-                    "type": "info",
-                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos.",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Help
-                        }
-                    },
-                },
-                {
-                    "type": "info",
-                    "title": "Registro",
-                    "subtitle": "De acuerdo. Para registrarse en la aplicación, necesito que introduzcas tu 'correo electrónico'. Si quieres volver al inicio, escribe 'Cancelar'",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Login
-                        }
-                    },
-                },
-                {
-                  "type": "chips",
-                  "options": 
-                  [
-                    {
-                      "text": "Cancelar",
-                      "image": 
-                      {
-                        "src": 
-                        {
-                          "rawUrl": referencesURI.imageURI_Login
-                        }
-                      }
-                    }
-                  ]
-                }
-            ]
-        ]
-      }
+      const response = RichContentResponses.input_users_register_waitingemail;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       UsersParams.setRegister(true)
     }
@@ -554,8 +297,6 @@ exports.agent = async function (req, res) {
     else{
       // Aun seguimos en el menu de login
       if(input=="Cerrar Sesión" || (!UsersParams.getLogin() && !UsersParams.getRegister()) || (UsersParams.getLogin() && input=="Cancelar") || (UsersParams.getRegister() && input=="Cancelar")){
-        const response = RichContentResponses.login;
-        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
         UsersParams.setLogin(false)
         UsersParams.setRegister(false)
         UsersParams.setPassword(null)
@@ -565,6 +306,8 @@ exports.agent = async function (req, res) {
         UsersParams.setRegName(null)
         UsersParams.setRegAge(null)
         if(input=="Cerrar Sesión") { UsersParams.setUser(null) }
+        const response = RichContentResponses.info_basic_login;
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
       // Hemos entrado en alguna opcion antes
       else{
@@ -582,59 +325,31 @@ exports.agent = async function (req, res) {
 
   // input.welcome 
   function ConversationBasic_Welcome(agent) {
-    const response = RichContentResponses.welcome(UsersParams.getName());
+    const response = RichContentResponses.info_basic_welcome(UsersParams.getName());
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.exit
   function ConversationBasic_Exit(agent) {
-    const response = RichContentResponses.exit;
+    const response = RichContentResponses.info_basic_exit(UsersParams.getName());
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.unknown
   function ConversationBasic_Fallback(agent) {
-    const response = RichContentResponses.unknown;
+    const response = RichContentResponses.error_basic_unknown;
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.options
   function ConversationBasic_Options(agent) {
-    const response = RichContentResponses.options;
+    const response = RichContentResponses.info_basic_options;
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.new.question
   function ConversationMain_TeachingAssistant(agent) {
-    const response = {
-      "richContent": [
-        [
-          {
-            "type": "info",
-            "title": "Nueva cuestión 1/3",
-            "subtitle": "Dime la cuestión que deseas guardar en mi aprendizaje. Si quieres detener el asistente, escribe 'Otras funciones'",
-            "image": {
-              "src": {
-                "rawUrl": referencesURI.imageURI_Teaching
-              }
-            },
-          },
-          {
-            "type": "chips",
-            "options": [
-              {
-                "text": "Otras funciones",
-                "image": {
-                  "src": {
-                    "rawUrl": referencesURI.imageURI_Public
-                  }
-                }
-              }
-            ]
-          }
-        ]
-      ]
-    }
+    const response = RichContentResponses.input_learning_create_waitingquestion;
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
@@ -646,64 +361,21 @@ exports.agent = async function (req, res) {
       // Ya existe
       if(input && await backendTools.existsBackend_Question(input,UsersParams.getUser())){
         WaitingInput.exit();
-        const response = {
-          "richContent": [
-            [
-              {
-                "type": "info",
-                "title": "Error",
-                "subtitle": "¡Esta pregunta ya la tenía guardada! (" + input + ") Si deseas realizar otra consulta, escribe 'Continuar'",
-                "image": {
-                  "src": {
-                    "rawUrl": referencesURI.imageURI_Error
-                  }
-                },
-              },
-              {
-                "type": "chips",
-                "options": [
-                  {
-                    "text": "Continuar",
-                    "image": {
-                      "src": {
-                        "rawUrl": referencesURI.imageURI_Public
-                      }
-                    }
-                  }
-                ]
-              }
-            ]
-          ]
-        }
+        const response = RichContentResponses.error_learning_create_questionexists(input);
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
       // Se puede guardar
       else{
         // se guardará cuando tenga su respuesta 
         WaitingInput.required(input);
-        const response = {
-          "richContent": [
-            [
-              {
-                "type": "info",
-                "title": "Nueva cuestión 2/3",
-                "subtitle": "¡Correcto! La cuestión se guardará como (" + input + "). ¿Cuál es su respuesta?",
-                "image": {
-                  "src": {
-                    "rawUrl": referencesURI.imageURI_Teaching
-                  }
-                },
-              }
-            ]
-          ]
-        }
+        const response = RichContentResponses.input_learning_create_waitinganswer(input);
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
     }
     // Se cancela operacion
     else{
       WaitingInput.exit();
-      const response = RichContentResponses.cancel;
+      const response = RichContentResponses.info_basic_cancel;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
   }
@@ -717,48 +389,12 @@ exports.agent = async function (req, res) {
       await backendTools.createBackend_Question(WaitingInput.current(), UsersParams.getUser())
       await backendTools.updateBackend_Answer(WaitingInput.current(), input, UsersParams.getUser())
       WaitingInput.exit();
-      const response = {
-        "richContent": [
-          [
-            {
-              "type": "info",
-              "title": "Nueva cuestión 3/3",
-              "subtitle": "¡Gracias por enseñarme! La respuesta para (" + WaitingInput.last() + ") es (" + input + "). Si deseas realizar otra operación, escribe 'Otras funciones'.",
-              "image": {
-                "src": {
-                  "rawUrl": referencesURI.imageURI_Teaching
-                }
-              },
-            },
-            {
-              "type": "chips",
-              "options": [
-                {
-                  "text": "Quiero enseñarte",
-                  "image": {
-                    "src": {
-                      "rawUrl": referencesURI.imageURI_Public
-                    }
-                  }
-                },
-                {
-                  "text": "Otras funciones",
-                  "image": {
-                    "src": {
-                      "rawUrl": referencesURI.imageURI_Public
-                    }
-                  }
-                }
-              ]
-            }
-          ]
-        ]
-      }
+      const response = RichContentResponses.info_learning_create_completed(WaitingInput.last(), input);
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
     else{
       WaitingInput.exit();
-      const response = RichContentResponses.options;
+      const response = RichContentResponses.info_basic_options;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
   }
