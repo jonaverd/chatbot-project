@@ -281,3 +281,9 @@ exports.getBackend_Intent = async function(input){
   return result;
 }
 
+// Auxiliar - procesos de backend
+exports.getBackend_IntentList = async function(){
+   // ... solo en los intents  
+   const list =  await apiTools.getIntentList();
+   return list; 
+}

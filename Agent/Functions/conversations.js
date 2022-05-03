@@ -148,8 +148,8 @@ module.exports = Object.freeze({
             },
             {
             "type": "list",
-            "title": "Quiero aprender <pregunta>",
-            "subtitle": "El agente busca una respuesta (en su base de conocimiento) para ayudar al usuario",
+            "title": "<insertar cuestión>",
+            "subtitle": "El usuario puede pedir en cualquier momento una pregunta al agente. Si el agente dispone de la respuesta (en su base de conocimiento) podrá ayudar al usuario",
             },
             {
             "type": "divider"
@@ -165,11 +165,35 @@ module.exports = Object.freeze({
             {
             "type": "list",
             "title": "Cerrar Sesión",
-            "subtitle": "Devuelve al usuario al menú de login, cerrando su sesión",
+            "subtitle": "Se cierra la sesión del usuario y lo devuelve al menú de inicio",
             },
             {
             "type": "chips",
             "options": [
+                {
+                "text": "Hola Odiseo",
+                "image": {
+                    "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                    }
+                }
+                },
+                {
+                "text": "Salir",
+                "image": {
+                    "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                    }
+                }
+                },
+                {
+                "text": "Otras funciones",
+                "image": {
+                    "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                    }
+                }
+                },
                 {
                 "text": "Quiero enseñarte",
                 "image": {

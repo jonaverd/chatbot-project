@@ -16,7 +16,7 @@ const WaitingInput = backendTools.WaitingInput();
 // Auxiliar - Parametros del middleware para el login en cada peticion
 // Similar a los user.params del Asistente (datos de la sesion)
 const UsersParams = backendTools.UserParams();
-
+  
 // enables lib debugging statements
 process.env.DEBUG = 'dialogflow:debug'; 
 
@@ -325,8 +325,8 @@ exports.agent = async function (req, res) {
 
   // Generar una funcion para leer los intents creados como respuestas
   async function GenerateResponse (agent){
-    if(await backendTools.getBackend_Intent(req.body.queryResult.queryText)){
-      const intent = await backendTools.getBackend_Intent(req.body.queryResult.queryText)
+    if(await backendTools.getBackend_Intent(req.body.queryResult.intent.displayName)){
+      const intent = await backendTools.getBackend_Intent(req.body.queryResult.intent.displayName)
       const response = RichContentResponses.info_learning_response_question(intent[0].messages[2]['basicCard'])
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
@@ -455,49 +455,74 @@ exports.agent = async function (req, res) {
   }
 
   // Asociamos el nombre del Intent de DialogFlow con su funcion
-  // Flujo normal (true) y respuesta de intent (true) o login (false)
-  async function setIntentsMap(middleware){
+  // Flujo normal (true), intent-respuesta (true) o login (false)
+  function setIntentsMap(middleware, list){
     let intentMap = new Map();
-    if(!middleware){
-      intentMap.set('ConversationBasic_Welcome', ConversationBasic_Welcome);
-      intentMap.set('ConversationBasic_Exit', ConversationBasic_Exit);
-      intentMap.set('ConversationBasic_Fallback', ConversationBasic_Fallback);
-      intentMap.set('ConversationBasic_Options', ConversationBasic_Options);
-      intentMap.set('ConversationMain_TeachingAssistant', ConversationMain_TeachingAssistant);
-      intentMap.set('ConversationOperations_TeachingAssistant_InputQuestion', ConversationOperations_TeachingAssistant_InputQuestion);
-      intentMap.set('ConversationOperations_TeachingAssistant_InputAnswer', ConversationOperations_TeachingAssistant_InputAnswer);
-      intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion', ConversationOperations_TeachingAssistant_DeleteQuestion);
-      intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm);
-      intentMap.set('ConversationMain_TeachingAssistant_UpdateAnswer', ConversationMain_TeachingAssistant_UpdateAnswer);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion', ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer', ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage', ConversationOperations_TeachingAssistant_UpdateImage);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion', ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', ConversationOperations_TeachingAssistant_UpdateImage_InputImage);
-      intentMap.set('ConversationOperations_TeachingAssistant_List', ConversationOperations_TeachingAssistant_List);
-      intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', ConversationOperations_TeachingAssistant_RandomQuestion);
-      intentMap.set(req.body.queryResult.queryText, GenerateResponse); // Caso de intent-respuesta
-    }
-    else{
-      intentMap.set('ConversationBasic_Welcome', Middleware);
-      intentMap.set('ConversationBasic_Exit', Middleware);
-      intentMap.set('ConversationBasic_Fallback', Middleware);
-      intentMap.set('ConversationBasic_Options', Middleware);
-      intentMap.set('ConversationMain_TeachingAssistant', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_InputQuestion', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_InputAnswer', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', Middleware);
-      intentMap.set('ConversationMain_TeachingAssistant_UpdateAnswer', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_List', Middleware);
-      intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', Middleware);
-      intentMap.set(req.body.queryResult.queryText, Middleware); // Caso de intent-respuesta
-    }
+    list.forEach(intent => {
+      // Lista de intenciones con middleware usuario
+      if(middleware){
+         intentMap.set(intent.displayName, Middleware);
+      }
+      else{
+        // Lista de intenciones del sistema
+        switch(intent.displayName){
+          case "ConversationBasic_Welcome": 
+            intentMap.set('ConversationBasic_Welcome', ConversationBasic_Welcome);
+            break;
+          case "ConversationBasic_Exit": 
+            intentMap.set('ConversationBasic_Exit', ConversationBasic_Exit);
+            break;
+          case "ConversationBasic_Fallback": 
+            intentMap.set('ConversationBasic_Fallback', ConversationBasic_Fallback);
+            break;
+          case "ConversationBasic_Options": 
+            intentMap.set('ConversationBasic_Options', ConversationBasic_Options);
+            break;
+          case "ConversationMain_TeachingAssistant": 
+            intentMap.set('ConversationMain_TeachingAssistant', ConversationMain_TeachingAssistant);
+            break;
+          case "ConversationOperations_TeachingAssistant_InputQuestion": 
+            intentMap.set('ConversationOperations_TeachingAssistant_InputQuestion', ConversationOperations_TeachingAssistant_InputQuestion);
+            break;
+          case "ConversationOperations_TeachingAssistant_InputAnswer": 
+            intentMap.set('ConversationOperations_TeachingAssistant_InputAnswer', ConversationOperations_TeachingAssistant_InputAnswer);
+            break;
+          case "ConversationOperations_TeachingAssistant_DeleteQuestion": 
+            intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion', ConversationOperations_TeachingAssistant_DeleteQuestion);
+            break;
+          case "ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm": 
+            intentMap.set('ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm', ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm);
+            break;
+          case "ConversationMain_TeachingAssistant_UpdateAnswer": 
+            intentMap.set('ConversationMain_TeachingAssistant_UpdateAnswer', ConversationMain_TeachingAssistant_UpdateAnswer);
+            break;
+          case "ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion": 
+            intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion', ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion);
+            break;
+          case "ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer": 
+            intentMap.set('ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer', ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer);
+            break;
+          case "ConversationOperations_TeachingAssistant_UpdateImage": 
+            intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage', ConversationOperations_TeachingAssistant_UpdateImage);
+            break;
+          case "ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion": 
+            intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion', ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion);
+            break;
+          case "ConversationOperations_TeachingAssistant_UpdateImage_InputImage": 
+            intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', ConversationOperations_TeachingAssistant_UpdateImage_InputImage);
+            break;
+          case "ConversationOperations_TeachingAssistant_List": 
+            intentMap.set('ConversationOperations_TeachingAssistant_List', ConversationOperations_TeachingAssistant_List);
+            break;
+          case "ConversationOperations_TeachingAssistant_RandomQuestion": 
+            intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', ConversationOperations_TeachingAssistant_RandomQuestion);
+            break;
+          // Lista de intenciones-respuesta
+          default:
+            intentMap.set(intent.displayName, GenerateResponse);
+        }
+      }
+    });  
     return intentMap;
   }
   // Hay flujo normal
@@ -506,5 +531,6 @@ exports.agent = async function (req, res) {
   if(req.body.queryResult.queryText=="Cerrar Sesión" || !UsersParams.getUser()){
     middleware = true;
   }
-  agent.handleRequest(await setIntentsMap(middleware));
+  const list = await backendTools.getBackend_IntentList();
+  agent.handleRequest(setIntentsMap(middleware, list));
 }
