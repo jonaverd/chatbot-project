@@ -136,12 +136,12 @@ exports.updateUserPassword = async function (inputpassword, inputemail){
     }
 }
 
-exports.checkQuestionExists = async function (inputquestion, inputuser){
+exports.checkQuestionExists = async function (inputquestion){
 
     try {
    
         // query function
-        const check =  await LearningCollections.find({question: inputquestion, user: inputuser});
+        const check =  await LearningCollections.find({question: inputquestion});
         
         console.log(check);
         if(check.length === 0){ return false; }

@@ -387,7 +387,7 @@ module.exports = Object.freeze({
           [
             {
               "type": "info",
-              "title": "Nueva cuestión 3/3",
+              "title": "Nueva cuestión",
               "subtitle": "¡Gracias por enseñarme! La respuesta para (" + preview + ") es (" + input + "). Si deseas realizar otra operación, escribe 'Otras funciones'.",
               "image": {
                 "src": {
@@ -406,6 +406,52 @@ module.exports = Object.freeze({
                     }
                   }
                 },
+                {
+                  "text": "Otras funciones",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      return response;
+    },
+    info_learning_response_question: function(input){
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "image",
+              "rawUrl": input.image.imageUri,
+              "accessibilityText": input.image.accessibilityText
+            },
+            {
+              "type": "info",
+              "subtitle": "Autor: " + input.subtitle,
+              "image": {
+                  "src": {
+                      "rawUrl": referencesURI.imageURI_Help
+                  }
+              },
+            },
+            {
+              "type": "info",
+              "title": "Cuestión: " + input.title,
+              "subtitle": "Respuesta: " + input.formattedText,
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Public
+                }
+              },
+            },
+            {
+              "type": "chips",
+              "options": [
                 {
                   "text": "Otras funciones",
                   "image": {
@@ -662,7 +708,7 @@ module.exports = Object.freeze({
           [
             {
               "type": "info",
-              "title": "Nueva cuestión 1/3",
+              "title": "Nueva cuestión",
               "subtitle": "Dime la cuestión que deseas guardar en mi aprendizaje. Si quieres detener el asistente, escribe 'Otras funciones'",
               "image": {
                 "src": {
@@ -692,7 +738,7 @@ module.exports = Object.freeze({
           [
             {
               "type": "info",
-              "title": "Nueva cuestión 2/3",
+              "title": "Nueva cuestión",
               "subtitle": "¡Correcto! La cuestión se guardará como (" + input + "). ¿Cuál es su respuesta?",
               "image": {
                 "src": {

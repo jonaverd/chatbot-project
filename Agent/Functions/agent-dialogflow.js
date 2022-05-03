@@ -323,6 +323,19 @@ exports.agent = async function (req, res) {
     }
   }
 
+  // Generar una funcion para leer los intents creados como respuestas
+  async function GenerateResponse (agent){
+    if(await backendTools.getBackend_Intent(req.body.queryResult.queryText)){
+      const intent = await backendTools.getBackend_Intent(req.body.queryResult.queryText)
+      const response = RichContentResponses.info_learning_response_question(intent[0].messages[2]['basicCard'])
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+    else{
+      const response = RichContentResponses.error_basic_unknown;
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+  }
+
   // input.welcome 
   function ConversationBasic_Welcome(agent) {
     const response = RichContentResponses.info_basic_welcome(UsersParams.getName());
@@ -359,7 +372,7 @@ exports.agent = async function (req, res) {
     // Se sigue con el proceso
     if(input != "Otras funciones"){
       // Ya existe
-      if(input && await backendTools.existsBackend_Question(input,UsersParams.getUser())){
+      if(input && await backendTools.existsBackend_Question(input)){
         WaitingInput.exit();
         const response = RichContentResponses.error_learning_create_questionexists(input);
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
@@ -442,8 +455,8 @@ exports.agent = async function (req, res) {
   }
 
   // Asociamos el nombre del Intent de DialogFlow con su funcion
-  // Flujo normal (true) o login (false)
-  function setIntentsMap(middleware){
+  // Flujo normal (true) y respuesta de intent (true) o login (false)
+  async function setIntentsMap(middleware){
     let intentMap = new Map();
     if(!middleware){
       intentMap.set('ConversationBasic_Welcome', ConversationBasic_Welcome);
@@ -463,6 +476,7 @@ exports.agent = async function (req, res) {
       intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', ConversationOperations_TeachingAssistant_UpdateImage_InputImage);
       intentMap.set('ConversationOperations_TeachingAssistant_List', ConversationOperations_TeachingAssistant_List);
       intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', ConversationOperations_TeachingAssistant_RandomQuestion);
+      intentMap.set(req.body.queryResult.queryText, GenerateResponse); // Caso de intent-respuesta
     }
     else{
       intentMap.set('ConversationBasic_Welcome', Middleware);
@@ -482,6 +496,7 @@ exports.agent = async function (req, res) {
       intentMap.set('ConversationOperations_TeachingAssistant_UpdateImage_InputImage', Middleware);
       intentMap.set('ConversationOperations_TeachingAssistant_List', Middleware);
       intentMap.set('ConversationOperations_TeachingAssistant_RandomQuestion', Middleware);
+      intentMap.set(req.body.queryResult.queryText, Middleware); // Caso de intent-respuesta
     }
     return intentMap;
   }
@@ -491,5 +506,5 @@ exports.agent = async function (req, res) {
   if(req.body.queryResult.queryText=="Cerrar Sesión" || !UsersParams.getUser()){
     middleware = true;
   }
-  agent.handleRequest(setIntentsMap(middleware));
+  agent.handleRequest(await setIntentsMap(middleware));
 }

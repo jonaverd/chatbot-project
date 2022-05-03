@@ -90,10 +90,10 @@ exports.checkIntentExists = async function(displayName){
 exports.createIntent = async function(displayNameParam, user){
 
   // Arguments information
-  const displayName = user+'_'+displayNameParam;
+  const displayName = displayNameParam;
   const trainingPhrasesParts = [displayNameParam];
-  const quickRepliesParts = ['Continuar'];
-  const suggestions = ['Continuar'];
+  const quickRepliesParts = ['Otras funciones'];
+  const suggestions = ['Otras funciones'];
   const messageTexts = 'null';
   const image = referencesURI.imageURI_Public;
 
@@ -114,11 +114,16 @@ exports.createIntent = async function(displayNameParam, user){
   // respuesta por defecto
   const element = {
     title: displayNameParam,
-    subtitle: messageTexts,
-    imageUri: image,
+    subtitle: user,
+    formattedText: messageTexts,
+      image: {
+        imageUri: image,
+        accessibilityText: "Odiseo Chatbot"
+      }
   };
   const message = {
-    card: element,
+    platform: "PLATFORM_UNSPECIFIED",
+    basicCard: element,
   };
 
   // respuesta google actions
@@ -126,8 +131,8 @@ exports.createIntent = async function(displayNameParam, user){
     platform: "ACTIONS_ON_GOOGLE",
     basicCard: {
       title: displayNameParam,
-      subtitle: messageTexts,
-      formattedText: "Generado con el asistente de Google",
+      subtitle: user,
+      formattedText: messageTexts,
       image: {
         imageUri: image,
         accessibilityText: "Odiseo Chatbot"
@@ -170,7 +175,7 @@ exports.createIntent = async function(displayNameParam, user){
   // creamos el intent con sus partes
   const intent = { 
     displayName: displayName,
-    endInteraction: 'false',
+    webhookState: "WEBHOOK_STATE_ENABLED",
     trainingPhrases: trainingPhrases,
     messages: [actions_card, actions_suggestions, message, quickReplies_final], 
     defaultResponsePlatforms: ['PLATFORM_UNSPECIFIED', 'ACTIONS_ON_GOOGLE'],

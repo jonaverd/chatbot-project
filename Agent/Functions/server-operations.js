@@ -186,31 +186,27 @@ exports.getBackend_UserPassword = async function(email){
 
 // Auxiliar - procesos de backend
 exports.updateBackend_UserName = async function(name, email){
-  // ... en la base de datos  
+  // ... solo la base de datos  
   await databaseTools.updateUserName(name, email)
 }
 
 // Auxiliar - procesos de backend
 exports.updateBackend_UserAge = async function(age, email){
-  // ... en la base de datos  
+  // ... solo la base de datos  
   await databaseTools.updateUserAge(age, email)
 }
 
 // Auxiliar - procesos de backend
 exports.updateBackend_UserPassword = async function(password, email){
-  // ... en la base de datos  
+  // ... solo la base de datos  
   await databaseTools.updateUserPassword(password, email)
 }
 
 // Auxiliar - procesos de backend
-exports.existsBackend_Question = async function (question, user){
-   // ... en los intents
-   const check1 = await apiTools.checkIntentExists(user+'_'+question);
-   // ... en la base de datos
-   const check2 = await databaseTools.checkQuestionExists(question, user);
-   // ¿Existe en alguno de los dos?
-   if(check1 == true || check2 == true){ return true; }
-   else { return false; }
+exports.existsBackend_Question = async function (question){
+  // ... solo la base de datos
+  const check = await databaseTools.checkQuestionExists(question);
+  return check; 
 }
 
 // Auxiliar - procesos de backend
@@ -223,11 +219,11 @@ exports.createBackend_Question = async function (question, user){
 
 // Auxiliar - procesos de backend
 exports.updateBackend_Answer = async function(input, data, user){
-  const id = await apiTools.getIDIntent_Name(user+'_'+input);
+  const id = await apiTools.getIDIntent_Name(input);
   const struct = await apiTools.getIntent(id);
   // La posicion 0 de mensajes indica el card actions, las siguientes: sugerencias y card dialogflow
-  struct[0].messages[0]['basicCard']['subtitle'] = data;
-  struct[0].messages[2]['card']['subtitle'] = data;
+  struct[0].messages[0]['basicCard']['formattedText'] = data;
+  struct[0].messages[2]['basicCard']['formattedText'] = data;
   // ... en los intents
   await apiTools.updateIntent(id, struct[0]);
   // ... en la base de datos  
@@ -275,5 +271,13 @@ exports.listBackend_QuestionAll = async function(){
   // ... solo la base de datos  
   const list =  await databaseTools.getQuestionsListAll();
   return list;
+}
+
+// Auxiliar - procesos de backend
+exports.getBackend_Intent = async function(input){
+  // ... solo en intents
+  const id = await apiTools.getIDIntent_Name(input);
+  const result = await apiTools.getIntent(id);
+  return result;
 }
 
