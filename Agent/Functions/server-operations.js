@@ -70,11 +70,11 @@ exports.UserParams = function (){
   var age;
   var login; // check user option in login menu
   var register; // check user option in login menu
-  var authorizate; // check user option in login menu
   var reg_email; // user variables register
   var reg_password; // user variables register
   var reg_name; // user variables register
   var reg_age; // user variables register
+  var exit; // user variables register
   function setTemporal(input){ 
     temporal = input
     if(input!=null) { last = input }
@@ -100,9 +100,9 @@ exports.UserParams = function (){
   function getLogin(){ return login }
   function setRegister(input){ register = input }
   function getRegister(){ return register }
-  function setAuthorizate(input){ authorizate = input }
-  function getAuthorizate(){ return authorizate }
   function getLast(){ return last }
+  function getExit(){ return exit }
+  function setExit(input){ exit = input }
   function reload(request){
     if(session != request){
       temporal = null;
@@ -112,11 +112,11 @@ exports.UserParams = function (){
       age = null;
       login = null;
       register = null;
-      authorizate = null;
       reg_email = null;
       reg_name = null;
       reg_age = null;
       reg_password = null;
+      exit = null;
       session = request;
     }
   }
@@ -136,8 +136,6 @@ exports.UserParams = function (){
     getLogin: getLogin,
     setRegister: setRegister,
     getRegister: getRegister,
-    setAuthorizate: setAuthorizate,
-    getAuthorizate: getAuthorizate,
     getLast: getLast,
     getRegEmail: getRegEmail,
     setRegEmail:  setRegEmail,
@@ -146,7 +144,9 @@ exports.UserParams = function (){
     getRegAge: getRegAge,
     setRegAge: setRegAge,
     getRegPassword: getRegPassword,
-    setRegPassword: setRegPassword
+    setRegPassword: setRegPassword,
+    getExit: getExit,
+    setExit: setExit
   };
 }
 

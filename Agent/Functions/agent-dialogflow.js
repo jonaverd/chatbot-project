@@ -296,16 +296,18 @@ exports.agent = async function (req, res) {
     // El usuario introduce otro input
     else{
       // Aun seguimos en el menu de login
-      if(input=="Cerrar Sesión" || (!UsersParams.getLogin() && !UsersParams.getRegister()) || (UsersParams.getLogin() && input=="Cancelar") || (UsersParams.getRegister() && input=="Cancelar")){
+      if(input=="Cerrar Sesión" || UsersParams.getExit() || (!UsersParams.getLogin() && !UsersParams.getRegister()) || (UsersParams.getLogin() && input=="Cancelar") || (UsersParams.getRegister() && input=="Cancelar")){
         UsersParams.setLogin(false)
         UsersParams.setRegister(false)
         UsersParams.setPassword(null)
+        UsersParams.setName(null)
+        UsersParams.setAge(null)
         UsersParams.setTemporal(null)
         UsersParams.setRegEmail(null)
         UsersParams.setRegPassword(null)
         UsersParams.setRegName(null)
         UsersParams.setRegAge(null)
-        if(input=="Cerrar Sesión") { UsersParams.setUser(null) }
+        if(input=="Cerrar Sesión" || UsersParams.getExit()) { UsersParams.setUser(null); UsersParams.setExit(false) }
         const response = RichContentResponses.info_basic_login;
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
@@ -348,6 +350,7 @@ exports.agent = async function (req, res) {
 
   // input.exit
   function ConversationBasic_Exit(agent) {
+    UsersParams.setExit(true)
     const response = RichContentResponses.info_basic_exit(UsersParams.getName());
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
@@ -666,7 +669,7 @@ exports.agent = async function (req, res) {
   // Hay flujo normal
   let middleware = false;
   // Se cierra la sesión actual / No hay sesión de login
-  if(req.body.queryResult.queryText=="Cerrar Sesión" || !UsersParams.getUser()){
+  if(req.body.queryResult.queryText=="Cerrar Sesión" || UsersParams.getExit() || !UsersParams.getUser()){
     middleware = true;
   }
   // Le paso la lista de todos los intents guardados en google
