@@ -446,7 +446,7 @@ exports.agent = async function (req, res) {
 
   // input.list.question
   async function ConversationOperations_TeachingAssistant_List(agent) {
-    const response = await RichContentResponses.show_details_list(UsersParams.getUser());
+    const response = await RichContentResponses.info_learning_detailslist(UsersParams.getUser(), UsersParams.getName());
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
