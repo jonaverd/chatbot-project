@@ -1,6 +1,5 @@
 // Respuestas de texto enriquecido utilizadas en dialogflow chat web
 const referencesURI = require('./Assets/references.js');
-const backendTools = require('./server-operations.js');
 module.exports = Object.freeze({
     info_basic_welcome: function(user){
       const response = {
@@ -491,11 +490,12 @@ module.exports = Object.freeze({
       }
       return response;
     },
-    info_learning_detailslist: async function(user, name){
-      const list = await backendTools.listBackend_Question(user);
-      // Rellenar lista de intents
-      const elements = []
-      const info =  {
+    info_learning_detailslist: function(list, name){
+      let response;
+      // Avisar de que no hay existencias
+      if(list.length===0){
+        const elements = []
+        const info =  {
           "type": "info",
           "title": "Almacén de " + name,
           "subtitle": "Mostrando lista personal. Para realizar alguna operación escribe 'Otras funciones'",
@@ -504,38 +504,20 @@ module.exports = Object.freeze({
               "rawUrl": referencesURI.imageURI_Public
               }
           },
-      }
-      elements.push(info);
-      list.forEach(element => { 
-          const divider = {
-          "type": "divider"
-          }
-          const main = {
-            "type": "info",
-            "title": "Cuestión: " + element.question,
-            "subtitle": "Autor: " + element.user,
-            "image": {
-                "src": {
-                "rawUrl": element.visual
-                }
-            },
-          }
-          const detail1 = {
-              "type": "accordion",
-              "subtitle": "Detalles del visual",
-              "text": element.visual
-          }
-          const detail2 = {
-            "type": "accordion",
-            "subtitle": "Detalles de la respuesta",
-            "text": element.answer
-          }
-          elements.push(divider);
-          elements.push(main);
-          elements.push(detail1);
-          elements.push(detail2);
-      })
-      const suggestions = {
+        }
+        elements.push(info);
+        const main = {
+          "type": "info",
+          "title": "No hay cuestiones disponibles" ,
+          "subtitle": "Mi base de conocimiento está vacía. No has guardado ninguna cuestión aún.",
+          "image": {
+              "src": {
+              "rawUrl": referencesURI.imageURI_Help
+              }
+          },
+        }
+        elements.push(main);
+        const suggestions = {
           "type": "chips",
           "options": [
               {
@@ -547,12 +529,76 @@ module.exports = Object.freeze({
               }
               }
           ]
-      }
-      elements.push(suggestions);
-      const response = {
+        }
+        elements.push(suggestions);
+        response = {
           "richContent": [
               elements
           ]
+        }
+      }
+      // Rellenar lista de intents
+      else{
+        const elements = []
+        const info =  {
+            "type": "info",
+            "title": "Almacén de " + name,
+            "subtitle": "Mostrando lista personal. Para realizar alguna operación escribe 'Otras funciones'",
+            "image": {
+                "src": {
+                "rawUrl": referencesURI.imageURI_Public
+                }
+            },
+        }
+        elements.push(info);
+        list.forEach(element => { 
+            const divider = {
+            "type": "divider"
+            }
+            const main = {
+              "type": "info",
+              "title": "Cuestión: " + element.question,
+              "subtitle": "Autor: " + element.user,
+              "image": {
+                  "src": {
+                  "rawUrl": element.visual
+                  }
+              },
+            }
+            const detail1 = {
+                "type": "accordion",
+                "subtitle": "Detalles del visual",
+                "text": element.visual
+            }
+            const detail2 = {
+              "type": "accordion",
+              "subtitle": "Detalles de la respuesta",
+              "text": element.answer
+            }
+            elements.push(divider);
+            elements.push(main);
+            elements.push(detail1);
+            elements.push(detail2);
+        })
+        const suggestions = {
+            "type": "chips",
+            "options": [
+                {
+                "text": "Otras funciones",
+                "image": {
+                    "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                    }
+                }
+                }
+            ]
+        }
+        elements.push(suggestions);
+        response = {
+            "richContent": [
+                elements
+            ]
+        }
       }
       return response;
     },
@@ -1437,56 +1483,33 @@ module.exports = Object.freeze({
       }
       return response;
     },
-
-
-
-    show_basic_list: async function(user){
-        const list = await backendTools.listBackend_Question(user);
-        // Rellenar lista de intents
-        const elements = []
-        const info =  {
+    error_learning_random_voidlist: {
+      "richContent": [
+        [
+          {
             "type": "info",
-            "title": "Almacén",
-            "subtitle": "Mostrando lista personal. Para realizar alguna operación escribe 'Otras funciones'",
+            "title": "Error",
+            "subtitle": "Mi base de conocimiento está vacía. Escribe 'Otras funciones' para ver mi lista de comandos",
             "image": {
-                "src": {
-                "rawUrl": referencesURI.imageURI_Public
-                }
+              "src": {
+                "rawUrl": referencesURI.imageURI_Error
+              }
             },
-        }
-        elements.push(info);
-        list.forEach(element => { 
-            const divider = {
-            "type": "divider"
-            }
-            const item = {
-                "type": "list",
-                "title": element.question,
-                "subtitle": element.answer,
-            }
-            elements.push(divider);
-            elements.push(item);
-        })
-        const suggestions = {
+          },
+          {
             "type": "chips",
             "options": [
-                {
+              {
                 "text": "Otras funciones",
                 "image": {
-                    "src": {
+                  "src": {
                     "rawUrl": referencesURI.imageURI_Public
-                    }
+                  }
                 }
-                }
+              }
             ]
-        }
-        elements.push(suggestions);
-        const response = {
-            "richContent": [
-                elements
-            ]
-        }
-        return response;
-    },
-    
+          }
+        ]
+      ]
+    } 
 });

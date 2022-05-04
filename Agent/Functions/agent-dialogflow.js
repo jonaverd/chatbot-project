@@ -325,11 +325,15 @@ exports.agent = async function (req, res) {
 
   // Generar una funcion para leer los intents creados como respuestas
   async function GenerateResponse (agent){
+    // Aqui compruebo que la entrada se corresponde con uno de los intents de google
+    // Estoy cojiendo de la peticion, el intent (que segun el body) Google esta asociando segun su frase
+    // de entrenamiento. De esta manera estoy obtiendo todas las posibles frases de entrenamiento de este intent
     if(await backendTools.getBackend_Intent(req.body.queryResult.intent.displayName)){
       const intent = await backendTools.getBackend_Intent(req.body.queryResult.intent.displayName)
       const response = RichContentResponses.info_learning_response_question(intent[0].messages[2]['basicCard'])
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
+    // En caso de no asociar con nada, devuelvo un fallback (aunque no se suele activar nunca)
     else{
       const response = RichContentResponses.error_basic_unknown;
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
@@ -446,12 +450,31 @@ exports.agent = async function (req, res) {
 
   // input.list.question
   async function ConversationOperations_TeachingAssistant_List(agent) {
-    const response = await RichContentResponses.info_learning_detailslist(UsersParams.getUser(), UsersParams.getName());
+    const list = await backendTools.listBackend_Question(UsersParams.getUser());
+    const response = RichContentResponses.info_learning_detailslist(list, UsersParams.getName());
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.random.question
-  function ConversationOperations_TeachingAssistant_RandomQuestion(agent) {
+  async function ConversationOperations_TeachingAssistant_RandomQuestion(agent) {
+     const list = await backendTools.listBackend_QuestionAll();
+     // No hay base de conocimiento
+     if(list.length===0){
+      const response = RichContentResponses.error_learning_random_voidlist;
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+     }
+     // Enlaza con un intent-cuestión random
+     else{
+      // Genero un numero al azar
+      const index = Math.floor(Math.random() * (Math.floor(list.length) - Math.ceil(0) + 1)) + Math.ceil(0);;
+      const name = list[index].question
+      // Igual que cuando respondemos una cuestion del usuario, vamos a obtener los datos del intent en google
+      // En este caso, no nos preocupan las frases de entrenamiento, ya que es una operación fija y el nombre del intent
+      // es el mismo que en la base de datos
+      const intent = await backendTools.getBackend_Intent(name)
+      const response = RichContentResponses.info_learning_response_question(intent[0].messages[2]['basicCard'])
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+     }
   }
 
   // Asociamos el nombre del Intent de DialogFlow con su funcion
@@ -461,11 +484,13 @@ exports.agent = async function (req, res) {
     list.forEach(intent => {
       // Lista de intenciones con middleware usuario
       if(middleware){
+         // Con middleware activado, se fuerza a middleware
          intentMap.set(intent.displayName, Middleware);
       }
       else{
         // Lista de intenciones del sistema
         switch(intent.displayName){
+          // Sin middleware, se asocia los que son del sistema
           case "ConversationBasic_Welcome": 
             intentMap.set('ConversationBasic_Welcome', ConversationBasic_Welcome);
             break;
@@ -519,6 +544,10 @@ exports.agent = async function (req, res) {
             break;
           // Lista de intenciones-respuesta
           default:
+            // Por descarte, los intents que quedan son los creados por los usuarios (cuestiones)
+            // Cualquier entrada que no sea algun intent de los de antes, se asocia a esta funcion
+            // Si Google tiene guardado un intent con el mismo nombre, lo asociará con su respuesta
+            // Sino, simplemente no podra asociar nada, y posiblemente responda un fallback
             intentMap.set(intent.displayName, GenerateResponse);
         }
       }
@@ -531,6 +560,7 @@ exports.agent = async function (req, res) {
   if(req.body.queryResult.queryText=="Cerrar Sesión" || !UsersParams.getUser()){
     middleware = true;
   }
+  // Le paso la lista de todos los intents guardados en google
   const list = await backendTools.getBackend_IntentList();
   agent.handleRequest(setIntentsMap(middleware, list));
 }
