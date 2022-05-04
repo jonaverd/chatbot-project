@@ -147,7 +147,7 @@ module.exports = Object.freeze({
             },
             {
             "type": "list",
-            "title": "<insertar cuestión>",
+            "title": "<Pedir cuestión>",
             "subtitle": "El usuario puede pedir en cualquier momento una pregunta al agente. Si el agente dispone de la respuesta (en su base de conocimiento) podrá ayudar al usuario",
             },
             {
@@ -761,6 +761,38 @@ module.exports = Object.freeze({
       }
       return response;
     },
+    info_learning_updateimage_completed: function(preview){
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "info",
+              "title": "Actualizar imagen",
+              "subtitle": "¡Ha quedado muy bien! La imagen para (" + preview + ") ha sido actualizada. Si deseas realizar otra operación, escribe 'Otras funciones'.",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Teaching
+                }
+              },
+            },
+            {
+              "type": "chips",
+              "options": [
+                {
+                  "text": "Otras funciones",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      return response;
+    },
     input_users_login_waitingemail: 
     {
       "richContent": [
@@ -1053,6 +1085,25 @@ module.exports = Object.freeze({
               "type": "info",
               "title": "Modificar respuesta",
               "subtitle": "Introduce la nueva respuesta para la cuestión (" + input + ").",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Teaching
+                }
+              },
+            }
+          ]
+        ]
+      }
+      return response;
+    },
+    input_learning_update_waitingimage: function(input){
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "info",
+              "title": "Actualizar imagen",
+              "subtitle": "Introduce el nuevo enlace visual para la cuestión (" + input + ").",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching

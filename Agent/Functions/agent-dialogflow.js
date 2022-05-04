@@ -506,15 +506,55 @@ exports.agent = async function (req, res) {
   }
 
   // input.update.question.image
-  function ConversationOperations_TeachingAssistant_UpdateImage(agent) {
+  async function ConversationOperations_TeachingAssistant_UpdateImage(agent) {
+    const list = await backendTools.listBackend_Question(UsersParams.getUser());
+    const response = RichContentResponses.info_learning_simplelist(list, UsersParams.getName(), "Actualizar imagen");
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.update.question.image.select
-  function ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion(agent) {
+  async function ConversationOperations_TeachingAssistant_UpdateImage_SelectQuestion(agent) {
+    const input = agent.parameters.any;
+    // Se sigue con el proceso
+    if(input != "Otras funciones"){
+      // No existe
+      if(input && !await backendTools.existsBackend_Question(input)){
+        WaitingInput.exit();
+        const response = RichContentResponses.error_learning_operations_questionnotexists(input);
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+      // Se puede modificar
+      else{
+        // se modificará cuando tenga su imagen 
+        WaitingInput.required(input);
+        const response = RichContentResponses.input_learning_update_waitingimage(input);
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }    
+    }
+    // Se cancela operacion
+    else{
+      WaitingInput.exit();
+      const response = RichContentResponses.info_basic_cancel;
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
   }
 
   // input.update.question.image.input 
-  function ConversationOperations_TeachingAssistant_UpdateImage_InputImage(agent) {
+  async function ConversationOperations_TeachingAssistant_UpdateImage_InputImage(agent) {
+    const input = agent.parameters.any;
+    // ¿Hay algun input pendiente?
+    if(WaitingInput.progress()){
+      // se modifica la imagen de la cuestión
+      await backendTools.updateBackend_Image(WaitingInput.current(), input, UsersParams.getUser())
+      WaitingInput.exit();
+      const response = RichContentResponses.info_learning_updateimage_completed(WaitingInput.last());
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+    else{
+      WaitingInput.exit();
+      const response = RichContentResponses.info_basic_options;
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
   }
 
   // input.list.question

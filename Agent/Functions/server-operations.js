@@ -248,11 +248,11 @@ exports.deleteBackend_Question = async function(input, user){
 
 // Auxiliar - procesos de backend
 exports.updateBackend_Image = async function(input, data, user){
-  const id = await apiTools.getIDIntent_Name(user+'_'+input);
+  const id = await apiTools.getIDIntent_Name(input);
   const struct = await apiTools.getIntent(id);
   // La posicion 0 de mensajes indica el card actions, las siguientes: sugerencias y card dialogflow
   struct[0].messages[0]['basicCard']['image']['imageUri'] = data;
-  struct[0].messages[2]['card']['imageUri'] = data;
+  struct[0].messages[2]['basicCard']['image']['imageUri'] = data;
   // ... en los intents
   await apiTools.updateIntent(id, struct[0]);
   // ... en la base de datos  
