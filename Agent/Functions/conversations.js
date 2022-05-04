@@ -602,15 +602,15 @@ module.exports = Object.freeze({
       }
       return response;
     },
-    info_learning_simplelist: function(list, name){
+    info_learning_simplelist: function(list, name, action){
       let response;
       // Avisar de que no hay existencias
       if(list.length===0){
         const elements = []
         const info =  {
           "type": "info",
-          "title": "Eliminar cuestión",
-          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", escribe la que quieras limpiar. Para realizar otra operación escribe 'Otras funciones'",
+          "title": action,
+          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", escribe la que deseas operar. Para realizar otra operación escribe 'Otras funciones'",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Teaching
@@ -654,8 +654,8 @@ module.exports = Object.freeze({
         const elements = []
         const info =  {
           "type": "info",
-          "title": "Eliminar cuestión",
-          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", escribe la que quieras limpiar. Para realizar otra operación escribe 'Otras funciones'",
+          "title": action,
+          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", escribe la que deseas operar. Para realizar otra operación escribe 'Otras funciones'",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Teaching
@@ -705,6 +705,38 @@ module.exports = Object.freeze({
               "type": "info",
               "title": "Eliminar cuestión",
               "subtitle": "¡Cuestión eliminada! (" + preview + "). Si deseas realizar otra operación, escribe 'Otras funciones'.",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Teaching
+                }
+              },
+            },
+            {
+              "type": "chips",
+              "options": [
+                {
+                  "text": "Otras funciones",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      return response;
+    },
+    info_learning_update_completed: function(preview, input){
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "info",
+              "title": "Modificar respuesta",
+              "subtitle": "¡Gracias por corregirme! La respuesta para (" + preview + ") se ha actualizado como (" + input + "). Si deseas realizar otra operación, escribe 'Otras funciones'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -1002,6 +1034,25 @@ module.exports = Object.freeze({
               "type": "info",
               "title": "Nueva cuestión",
               "subtitle": "¡Correcto! La cuestión se guardará como (" + input + "). ¿Cuál es su respuesta?",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Teaching
+                }
+              },
+            }
+          ]
+        ]
+      }
+      return response;
+    },
+    input_learning_update_waitinganswer: function(input){
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "info",
+              "title": "Modificar respuesta",
+              "subtitle": "Introduce la nueva respuesta para la cuestión (" + input + ").",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -1610,7 +1661,7 @@ module.exports = Object.freeze({
       }
       return response;
     },
-    error_learning_delete_questionnotexists: function(input){
+    error_learning_operations_questionnotexists: function(input){
       const response = {
         "richContent": [
           [

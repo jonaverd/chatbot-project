@@ -419,7 +419,7 @@ exports.agent = async function (req, res) {
   // input.delete.question
   async function ConversationOperations_TeachingAssistant_DeleteQuestion(agent) {
     const list = await backendTools.listBackend_Question(UsersParams.getUser());
-    const response = RichContentResponses.info_learning_simplelist(list, UsersParams.getName());
+    const response = RichContentResponses.info_learning_simplelist(list, UsersParams.getName(), "Eliminar cuestión");
     agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
@@ -431,7 +431,7 @@ exports.agent = async function (req, res) {
       // No existe
       if(input && !await backendTools.existsBackend_Question(input)){
         WaitingInput.exit();
-        const response = RichContentResponses.error_learning_delete_questionnotexists(input);
+        const response = RichContentResponses.error_learning_operations_questionnotexists(input);
         agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
       }
       // Se puede eliminar
@@ -454,15 +454,55 @@ exports.agent = async function (req, res) {
   }
 
   // input.update.question.answer
-  function ConversationMain_TeachingAssistant_UpdateAnswer(agent) {
+  async function ConversationMain_TeachingAssistant_UpdateAnswer(agent) {
+    const list = await backendTools.listBackend_Question(UsersParams.getUser());
+    const response = RichContentResponses.info_learning_simplelist(list, UsersParams.getName(), "Modificar respuesta");
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.update.question.answer.select
-  function ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion(agent) {
+  async function ConversationOperations_TeachingAssistant_UpdateAnswer_SelectQuestion(agent) {
+    const input = agent.parameters.any;
+    // Se sigue con el proceso
+    if(input != "Otras funciones"){
+      // No existe
+      if(input && !await backendTools.existsBackend_Question(input)){
+        WaitingInput.exit();
+        const response = RichContentResponses.error_learning_operations_questionnotexists(input);
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+      // Se puede modificar
+      else{
+        // se modificará cuando tenga su respuesta 
+        WaitingInput.required(input);
+        const response = RichContentResponses.input_learning_update_waitinganswer(input);
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }    
+    }
+    // Se cancela operacion
+    else{
+      WaitingInput.exit();
+      const response = RichContentResponses.info_basic_cancel;
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
   }
 
   // input.update.question.answer.input
-  function ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer(agent) {
+  async function ConversationOperations_TeachingAssistant_UpdateAnswer_InputAnswer(agent) {
+    const input = agent.parameters.any;
+    // ¿Hay algun input pendiente?
+    if(WaitingInput.progress()){
+      // se modifica la respuesta de la cuestión
+      await backendTools.updateBackend_Answer(WaitingInput.current(), input, UsersParams.getUser())
+      WaitingInput.exit();
+      const response = RichContentResponses.info_learning_update_completed(WaitingInput.last(), input);
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
+    else{
+      WaitingInput.exit();
+      const response = RichContentResponses.info_basic_options;
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
   }
 
   // input.update.question.image
