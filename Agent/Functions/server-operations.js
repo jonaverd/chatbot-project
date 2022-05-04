@@ -239,7 +239,7 @@ exports.listBackend_Question = async function(user){
 
 // Auxiliar - procesos de backend
 exports.deleteBackend_Question = async function(input, user){
-  const id = await apiTools.getIDIntent_Name(user+'_'+input);
+  const id = await apiTools.getIDIntent_Name(input);
   // ... en los intents
   await apiTools.deleteIntent(id)
   // ... en la base de datos  

@@ -602,6 +602,133 @@ module.exports = Object.freeze({
       }
       return response;
     },
+    info_learning_simplelist: function(list, name){
+      let response;
+      // Avisar de que no hay existencias
+      if(list.length===0){
+        const elements = []
+        const info =  {
+          "type": "info",
+          "title": "Eliminar cuestión",
+          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", escribe la que quieras limpiar. Para realizar otra operación escribe 'Otras funciones'",
+          "image": {
+              "src": {
+              "rawUrl": referencesURI.imageURI_Teaching
+              }
+          },
+        }
+        elements.push(info);
+        const main = {
+          "type": "info",
+          "title": "No hay cuestiones disponibles" ,
+          "subtitle": "Mi base de conocimiento está vacía. No has guardado ninguna cuestión aún.",
+          "image": {
+              "src": {
+              "rawUrl": referencesURI.imageURI_Help
+              }
+          },
+        }
+        elements.push(main);
+        const suggestions = {
+          "type": "chips",
+          "options": [
+              {
+              "text": "Otras funciones",
+              "image": {
+                  "src": {
+                  "rawUrl": referencesURI.imageURI_Public
+                  }
+              }
+              }
+          ]
+        }
+        elements.push(suggestions);
+        response = {
+          "richContent": [
+              elements
+          ]
+        }
+      }
+      // Rellenar lista de intents
+      else{
+        const elements = []
+        const info =  {
+          "type": "info",
+          "title": "Eliminar cuestión",
+          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", escribe la que quieras limpiar. Para realizar otra operación escribe 'Otras funciones'",
+          "image": {
+              "src": {
+              "rawUrl": referencesURI.imageURI_Teaching
+              }
+          },
+        }
+        elements.push(info);
+        list.forEach(element => { 
+            const divider = {
+            "type": "divider"
+            }
+            const main = {
+              "type": "list",
+              "title": element.question,
+              "subtitle": element.answer,
+            }
+            elements.push(divider);
+            elements.push(main);
+        })
+        const suggestions = {
+            "type": "chips",
+            "options": [
+                {
+                "text": "Otras funciones",
+                "image": {
+                    "src": {
+                    "rawUrl": referencesURI.imageURI_Public
+                    }
+                }
+                }
+            ]
+        }
+        elements.push(suggestions);
+        response = {
+            "richContent": [
+                elements
+            ]
+        }
+      }
+      return response;
+    },
+    info_learning_delete_completed: function(preview){
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "info",
+              "title": "Eliminar cuestión",
+              "subtitle": "¡Cuestión eliminada! (" + preview + "). Si deseas realizar otra operación, escribe 'Otras funciones'.",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Teaching
+                }
+              },
+            },
+            {
+              "type": "chips",
+              "options": [
+                {
+                  "text": "Otras funciones",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      return response;
+    },
     input_users_login_waitingemail: 
     {
       "richContent": [
@@ -1459,6 +1586,38 @@ module.exports = Object.freeze({
               "type": "info",
               "title": "Error",
               "subtitle": "¡Esta pregunta ya la tenía guardada! (" + input + ") Si deseas realizar otra consulta, escribe 'Continuar'",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Error
+                }
+              },
+            },
+            {
+              "type": "chips",
+              "options": [
+                {
+                  "text": "Continuar",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      return response;
+    },
+    error_learning_delete_questionnotexists: function(input){
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "info",
+              "title": "Error",
+              "subtitle": "¡Esta pregunta no existe en mi base de conocimiento! (" + input + ") Si deseas realizar otra consulta, escribe 'Continuar'",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Error

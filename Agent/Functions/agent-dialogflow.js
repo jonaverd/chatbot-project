@@ -417,11 +417,40 @@ exports.agent = async function (req, res) {
   }
 
   // input.delete.question
-  function ConversationOperations_TeachingAssistant_DeleteQuestion(agent) {
+  async function ConversationOperations_TeachingAssistant_DeleteQuestion(agent) {
+    const list = await backendTools.listBackend_Question(UsersParams.getUser());
+    const response = RichContentResponses.info_learning_simplelist(list, UsersParams.getName());
+    agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
   }
 
   // input.delete.question.confirm
-  function ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm(agent) {
+  async function ConversationOperations_TeachingAssistant_DeleteQuestion_Confirm(agent) {
+    const input = agent.parameters.any;
+    // Se sigue con el proceso
+    if(input != "Otras funciones"){
+      // No existe
+      if(input && !await backendTools.existsBackend_Question(input)){
+        WaitingInput.exit();
+        const response = RichContentResponses.error_learning_delete_questionnotexists(input);
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+      // Se puede eliminar
+      else{
+        WaitingInput.required(input);
+        if(WaitingInput.progress()){
+          await backendTools.deleteBackend_Question(WaitingInput.current(), UsersParams.getUser())
+        }
+        WaitingInput.exit();
+        const response = RichContentResponses.info_learning_delete_completed(WaitingInput.last())
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }    
+    }
+    // Se cancela operacion
+    else{
+      WaitingInput.exit();
+      const response = RichContentResponses.info_basic_options;
+      agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+    }
   }
 
   // input.update.question.answer
