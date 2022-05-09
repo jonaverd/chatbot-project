@@ -5,11 +5,7 @@
   "main": "./Server/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "credentials": "powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Functions/Authentication/ath_scr.ps1",
-    "tunneling": "powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Server/Tunneling/srv_scr.ps1",
-    "server": "powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Server/cfg_scr.ps1",
-    "start": "nodemon ./Server/index.js",
-    "deploy": "npm run credentials; npm run tunneling; nodemon ./Server/index.js"
+    "start": "node ./Server/index.js"
   },
   "repository": {
     "type": "git",
@@ -34,12 +30,18 @@
     "bcrypt": "^5.0.1",
     "dialogflow": "^1.2.0",
     "dialogflow-fulfillment": "^0.6.1",
+    "dotenv": "^16.0.0",
     "email-validator": "^2.0.4",
     "express": "^4.17.3",
     "mongoose": "^6.2.11",
+    "node-cache": "^5.1.2",
     "password-validator": "^5.2.1",
     "pug": "^3.0.2",
-    "regexp": "^1.0.0"
+    "regexp": "^1.0.0",
+    "store2": "^2.13.2",
+    "throng": "^5.0.0",
+    "valid-url": "^1.0.9",
+    "xregexp": "^5.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.14"
