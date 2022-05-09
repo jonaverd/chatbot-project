@@ -15,7 +15,7 @@ Por primera vez al arrancar el proyecto es posible necesitar
 |Google Cloud SDK|Local|[Descargar](https://cloud.google.com/sdk/docs/quickstart "https://cloud.google.com/sdk/docs/quickstart")|**Sí**|Gestionar credenciales de Google Cloud|
 |MongoDB Atlas|Online|[Acceder](https://cloud.mongodb.com/v2/61b772821206554caad366c7#clusters "https://cloud.mongodb.com/v2/61b772821206554caad366c7#clusters")|No|Administrador de bases de datos|
 |DialogFlow Google|Online|[Acceder](https://dialogflow.cloud.google.com/#/agent/odiseo-chatbot/intents "https://dialogflow.cloud.google.com/#/agent/odiseo-chatbot/intents")|No|Interfaz del agente conversacional|
-|Google Actions Assistant|Online|[Acceder](https://console.actions.google.com/project/odiseo-voice-80c95/simulator "https://console.actions.google.com/project/odiseo-voice-80c95/simulator")|No|Asistente de voz compatible con DialogFlow|
+|Google Actions Assistant|Online|[Acceder](https://console.actions.google.com/project/odiseo-voicebot-75d44/simulator "https://console.actions.google.com/project/odiseo-voicebot-75d44/simulator")|No|Asistente de voz compatible con DialogFlow|
 |Heroku Hosting|Online|[Acceder](https://dashboard.heroku.com/apps "https://dashboard.heroku.com/apps")|No|Servidor de hosting público para NodeJS|
 
 ## Configurar dependencias
@@ -54,7 +54,7 @@ https://odiseo-chatbot.herokuapp.com/
 ````
 Comando para iniciar el Asistente de voz Odiseo en Google (panel de aprendizaje para alumnos)
 ````
-"Hablar con Agente Odiseo"
+"Hablar con Profesor Odiseo"
 ````
 
 ## Visualizar resultados
