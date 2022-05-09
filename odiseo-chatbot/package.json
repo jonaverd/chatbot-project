@@ -1,0 +1,49 @@
+{
+  "name": "odiseo-chatbot",
+  "version": "2.0.0",
+  "description": "TFG Project UA",
+  "main": "./Server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm rebuild; node ./Server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonaverd/chatbot-project.git"
+  },
+  "keywords": [
+    "Google",
+    "Actions",
+    "Dialogflow",
+    "API"
+  ],
+  "author": "jvv13@gcloud.ua.es",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonaverd/chatbot-project/issues"
+  },
+  "homepage": "https://github.com/jonaverd/chatbot-project#readme",
+  "dependencies": {
+    "@assistant/conversation": "^3.8.1",
+    "@google-cloud/dialogflow": "^4.7.0",
+    "actions-on-google": "^2.4.1",
+    "bcrypt": "^5.0.1",
+    "dialogflow": "^1.2.0",
+    "dialogflow-fulfillment": "^0.6.1",
+    "dotenv": "^16.0.0",
+    "email-validator": "^2.0.4",
+    "express": "^4.17.3",
+    "mongoose": "^6.2.11",
+    "node-cache": "^5.1.2",
+    "password-validator": "^5.2.1",
+    "pug": "^3.0.2",
+    "regexp": "^1.0.0",
+    "store2": "^2.13.2",
+    "throng": "^5.0.0",
+    "valid-url": "^1.0.9",
+    "xregexp": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  }
+}
