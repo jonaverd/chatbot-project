@@ -17,6 +17,7 @@ Por primera vez al arrancar el proyecto es posible necesitar
 |DialogFlow Google|Online|[Acceder](https://dialogflow.cloud.google.com/#/agent/odiseo-chatbot/intents "https://dialogflow.cloud.google.com/#/agent/odiseo-chatbot/intents")|No|Interfaz del agente conversacional|
 |Google Actions Assistant|Online|[Acceder](https://console.actions.google.com/project/odiseo-voicebot-75d44/simulator "https://console.actions.google.com/project/odiseo-voicebot-75d44/simulator")|No|Asistente de voz compatible con DialogFlow|
 |Heroku Hosting|Online|[Acceder](https://dashboard.heroku.com/apps "https://dashboard.heroku.com/apps")|No|Servidor de hosting público para NodeJS|
+|ImagBB Cloud|Online|[Acceder](https://jonathan-verdu.imgbb.com/ "https://jonathan-verdu.imgbb.com/")|No|Servidor de hosting para imágenes|
 
 ## Configurar dependencias
 La primera vez, el proyecto necesitará instalar sus dependencias y crear la carpeta *node_modules*
