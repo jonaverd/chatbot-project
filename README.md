@@ -56,6 +56,10 @@ Comando para iniciar el Asistente de voz Odiseo en Google (panel de aprendizaje 
 ````
 "Hablar con Profesor Odiseo"
 ````
+````
+https://assistant.google.com/services/a/uid/000000ea15df3d39?hl=es
+````
+
 
 ## Visualizar resultados
 Para comprobar o visualizar los resultados
