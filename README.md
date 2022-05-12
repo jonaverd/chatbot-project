@@ -55,10 +55,10 @@ https://odiseo-chatbot.herokuapp.com/
 ````
 Comando para iniciar el Asistente de voz Odiseo en Google (panel de aprendizaje para alumnos)
 ````
-"Hablar con Profesor Odiseo"
+"Hablar con Odiseo el mochuelo inteligente"
 ````
 ````
-https://assistant.google.com/services/a/uid/000000ea15df3d39?hl=es
+https://assistant.google.com/services/invoke/uid/000000ea15df3d39/alm/CgRnuCCfEgIQAQ==?hl=es
 ````
 
 
