@@ -224,12 +224,9 @@ exports.agent = async function (req, res, store) {
     // ¿formato válido?
     if (usersAuth.validatorNumbers(input)){
       // si hemos llegado aqui, ya tenemos todos los datos del usuario, registramos 
+      //¡UPDATE! Operamos cuando nos confirman que "Sí" con esos datos
       store.set('reg_age', input)
-      await backendTools.createBackend_User(store.get('reg_email'))
-      await backendTools.updateBackend_UserPassword(await usersAuth.gethashPassword(store.get('reg_password')), store.get('reg_email'))
-      await backendTools.updateBackend_UserName(store.get('reg_name'), store.get('reg_email'))
-      await backendTools.updateBackend_UserAge(store.get('reg_age'), store.get('reg_email'))
-      const response = RichContentResponses.info_users_register_completed(store.get('reg_name'));
+      const response = RichContentResponses.info_users_register_confirm(store.get('reg_name'), store.get('reg_email'), store.get('reg_age'), store.get('reg_password'));
       agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
     }
     // formato incorrecto (entrada normal)
@@ -298,13 +295,24 @@ exports.agent = async function (req, res, store) {
             }
           }
           else{
-            // El registro ya se completó con la edad, simplemente reseteamos valores y volvemos al menu principal
-            store.set('register', null)
+            // El registro ya se completó con la edad, simplemente reseteamos valores y volvemos al Menú Principal
+            //¡UPDATE! Como nos dicen que "Sí" guardamos los valores y le iniciamos la sesión
+            await backendTools.createBackend_User(store.get('reg_email'))
+            await backendTools.updateBackend_UserPassword(await usersAuth.gethashPassword(store.get('reg_password')), store.get('reg_email'))
+            await backendTools.updateBackend_UserName(store.get('reg_name'), store.get('reg_email'))
+            await backendTools.updateBackend_UserAge(store.get('reg_age'), store.get('reg_email'))
+            storageSetTemporal(store.get('reg_email'), store)
             store.set('reg_email', null)
+            store.set('password', true)
             store.set('reg_password', null)
+            store.set('user', store.get('temporal'));
+            store.set('namedata', store.get('reg_name'));
             store.set('reg_name', null)
+            store.set('age', store.get('reg_age'));
             store.set('reg_age', null)
-            const response = RichContentResponses.info_basic_login;
+            store.set('login', true)
+            store.set('register', null)
+            const response = RichContentResponses.info_basic_welcome_fromregister(store.get('namedata'), store.get('user'));
             agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
           }
         }
@@ -414,7 +422,7 @@ exports.agent = async function (req, res, store) {
     // arreglamos el formato (espacios, etc)
     const input = usersAuth.FormatHealer(inputparam, {spaces: "only"})
     // Se sigue con el proceso
-    if(input != "Menu Principal"){
+    if(input != "Menú Principal"){
       // Ya existe
       if(input && await backendTools.existsBackend_Question(input)){
        store.set('currentinput', null);
@@ -471,7 +479,7 @@ exports.agent = async function (req, res, store) {
     // arreglamos el formato (espacios, etc)
     const input = usersAuth.FormatHealer(inputparam, {spaces: "only"})
     // Se sigue con el proceso
-    if(input != "Menu Principal"){
+    if(input != "Menú Principal"){
       // No existe
       if(input && !await backendTools.existsBackend_QuestionUser(input, store.get('user'))){
        store.set('currentinput', null);
@@ -510,7 +518,7 @@ exports.agent = async function (req, res, store) {
     // arreglamos el formato (espacios, etc)
     const input = usersAuth.FormatHealer(inputparam, {spaces: "only"})
     // Se sigue con el proceso
-    if(input != "Menu Principal"){
+    if(input != "Menú Principal"){
       // No existe
       if(input && !await backendTools.existsBackend_QuestionUser(input, store.get('user'))){
        store.set('currentinput', null);
@@ -566,7 +574,7 @@ exports.agent = async function (req, res, store) {
     // arreglamos el formato (espacios, etc)
     const input = usersAuth.FormatHealer(inputparam, {spaces: "only"})
     // Se sigue con el proceso
-    if(input != "Menu Principal"){
+    if(input != "Menú Principal"){
       // No existe
       if(input && !await backendTools.existsBackend_QuestionUser(input, store.get('user'))){
        store.set('currentinput', null);
@@ -629,7 +637,7 @@ exports.agent = async function (req, res, store) {
     // arreglamos el formato (espacios, etc)
     const input = usersAuth.FormatHealer(inputparam, {spaces: "only"})
     // Mostrar listas
-    if(input != "Menu Principal"){
+    if(input != "Menú Principal"){
       // Todas las cuestiones
       if(input == "Mostrar Todas"){
         store.set('currentinput', null);
@@ -700,7 +708,7 @@ exports.agent = async function (req, res, store) {
     // arreglamos el formato (espacios, etc)
     const input = usersAuth.FormatHealer(inputparam, {spaces: "only"})
     // Se sigue con el proceso
-    if(input != "Menu Principal"){
+    if(input != "Menú Principal"){
       // No esta pendiente
       if(input && !await backendTools.existsBackend_Pending(input, store.get('user'))){
        store.set('currentinput', null);

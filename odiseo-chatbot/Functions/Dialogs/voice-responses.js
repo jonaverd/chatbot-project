@@ -88,7 +88,7 @@ module.exports = Object.freeze({
     info_basic_response_header: function(answer){
         const response = {
             speech: 'La respuesta es: ' + answer + '.',
-            text: 'La respuesta es: ' + answer + '. ¡Si quieres hacer otra cosa, di la palabra "Continuar"!',
+            text: '¡Si quieres hacer otra cosa, di la palabra "Continuar"!',
         }
         return response;
     },
@@ -212,8 +212,8 @@ module.exports = Object.freeze({
         text: 'Lo siento, no te entiendo. ¿Te puedo ayudar en algo? ¡Si quieres conocer todas mis opciones, di la palabra "Comandos"!'
     },
     error_basic_notsupported: {
-        speech: 'Lo siento, esta función no está disponible desde el Asistente de Voz de Odiseo. ¡Si quieres conocer todas mis opciones, di la palabra "Comandos"!',
-        text: 'Lo siento, esta función no está disponible desde el Asistente de Voz de Odiseo. ¡Si quieres conocer todas mis opciones, di la palabra "Comandos"!'
+        speech: 'Lo siento, esta función no está disponible desde el Asistente de Voz de Odiseo.',
+        text: 'Lo siento, esta función no está disponible desde el Asistente de Voz de Odiseo.'
     },
     error_operations_listvoid: {
         speech: '¡Vaya! Parece que no he podido aprender nada todavía.',

@@ -9,7 +9,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Hola " + user,
-              "subtitle": "¡Bienvenido/a de nuevo! Soy Odiseo, tu agente educativo. ¿Que quieres hacer?",
+              "subtitle": "¡Bienvenido/a de nuevo! Soy Odiseo, tu agente educativo. ¿Qué quieres hacer? Aquí te dejo algunas sugerencias. Si necesitas ver todas mis opciones pulsa 'Menú Principal'",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Public
@@ -20,7 +20,96 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Quiero Enseñarte",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Muéstrame Base de Conocimiento",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Menú Principal",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Hasta Luego Odiseo",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Cerrar Sesión",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+      return response; 
+    },
+    info_basic_welcome_fromregister: function(user, email){
+      const response = {
+        "richContent": [
+          [
+            {
+              "type": "info",
+              "subtitle": "¡Se ha completado el registro! La próxima vez podré identificarte con el email: " + email,
+              "image": {
+                  "src": {
+                      "rawUrl": referencesURI.imageURI_Help
+                  }
+              },
+              },
+            {
+              "type": "info",
+              "title": "Hola " + user,
+              "subtitle": "¡Bienvenido/a de nuevo! Soy Odiseo, tu agente educativo. ¿Qué quieres hacer? Aquí te dejo algunas sugerencias. Si necesitas ver todas mis opciones pulsa 'Menú Principal'",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Public
+                }
+              },
+            },
+            {
+              "type": "chips",
+              "options": [
+                {
+                  "text": "Quiero Enseñarte",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Muéstrame Base de Conocimiento",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -84,8 +173,8 @@ module.exports = Object.freeze({
             },
             {
             "type": "info",
-            "title": "Menu Principal",
-            "subtitle": "Aquí tienes una lista de referencias con todos mis comandos. ¿Qué quieres hacer?",
+            "title": "Menú Principal",
+            "subtitle": "Aquí tienes una lista de referencias con todos mis comandos. Por favor, lee su descripción antes de continuar.",
             "image": {
                 "src": {
                 "rawUrl": referencesURI.imageURI_Public
@@ -93,7 +182,10 @@ module.exports = Object.freeze({
             },
             },
             {
-            "type": "list",
+              "type": "divider"
+            },
+            {
+            "type": "info",
             "title": "Hola Odiseo",
             "subtitle": "El agente te da la bienvenida",
             },
@@ -101,7 +193,7 @@ module.exports = Object.freeze({
             "type": "divider"
             },
             {
-            "type": "list",
+            "type": "info",
             "title": "<Pedir Cuestión>",
             "subtitle": "El usuario puede pedir en cualquier momento una pregunta al agente. Si el agente dispone de la respuesta (en su base de conocimiento) podrá ayudar al usuario",
             },
@@ -109,7 +201,7 @@ module.exports = Object.freeze({
             "type": "divider"
             },
             {
-            "type": "list",
+            "type": "info",
             "title": "Quiero Enseñarte",
             "subtitle": "Activa el aprendizaje guiado del asistente",
             },
@@ -117,7 +209,7 @@ module.exports = Object.freeze({
             "type": "divider"
             },
             {
-            "type": "list",
+            "type": "info",
             "title": "Quiero Actualizar Respuesta",
             "subtitle": "Modifica la respuesta de una pregunta que haya almacenado el usuario",
             },
@@ -125,7 +217,7 @@ module.exports = Object.freeze({
             "type": "divider"
             },
             {
-            "type": "list",
+            "type": "info",
             "title": "Quiero Actualizar Imagen",
             "subtitle": "Modifica la imagen de una pregunta que haya almacenado el usuario",
             },
@@ -133,15 +225,15 @@ module.exports = Object.freeze({
             "type": "divider"
             },
             {
-              "type": "divider"
-              },
-              {
-              "type": "list",
-              "title": "Quiero Eliminar Cuestión",
-              "subtitle": "Borra una pregunta que haya almacenado el usuario",
-              },
+            "type": "info",
+            "title": "Quiero Eliminar Cuestión",
+            "subtitle": "Borra una pregunta que haya almacenado el usuario",
+            },
             {
-            "type": "list",
+            "type": "divider"
+            },
+            {
+            "type": "info",
             "title": "Muéstrame Base de Conocimiento",
             "subtitle": "Muestra todas las preguntas almacenadas por el agente. El usuario puede filtrar la lista para mostrar sólo las suyas",
             },
@@ -149,7 +241,7 @@ module.exports = Object.freeze({
             "type": "divider"
             },
             {
-            "type": "list",
+            "type": "info",
             "title": "Dime Alguna Curiosidad",
             "subtitle": "El agente busca una pregunta al azar para responder al usuario",
             },
@@ -157,7 +249,7 @@ module.exports = Object.freeze({
               "type": "divider"
               },
               {
-              "type": "list",
+              "type": "info",
               "title": "Comprobar Cuestiones Pendientes",
               "subtitle": "El agente comprueba las preguntas que solicitan la aprobación del usuario",
               },
@@ -165,7 +257,7 @@ module.exports = Object.freeze({
             "type": "divider"
             },
             {
-            "type": "list",
+            "type": "info",
             "title": "Hasta Luego Odiseo",
             "subtitle": "La conversación finaliza",
             },
@@ -173,10 +265,20 @@ module.exports = Object.freeze({
             "type": "divider"
             },
             {
-            "type": "list",
+            "type": "info",
             "title": "Cerrar Sesión",
             "subtitle": "Se cierra la sesión del usuario y lo devuelve al menú de login",
             },
+            {
+              "type": "info",
+              "title": "¿Que operación deseas realizar?",
+              "subtitle": "A continuación, pulsa sobre los siguientes botones para iniciar alguna operación.",
+              "image": {
+                  "src": {
+                  "rawUrl": referencesURI.imageURI_Public
+                  }
+              },
+              },
             {
             "type": "chips",
             "options": [
@@ -316,7 +418,7 @@ module.exports = Object.freeze({
           {
             "type": "info",
             "title": "Cancelado",
-            "subtitle": "He cancelado la operación. Para realizar otras operaciones escribe 'Continuar'",
+            "subtitle": "He cancelado la operación. Para realizar otras operaciones pulsa en 'Continuar'",
             "image": {
               "src": {
                 "rawUrl": referencesURI.imageURI_Error
@@ -347,7 +449,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Confirmar Acceso",
-              "subtitle": "Contraseña verificada. Identificado como: " + user + ". Para acceder a tu cuenta, escribe 'Acceder'",
+              "subtitle": "Contraseña verificada. Identificado como: " + user + ". Para acceder a tu cuenta, pulsa 'Acceder'. Si deseas volver al inicio, pulsa 'Cancelar' ",
               "image": 
               {
                 "src": 
@@ -382,14 +484,14 @@ module.exports = Object.freeze({
       }
       return response;
     },
-    info_users_register_completed: function(user){
+    info_users_register_confirm: function(user, email, age, password){
       const response = {
         "richContent": [
             [
                 {
                     "type": "info",
-                    "title": "Registro Completado",
-                    "subtitle": "La próxima vez podré identificarte como " + user + ". Si quieres volver al inicio, escribe 'Finalizar'",
+                    "title": "¿Confirmar Registro?",
+                    "subtitle": "Se va a registrar un nuevo usuario con los siguientes datos:",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Login 
@@ -397,11 +499,50 @@ module.exports = Object.freeze({
                     },
                 },
                 {
+                  "type": "info",
+                  "title": "Email",
+                  "subtitle": email,
+                },
+                {
+                  "type": "info",
+                  "title": "Contraseña",
+                  "subtitle": password,
+                },
+                {
+                  "type": "info",
+                  "title": "Nombre y Apellidos",
+                  "subtitle": user,
+                },
+                {
+                  "type": "info",
+                  "title": "Edad",
+                  "subtitle": age,
+                },
+                {
+                  "type": "info",
+                  "subtitle": "Pulsa 'Continuar' para finalizar el registro. Si deseas modificar algun dato o salir de la operación, pulsa 'Cancelar'",
+                  "image": {
+                      "src": {
+                          "rawUrl": referencesURI.imageURI_Login 
+                      }
+                  },
+              },
+                {
                   "type": "chips",
                   "options": 
                   [
                     {
-                      "text": "Finalizar",
+                      "text": "Continuar",
+                      "image": 
+                      {
+                        "src": 
+                        {
+                          "rawUrl": referencesURI.imageURI_Login
+                        }
+                      }
+                    },
+                    {
+                      "text": "Cancelar",
                       "image": 
                       {
                         "src": 
@@ -424,7 +565,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Cuestión Guardada",
-              "subtitle": "¡Gracias por enseñarme! La respuesta para (" + preview + ") es (" + input + "). Si deseas realizar otra operación, escribe 'Menu Principal'.",
+              "subtitle": "¡Gracias por enseñarme! La respuesta para (" + preview + ") es (" + input + "). Si deseas realizar otra operación, pulsa 'Menú Principal'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -435,7 +576,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -481,7 +622,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -503,7 +644,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "¿Filtrar Cuestiones?",
-                    "subtitle": "Para filtrar sólo tus cuestiones personales escribe 'Creadas por " + user + "'. Si quieres ver una lista completa con todas las cuestiones disponibles escribe 'Mostrar Todas'. Si deseas realizar otra operación, escribe 'Menu Principal'",
+                    "subtitle": "Para filtrar sólo tus cuestiones personales pulsa 'Creadas por " + user + "'. Si quieres ver una lista completa con todas las cuestiones disponibles pulsa 'Mostrar Todas'. Si deseas realizar otra operación, pulsa 'Menú Principal'",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Public
@@ -535,7 +676,7 @@ module.exports = Object.freeze({
                       }
                     },
                     {
-                      "text": "Menu Principal",
+                      "text": "Menú Principal",
                       "image": {
                         "src": {
                           "rawUrl": referencesURI.imageURI_Public
@@ -557,7 +698,7 @@ module.exports = Object.freeze({
         const info =  {
           "type": "info",
           "title": "Almacén de " + name,
-          "subtitle": "Mostrando lista personal. Para realizar alguna operación escribe 'Menu Principal'",
+          "subtitle": "Mostrando lista personal. Para realizar alguna operación pulsa 'Menú Principal'",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Public
@@ -580,7 +721,7 @@ module.exports = Object.freeze({
           "type": "chips",
           "options": [
               {
-              "text": "Menu Principal",
+              "text": "Menú Principal",
               "image": {
                   "src": {
                   "rawUrl": referencesURI.imageURI_Public
@@ -602,7 +743,7 @@ module.exports = Object.freeze({
         const info =  {
             "type": "info",
             "title": "Almacén de " + name,
-            "subtitle": "Mostrando lista personal. Para realizar alguna operación escribe 'Menu Principal'",
+            "subtitle": "Mostrando lista personal. Para realizar alguna operación pulsa 'Menú Principal'",
             "image": {
                 "src": {
                 "rawUrl": referencesURI.imageURI_Public
@@ -643,7 +784,7 @@ module.exports = Object.freeze({
             "type": "chips",
             "options": [
                 {
-                "text": "Menu Principal",
+                "text": "Menú Principal",
                 "image": {
                     "src": {
                     "rawUrl": referencesURI.imageURI_Public
@@ -669,7 +810,7 @@ module.exports = Object.freeze({
         const info =  {
           "type": "info",
           "title": "Base de Conocimiento de Odiseo",
-          "subtitle": "Mostrando lista de todas las cuestiones disponibles. Para realizar alguna operación escribe 'Menu Principal'",
+          "subtitle": "Mostrando lista de todas las cuestiones disponibles. Para realizar alguna operación pulsa 'Menú Principal'",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Public
@@ -692,7 +833,7 @@ module.exports = Object.freeze({
           "type": "chips",
           "options": [
               {
-              "text": "Menu Principal",
+              "text": "Menú Principal",
               "image": {
                   "src": {
                   "rawUrl": referencesURI.imageURI_Public
@@ -714,7 +855,7 @@ module.exports = Object.freeze({
         const info =  {
             "type": "info",
             "title": "Base de Conocimiento de Odiseo",
-            "subtitle": "Mostrando lista de todas las cuestiones disponibles. Para realizar alguna operación escribe 'Menu Principal'",
+            "subtitle": "Mostrando lista de todas las cuestiones disponibles. Para realizar alguna operación pulsa 'Menú Principal'",
             "image": {
                 "src": {
                 "rawUrl": referencesURI.imageURI_Public
@@ -755,7 +896,7 @@ module.exports = Object.freeze({
             "type": "chips",
             "options": [
                 {
-                "text": "Menu Principal",
+                "text": "Menú Principal",
                 "image": {
                     "src": {
                     "rawUrl": referencesURI.imageURI_Public
@@ -781,7 +922,7 @@ module.exports = Object.freeze({
         const info =  {
           "type": "info",
           "title": action,
-          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", escribe la que deseas operar. Para realizar otra operación escribe 'Menu Principal'",
+          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", pulsa la que deseas operar. Para realizar otra operación pulsa 'Menú Principal'",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Teaching
@@ -804,7 +945,7 @@ module.exports = Object.freeze({
           "type": "chips",
           "options": [
               {
-              "text": "Menu Principal",
+              "text": "Menú Principal",
               "image": {
                   "src": {
                   "rawUrl": referencesURI.imageURI_Public
@@ -827,7 +968,7 @@ module.exports = Object.freeze({
         const info =  {
           "type": "info",
           "title": action,
-          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", escribe la que deseas operar. Para realizar otra operación escribe 'Menu Principal'",
+          "subtitle": "Aquí te dejo una lista de cuestiones disponibles de " + name + ", pulsa la que deseas operar. Para realizar otra operación pulsa 'Menú Principal'",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Teaching
@@ -836,7 +977,7 @@ module.exports = Object.freeze({
         }
         elements.push(info);
         const cancel = {
-          "text": "Menu Principal",
+          "text": "Menú Principal",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Public
@@ -886,7 +1027,7 @@ module.exports = Object.freeze({
         const info =  {
           "type": "info",
           "title": action,
-          "subtitle": "Aquí te dejo una lista de cuestiones dirigidas a " + name + ", escribe la que deseas confirmar permanentemente o denegar su acceso. Para realizar otra operación escribe 'Menu Principal'",
+          "subtitle": "Aquí te dejo una lista de cuestiones dirigidas a " + name + ", pulsa la que deseas confirmar permanentemente o denegar su acceso. Para realizar otra operación pulsa 'Menú Principal'",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Teaching
@@ -909,7 +1050,7 @@ module.exports = Object.freeze({
           "type": "chips",
           "options": [
               {
-              "text": "Menu Principal",
+              "text": "Menú Principal",
               "image": {
                   "src": {
                   "rawUrl": referencesURI.imageURI_Public
@@ -932,7 +1073,7 @@ module.exports = Object.freeze({
         const info =  {
           "type": "info",
           "title": action,
-          "subtitle": "Aquí te dejo una lista de cuestiones dirigidas a " + name + ", escribe la que deseas confirmar permanentemente o denegar su acceso. Para realizar otra operación escribe 'Menu Principal'",
+          "subtitle": "Aquí te dejo una lista de cuestiones dirigidas a " + name + ", pulsa la que deseas confirmar permanentemente o denegar su acceso. Para realizar otra operación pulsa 'Menú Principal'",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Teaching
@@ -941,7 +1082,7 @@ module.exports = Object.freeze({
         }
         elements.push(info);
         const cancel = {
-          "text": "Menu Principal",
+          "text": "Menú Principal",
           "image": {
               "src": {
               "rawUrl": referencesURI.imageURI_Public
@@ -993,7 +1134,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Cuestión Eliminada",
-              "subtitle": "La pregunta (" + preview + ") ha sido eliminada. Si deseas realizar otra operación, escribe 'Menu Principal'.",
+              "subtitle": "La pregunta (" + preview + ") ha sido eliminada. Si deseas realizar otra operación, pulsa 'Menú Principal'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -1004,7 +1145,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1025,7 +1166,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Respuesta Actualizada",
-              "subtitle": "¡Gracias por corregirme! La respuesta para (" + preview + ") se ha actualizado como (" + input + "). Si deseas realizar otra operación, escribe 'Menu Principal'.",
+              "subtitle": "¡Gracias por corregirme! La respuesta para (" + preview + ") se ha actualizado como (" + input + "). Si deseas realizar otra operación, pulsa 'Menú Principal'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -1036,7 +1177,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1057,7 +1198,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Imagen Actualizada",
-              "subtitle": "¡Ha quedado muy bien! La imagen para (" + preview + ") ha sido actualizada. Si deseas realizar otra operación, escribe 'Menu Principal'.",
+              "subtitle": "¡Ha quedado muy bien! La imagen para (" + preview + ") ha sido actualizada. Si deseas realizar otra operación, pulsa 'Menú Principal'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -1068,7 +1209,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1089,7 +1230,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Cuestión Confirmada",
-              "subtitle": "La pregunta (" + preview + ") ha sido publicada en mi base conocimiento. Si deseas realizar otra operación, escribe 'Menu Principal'.",
+              "subtitle": "La pregunta (" + preview + ") ha sido publicada en mi base conocimiento. Si deseas realizar otra operación, pulsa 'Menú Principal'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -1100,7 +1241,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1121,7 +1262,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Cuestión Denegada",
-              "subtitle": "La pregunta (" + preview + ") ha sido rechazada de las candidatas para publicar. Si deseas realizar otra operación, escribe 'Menu Principal'.",
+              "subtitle": "La pregunta (" + preview + ") ha sido rechazada de las candidatas para publicar. Si deseas realizar otra operación, pulsa 'Menú Principal'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -1132,7 +1273,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1164,7 +1305,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1213,7 +1354,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "📴 Asistente: Información (2/2)",
-              "subtitle": "Para realizar consultas y solicitar la publicación de cuestiones de forma interactiva, por favor, utiliza la versión de voz de Odiseo en Google Assistant. Si deseas realizar otra operación, escribe 'Menu Principal'.",
+              "subtitle": "Para realizar consultas y solicitar la publicación de cuestiones de forma interactiva, por favor, utiliza la versión de voz de Odiseo en Google Assistant. Si deseas realizar otra operación, pulsa 'Menú Principal'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Assistant
@@ -1224,7 +1365,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1243,7 +1384,7 @@ module.exports = Object.freeze({
               {
                   "type": "info",
                   "title": "Iniciar Sesión: Email",
-                  "subtitle": "De acuerdo. Para acceder a la aplicación, introduce tu 'correo electrónico'. Si quieres volver al inicio, escribe 'Cancelar'",
+                  "subtitle": "De acuerdo. Para acceder a la aplicación, introduce tu 'correo electrónico'. Si quieres volver al inicio, pulsa 'Cancelar'",
                   "image": {
                       "src": {
                           "rawUrl": referencesURI.imageURI_Login
@@ -1276,7 +1417,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Iniciar Sesión: Contraseña",
-                    "subtitle": "Email verificado (" + user + ") Introduce tu contraseña de 6 dígitos para acceder a tu cuenta.",
+                    "subtitle": "Email verificado (" + user + ") Introduce tu contraseña para acceder a tu cuenta.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Login
@@ -1310,7 +1451,7 @@ module.exports = Object.freeze({
           [
               {
                   "type": "info",
-                  "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos.",
+                  "subtitle": "Recuerda que la privacidad de tus datos personales siempre será respetada y nunca serán compartidos.",
                   "image": {
                       "src": {
                           "rawUrl": referencesURI.imageURI_Help
@@ -1320,7 +1461,7 @@ module.exports = Object.freeze({
               {
                   "type": "info",
                   "title": "Registro: Email",
-                  "subtitle": "De acuerdo. Para registrarse en la aplicación, necesito que introduzcas tu 'correo electrónico'. Si quieres volver al inicio, escribe 'Cancelar'",
+                  "subtitle": "De acuerdo. Para registrarse en la aplicación, necesito que introduzcas tu 'correo electrónico'. Si quieres volver al inicio, pulsa 'Cancelar'",
                   "image": {
                       "src": {
                           "rawUrl": referencesURI.imageURI_Login
@@ -1350,19 +1491,19 @@ module.exports = Object.freeze({
     {
         "richContent": [
             [
-                {
-                    "type": "info",
-                    "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Tu contraseña se guardará como una llave cifrada por razones de seguridad",
-                    "image": {
-                        "src": {
-                            "rawUrl": referencesURI.imageURI_Help
-                        }
-                    },
+              {
+                "type": "info",
+                "subtitle": "⚠️ ¡Aviso! Aunque las contraseñas se encriptan de forma segura en el servidor, es recomendable que no guardes contraseñas fáciles de adivinar.",
+                "image": {
+                  "src": {
+                    "rawUrl": referencesURI.imageURI_Help
+                  }
                 },
+              },
                 {
                     "type": "info",
                     "title": "Registro: Contraseña",
-                    "subtitle": "Gracias. Para continuar con el registro necesito crear una contraseña personal de 6 dígitos. Introduce tu 'contraseña'. Si quieres volver al inicio, escribe 'Cancelar'",
+                    "subtitle": "Gracias. Para continuar con el registro necesito crear una contraseña personal. Introduce tu 'contraseña' utilizando sólo números. Recuerda, que necesitas 6 números obligatoriamente. Si quieres volver al inicio, pulsa 'Cancelar'",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Login 
@@ -1392,19 +1533,19 @@ module.exports = Object.freeze({
     {
       "richContent": [
           [
-              {
-                  "type": "info",
-                  "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Los datos adicionales se recojerán únicamente para tu identificación personal, o bien, para extraer estadísticas relacionadas con el uso de la aplicación.",
-                  "image": {
-                      "src": {
-                          "rawUrl": referencesURI.imageURI_Help
-                      }
-                  },
+            {
+              "type": "info",
+              "subtitle": "Los datos adicionales serán utilizados de forma anónima para extraer estadísticas del uso de la aplicación.",
+              "image": {
+                  "src": {
+                      "rawUrl": referencesURI.imageURI_Help
+                  }
               },
+          },
               {
                   "type": "info",
                   "title": "Registro: Datos Adicionales (1/2)",
-                  "subtitle": "Perfecto. Si quieres completar el registro tendrás que facilitarme algunos datos adicionales. Introduce tu 'nombre y apellidos'. Si quieres volver al inicio, escribe 'Cancelar'",
+                  "subtitle": "Perfecto. Si quieres completar el registro tendrás que facilitarme algunos datos adicionales. Introduce tu 'nombre y apellidos' sin utilizar números ni símbolos especiales. Si quieres volver al inicio, pulsa 'Cancelar'",
                   "image": {
                       "src": {
                           "rawUrl": referencesURI.imageURI_Login 
@@ -1435,17 +1576,8 @@ module.exports = Object.freeze({
           [
               {
                   "type": "info",
-                  "subtitle": "Recuerda que la privacidad de tus datos siempre será respetada y nunca serán compartidos. Los datos adicionales se recojerán únicamente para tu identificación personal, o bien, para extraer estadísticas relacionadas con el uso de la aplicación.",
-                  "image": {
-                      "src": {
-                          "rawUrl": referencesURI.imageURI_Help
-                      }
-                  },
-              },
-              {
-                  "type": "info",
                   "title": "Registro: Datos Adicionales (2/2)",
-                  "subtitle": "Correcto. Para finalizar el registro de tu cuenta introduce tu 'edad'. Si quieres volver al inicio, escribe 'Cancelar'",
+                  "subtitle": "Correcto. Para finalizar el registro de tu cuenta introduce tu 'edad'. Por favor, utiliza sólo números. Si quieres volver al inicio, pulsa 'Cancelar'",
                   "image": {
                       "src": {
                           "rawUrl": referencesURI.imageURI_Login 
@@ -1478,7 +1610,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Nueva Cuestión",
-              "subtitle": "Dime la cuestión que deseas guardar en mi aprendizaje. Si quieres detener el asistente, escribe 'Menu Principal'",
+              "subtitle": "Dime la cuestión que deseas guardar en mi aprendizaje. Si quieres detener el asistente, pulsa 'Menú Principal'",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -1489,7 +1621,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1602,7 +1734,7 @@ module.exports = Object.freeze({
                   }
                 },
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Teaching
@@ -1622,7 +1754,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "¿Disculpa?",
-              "subtitle": "No puedo encontrar ninguna referencia. Escribe 'Menu Principal' para ver mi lista de comandos",
+              "subtitle": "No puedo encontrar ninguna referencia. Pulsa 'Menú Principal' para ver mi lista de comandos",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Error
@@ -1633,7 +1765,7 @@ module.exports = Object.freeze({
               "type": "chips",
               "options": [
                 {
-                  "text": "Menu Principal",
+                  "text": "Menú Principal",
                   "image": {
                     "src": {
                       "rawUrl": referencesURI.imageURI_Public
@@ -1660,7 +1792,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "El email " + input +" no está registrado en mi base de datos",
+                    "subtitle": "El email " + input +" no está registrado en mi base de datos. Por favor, 'Regístrate' primero para acceder a la aplicación.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -1695,7 +1827,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "La entrada " + input +" no es un email con formato válido",
+                    "subtitle": "La entrada " + input +" no es un email con formato válido. Por favor, escribe tu correo electrónico utilizando el símbolo (@) y una terminación apropiada como (.com .es .net). Por ejemplo: marigarcia@gmail.com",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -1730,7 +1862,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "El email " + user +" no tiene una contraseña registrada.",
+                    "subtitle": "El email " + user +" no tiene una contraseña registrada. Por favor, contacta con un administrador para solucionar el problema.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -1765,7 +1897,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido",
+                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido. Por favor, escribe tu contraseña utilizando sólo números. Recuerda, que necesitas 6 números obligatoriamente. Por ejemplo: 123456",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -1801,7 +1933,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Error",
-              "subtitle": "La contraseña no es correcta. Introduce la contraseña de 6 dígitos asociada a este usuario: " + user,
+              "subtitle": "¡Contraseña incorrecta! Por favor, introduce la contraseña asociada a este usuario: " + user,
               "image": 
               {
                 "src": 
@@ -1838,7 +1970,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "El email " + user +" no tiene un nombre registrado.",
+                    "subtitle": "El email " + user +" no tiene un nombre registrado. Por favor, contacta con un administrador para solucionar el problema.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -1873,7 +2005,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "El email " + user +" no tiene una edad registrada.",
+                    "subtitle": "El email " + user +" no tiene una edad registrada. Por favor, contacta con un administrador para solucionar el problema.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -1908,7 +2040,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "La entrada " + input +" no es un email con formato válido",
+                    "subtitle": "La entrada " + input +" no es un email con formato válido. Por favor, escribe tu correo electrónico utilizando el símbolo (@) y una terminación apropiada como (.com .es .net). Por ejemplo: marigarcia@gmail.com",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -1943,7 +2075,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "¡El usuario con email " + input +" ya está registrado!",
+                    "subtitle": "¡El usuario con email " + input +" ya está registrado! Por favor, introduce otro email. Si ya estás registrado en la aplicación, 'Cancela' el registro e 'Inicia Sesión' con tu cuenta.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -1978,7 +2110,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido",
+                    "subtitle": "La entrada " + input +" no es una contraseña con formato válido. Por favor, escribe tu contraseña utilizando sólo números. Recuerda, que necesitas 6 números obligatoriamente. Por ejemplo: 123456",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -2013,7 +2145,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "¡La contraseña para el email " + user +" ya está registrada!",
+                    "subtitle": "¡La contraseña para el email " + user +" ya está registrada! Por favor, contacta con un administrador para solucionar el problema.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -2048,7 +2180,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "La entrada " + input +" no es un nombre o apellidos con formato válido",
+                    "subtitle": "La entrada " + input +" no es un nombre o apellidos con formato válido. Por favor, escribe tu nombre y apellidos sin utilizar números ni símbolos especiales. Por ejemplo: Francisco Martínez",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -2083,7 +2215,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "¡El nombre para el email " + user +" ya está registrado!",
+                    "subtitle": "¡El nombre para el email " + user +" ya está registrado! Por favor, contacta con un administrador para solucionar el problema.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -2118,7 +2250,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "La entrada " + input +" no es una edad con formato válido",
+                    "subtitle": "La entrada " + input +" no es una edad con formato válido. Por favor, escribe tu edad utilizando números. Por ejemplo: 8, 15, 43",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -2153,7 +2285,7 @@ module.exports = Object.freeze({
                 {
                     "type": "info",
                     "title": "Error",
-                    "subtitle": "¡La edad para el email " + user +" ya está registrada!",
+                    "subtitle": "¡La edad para el email " + user +" ya está registrada! Por favor, contacta con un administrador para solucionar el problema.",
                     "image": {
                         "src": {
                             "rawUrl": referencesURI.imageURI_Error
@@ -2188,7 +2320,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Error",
-              "subtitle": "¡Esta pregunta ya la tenía guardada! (" + input + ") Si deseas realizar otra consulta, escribe 'Continuar'",
+              "subtitle": "¡Esta pregunta ya la tenía guardada! (" + input + ") Si deseas realizar otra consulta, pulsa 'Continuar'",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Error
@@ -2220,7 +2352,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Cancelado",
-              "subtitle": "¡Esta pregunta no la tienes registrada en tu base de conocimiento! (" + input + ") Si deseas realizar otra consulta, escribe 'Continuar'",
+              "subtitle": "¡Esta pregunta no la tienes registrada en tu base de conocimiento! (" + input + ") Si deseas realizar otra consulta, pulsa 'Continuar'",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Error
@@ -2252,7 +2384,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Cancelado",
-              "subtitle": "¡Esta pregunta no se encuentra pendiente de confirmar! (" + input + ") Si deseas realizar otra consulta, escribe 'Continuar'",
+              "subtitle": "¡Esta pregunta no se encuentra pendiente de confirmar! (" + input + ") Si deseas realizar otra consulta, pulsa 'Continuar'",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Error
@@ -2283,7 +2415,7 @@ module.exports = Object.freeze({
           {
             "type": "info",
             "title": "Sin Información",
-            "subtitle": "Mi base de conocimiento está vacía. Escribe 'Menu Principal' para ver mi lista de comandos",
+            "subtitle": "Mi base de conocimiento está vacía. Pulsa 'Menú Principal' para ver mi lista de comandos",
             "image": {
               "src": {
                 "rawUrl": referencesURI.imageURI_Error
@@ -2294,7 +2426,7 @@ module.exports = Object.freeze({
             "type": "chips",
             "options": [
               {
-                "text": "Menu Principal",
+                "text": "Menú Principal",
                 "image": {
                   "src": {
                     "rawUrl": referencesURI.imageURI_Public

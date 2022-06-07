@@ -262,112 +262,120 @@ class Assistant {
   input_new_question(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorNotSupported)))
     this.conv.add(new Simple(RichContentResponses.error_basic_notsupported));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Aceptar")))
   } 
   // No disponible en version Voz
   input_new_question_request_question(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_cancel_first));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Detener Operación")))
   }
   // No disponible en version Voz
   input_new_question_request_answer(){
-    this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_options));
+    this.conv.add(new Table(RichContentResponses.info_basic_list_options(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_PublicJunior)))));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hola Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Dime Alguna Curiosidad")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Aprender")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Enviar Pregunta")))
     this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
   }
   // No disponible en version Voz
   input_delete_question(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorNotSupported)))
     this.conv.add(new Simple(RichContentResponses.error_basic_notsupported));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Aceptar")))
   }
   // No disponible en version Voz
   input_delete_question_confirm(){
-    this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_options));
+    this.conv.add(new Table(RichContentResponses.info_basic_list_options(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_PublicJunior)))));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hola Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Dime Alguna Curiosidad")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Aprender")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Enviar Pregunta")))
     this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
   }
   // No disponible en version Voz
   input_update_question_answer(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorNotSupported)))
     this.conv.add(new Simple(RichContentResponses.error_basic_notsupported));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Aceptar")))
   }
   // No disponible en version Voz
   input_update_question_answer_select(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_cancel_first));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Detener Operación")))
   }
   // No disponible en version Voz
   input_update_question_answer_input(){
-    this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_options));
+    this.conv.add(new Table(RichContentResponses.info_basic_list_options(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_PublicJunior)))));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hola Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Dime Alguna Curiosidad")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Aprender")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Enviar Pregunta")))
     this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
   }
   // No disponible en version Voz
   input_update_question_image(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorNotSupported)))
     this.conv.add(new Simple(RichContentResponses.error_basic_notsupported));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Aceptar")))
   }
   // No disponible en version Voz
   input_update_question_image_select(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_cancel_first));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Detener Operación")))
   }
   // No disponible en version Voz
   input_update_question_image_input(){
-    this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_options));
+    this.conv.add(new Table(RichContentResponses.info_basic_list_options(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_PublicJunior)))));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hola Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Dime Alguna Curiosidad")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Aprender")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Enviar Pregunta")))
     this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
   }
   // No disponible en version Voz
   input_list_question(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorNotSupported)))
     this.conv.add(new Simple(RichContentResponses.error_basic_notsupported));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Aceptar")))
   }
   // No disponible en version Voz
   input_list_question_filter(){
-    this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_options));
+    this.conv.add(new Table(RichContentResponses.info_basic_list_options(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_PublicJunior)))));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hola Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Dime Alguna Curiosidad")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Aprender")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Enviar Pregunta")))
     this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
   }
   // No disponible en version Voz
   input_list_question_pending(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorNotSupported)))
     this.conv.add(new Simple(RichContentResponses.error_basic_notsupported));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Aceptar")))
   }
   // No disponible en version Voz
   input_list_question_pending_select(){
     this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_cancel_first));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Detener Operación")))
   }
   // No disponible en version Voz
   input_list_question_pending_confirm(){
-    this.conv.add(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_ErrorJunior)))
-    this.conv.add(new Simple(RichContentResponses.error_basic_unknown));
-    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Comandos")))
+    this.conv.add(new Simple(RichContentResponses.info_basic_options));
+    this.conv.add(new Table(RichContentResponses.info_basic_list_options(new Image(RichContentResponses.info_basic_image(referencesURI.imageURI_PublicJunior)))));
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hola Odiseo")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Dime Alguna Curiosidad")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Aprender")))
+    this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Quiero Enviar Pregunta")))
     this.conv.add(new Suggestion(RichContentResponses.info_basic_suggestion("Hasta Luego Odiseo")))
   }
 }

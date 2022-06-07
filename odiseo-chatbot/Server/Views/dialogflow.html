@@ -5,6 +5,9 @@
     <title>Odiseo Chatbot - Dialogflow Web</title>
     <meta name="viewport" content="width-device-width, initial-scale=1">
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <script>
+        setTimeout(function(){ document.querySelector("df-messenger").shadowRoot.querySelector("df-messenger-chat").shadowRoot.querySelector("df-messenger-user-input").shadowRoot.querySelector(".input-box-wrapper > input").placeholder='Escríbeme algo...' }, 1000);
+    </script>
     <style>
         body {
             background: url('https://i.ibb.co/mHrPjBY/kisspng-owl-teacher-clip-art-owls-5acdf2ce83ac13-9124656515234464785393.png') no-repeat center center fixed; 
