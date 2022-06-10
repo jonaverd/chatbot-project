@@ -441,39 +441,69 @@ module.exports = Object.freeze({
         ]
       ]
     },
-    info_users_login_access: function(user){
+    info_basic_welcome_fromlogin: function(user){
       const response = {
-        "richContent": 
-        [
+        "richContent": [
           [
             {
               "type": "info",
-              "title": "Confirmar Acceso",
-              "subtitle": "Contraseña verificada. Identificado como: " + user + ". Para acceder a tu cuenta, pulsa 'Acceder'. Si deseas volver al inicio, pulsa 'Cancelar' ",
-              "image": 
-              {
-                "src": 
-                {
-                  "rawUrl": referencesURI.imageURI_Login
+              "subtitle": "Contraseña verificada. Identificado como: " + user + ".",
+              "image": {
+                  "src": {
+                      "rawUrl": referencesURI.imageURI_Help
+                  }
+              },
+              },
+            {
+              "type": "info",
+              "title": "Hola " + user,
+              "subtitle": "¡Bienvenido/a de nuevo! Soy Odiseo, tu agente educativo. ¿Qué quieres hacer? Aquí te dejo algunas sugerencias. Si necesitas ver todas mis opciones pulsa 'Menú Principal'",
+              "image": {
+                "src": {
+                  "rawUrl": referencesURI.imageURI_Public
                 }
-              }
+              },
             },
             {
               "type": "chips",
               "options": [
                 {
-                  "text": "Acceder",
+                  "text": "Quiero Enseñarte",
                   "image": {
                     "src": {
-                      "rawUrl": referencesURI.imageURI_Login
+                      "rawUrl": referencesURI.imageURI_Public
                     }
                   }
                 },
                 {
-                  "text": "Cancelar",
+                  "text": "Muéstrame Base de Conocimiento",
                   "image": {
                     "src": {
-                      "rawUrl": referencesURI.imageURI_Login
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Menú Principal",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Hasta Luego Odiseo",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
+                {
+                  "text": "Cerrar Sesión",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
                     }
                   }
                 }
@@ -482,7 +512,7 @@ module.exports = Object.freeze({
           ]
         ]
       }
-      return response;
+      return response; 
     },
     info_users_register_confirm: function(user, email, age, password){
       const response = {
@@ -565,7 +595,7 @@ module.exports = Object.freeze({
             {
               "type": "info",
               "title": "Cuestión Guardada",
-              "subtitle": "¡Gracias por enseñarme! La respuesta para (" + preview + ") es (" + input + "). Si deseas realizar otra operación, pulsa 'Menú Principal'.",
+              "subtitle": "¡Gracias por enseñarme! La respuesta para (" + preview + ") es (" + input + "). Si quieres enseñarme más preguntas, pulsa 'Añadir otra cuestión'. Si deseas realizar otra operación, pulsa 'Menú Principal'.",
               "image": {
                 "src": {
                   "rawUrl": referencesURI.imageURI_Teaching
@@ -575,6 +605,14 @@ module.exports = Object.freeze({
             {
               "type": "chips",
               "options": [
+                {
+                  "text": "Añadir otra cuestión",
+                  "image": {
+                    "src": {
+                      "rawUrl": referencesURI.imageURI_Public
+                    }
+                  }
+                },
                 {
                   "text": "Menú Principal",
                   "image": {
@@ -759,11 +797,11 @@ module.exports = Object.freeze({
               "type": "info",
               "title": "Cuestión: " + element.question,
               "subtitle": "Autor: " + element.user,
-              "image": {
-                  "src": {
-                  "rawUrl": element.visual
-                  }
-              },
+            }
+            const detail0 = {
+              "type": "image",
+              "rawUrl": element.visual,
+              "accessibilityText": element.question
             }
             const detail1 = {
                 "type": "accordion",
@@ -777,6 +815,7 @@ module.exports = Object.freeze({
             }
             elements.push(divider);
             elements.push(main);
+            elements.push(detail0);
             elements.push(detail1);
             elements.push(detail2);
         })
@@ -871,11 +910,11 @@ module.exports = Object.freeze({
               "type": "info",
               "title": "Cuestión: " + element.question,
               "subtitle": "Autor: " + element.user,
-              "image": {
-                  "src": {
-                  "rawUrl": element.visual
-                  }
-              },
+            }
+            const detail0 = {
+              "type": "image",
+              "rawUrl": element.visual,
+              "accessibilityText": element.question
             }
             const detail1 = {
                 "type": "accordion",
@@ -889,6 +928,7 @@ module.exports = Object.freeze({
             }
             elements.push(divider);
             elements.push(main);
+            elements.push(detail0);
             elements.push(detail1);
             elements.push(detail2);
         })
@@ -990,7 +1030,7 @@ module.exports = Object.freeze({
             "type": "divider"
             }
             const main = {
-              "type": "list",
+              "type": "info",
               "title": element.question,
               "subtitle": element.answer,
             }

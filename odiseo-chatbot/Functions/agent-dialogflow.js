@@ -102,8 +102,28 @@ exports.agent = async function (req, res, store) {
         // login válido
         if(await usersAuth.comparehashPassword(input, await backendTools.getBackend_UserPassword(store.get('temporal')))){
           store.set('password', true)
-          const response = RichContentResponses.info_users_login_access(await backendTools.getBackend_UserName(store.get('temporal')));
-          agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+          //¡UPDATED! Se pone en la misma funcion de login_password, para que no aparezca el mensaje de "acceder"
+          // No hay nombre registrado 
+          if(!await backendTools.getBackend_UserName(store.get('temporal'))){
+            const response = RichContentResponses.error_users_login_namenotexists(store.get('last'));
+            agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+          }
+          // Hay nombre registrado
+          else{
+            // No hay edad registrada
+            if(!await backendTools.getBackend_UserAge(store.get('temporal'))){
+              const response = RichContentResponses.error_users_login_agenotexists(store.get('last'));
+              agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+            }
+            // Hay edad registrada (todos los campos disponibles)
+            else{
+              store.set('user', store.get('temporal'));
+              store.set('namedata', await backendTools.getBackend_UserName(store.get('user')));
+              store.set('age', await backendTools.getBackend_UserAge(store.get('user')));
+              const response = RichContentResponses.info_basic_welcome_fromlogin(store.get('namedata'));
+              agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+            }
+          }
         }
         // login error
         else{
@@ -133,8 +153,13 @@ exports.agent = async function (req, res, store) {
       if(store.get('password')==null){
         await UserLogin_Password(agent, input)
       }
-      // Hay sesión de contraseña
       else{
+        const response = RichContentResponses.info_basic_welcome(store.get('namedata'));
+        agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
+      }
+      // Hay sesión de contraseña
+      //¡UPDATED! Se pone en la misma funcion de login_password, para que no aparezca el mensaje de "acceder"
+      /*else{
         // No hay nombre registrado 
         if(!await backendTools.getBackend_UserName(store.get('temporal'))){
           const response = RichContentResponses.error_users_login_namenotexists(store.get('last'));
@@ -156,7 +181,7 @@ exports.agent = async function (req, res, store) {
             agent.add(new Payload(agent.UNSPECIFIED, response, { rawPayload: true, sendAsMessage: true}));
           }
         }
-      }
+      }*/
     }
   }
   
