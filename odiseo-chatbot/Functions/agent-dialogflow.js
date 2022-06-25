@@ -1,5 +1,5 @@
 
-// See https://github.com/dialogflow/dialogflow-fulfillment-nodejs
+/// See https://github.com/dialogflow/dialogflow-fulfillment-nodejs
 // for Dialogflow fulfillment library docs, samples, and to report issues
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Suggestion, Image, Card, Payload} = require('dialogflow-fulfillment');

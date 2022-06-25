@@ -92,8 +92,8 @@ exports.createIntent = async function(displayNameParam, user){
   // Arguments information
   const displayName = displayNameParam;
   const trainingPhrasesParts = [displayNameParam];
-  const quickRepliesParts = ['Menu Principal'];
-  const suggestions = ['Menu Principal'];
+  const quickRepliesParts = ['Menú Principal'];
+  const suggestions = ['Menú Principal'];
   const messageTexts = 'null';
   const image = referencesURI.imageURI_Public;
 
