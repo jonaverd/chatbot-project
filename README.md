@@ -5,6 +5,11 @@ Agente Odiseo es un asistente interactivo para alumnos y profesores. Su intelige
 
 Como profesor gestiona tus propias cuestiones y ayuda a Odiseo aprender con su base de conocimientos. Como alumno, pide ayuda a Odiseo para que te ayude a responder cualquier cuestión almacenada.
 
+## ¡Advertencia!
+El archivo de credenciales ha sido borrado por seguridad de Google. Para volver a ponerlo en la carpeta de "Authentication" (necesario para que la API de Dialogflow funcione) descargar desde el repositorio de Heroku, buscarlo en alguna carpeta local del PC o ir al proyecto de Google Clod Platform para descargarlas de nuevo.
+
+
+
 ## Herramientas necesarias
 Por primera vez al arrancar el proyecto es posible necesitar
 |Nombre|Acceso|Referencia|Ejecutable|Descripción|
